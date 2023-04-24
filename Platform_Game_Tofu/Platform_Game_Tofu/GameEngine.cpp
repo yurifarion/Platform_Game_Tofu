@@ -83,7 +83,42 @@ void GameEngine::sUserInput()
 
 void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene, bool endCurrentScene)
 {
+	if (scene)
+	{
+		m_sceneMap[sceneName] = scene;
+	}
+	else
+	{
+		if (m_sceneMap.find(sceneName) == m_sceneMap.end())
+		{
+			std::cerr << "Warning: Scene does not exist: " << sceneName << std::endl;
+			return;
+		}
+	}
 
+	if (endCurrentScene)
+	{
+		m_sceneMap.erase(m_sceneMap.find(m_currentScene));
+	}
+
+	m_currentScene = sceneName;
+}
+
+void GameEngine::update()
+{
+	if (!isRunning()) { return; }
+
+	if (m_sceneMap.empty()) { return; }
+
+	sUserInput();
+	currentScene()->simulate(m_simulationSpeed);
+	currentScene()->sRender();
+	m_window.display();
+}
+
+void GameEngine::quit()
+{
+	m_running = false;
 }
 Assets& GameEngine::assets()
 {

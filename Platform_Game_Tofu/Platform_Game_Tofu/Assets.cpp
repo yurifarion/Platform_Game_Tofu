@@ -1,38 +1,96 @@
 #include "Assets.h"
+#include <cassert>
 
-void Assets::addTexture(std::string name, std::string path)
+Assets::Assets()
 {
-	//TODO
+
 }
-void Assets::addAnimation(std::string name, std::string path)
+
+void Assets::loadFromFile(const std::string& path)
 {
-	//TODO
+    std::ifstream file(path);
+    std::string str;
+    while (file.good())
+    {
+        file >> str;
+
+        if (str == "Texture")
+        {
+            std::string name, path;
+            file >> name >> path;
+            addTexture(name, path);
+        }
+        else if (str == "Animation")
+        {
+            std::string name, texture;
+            size_t frames, speed;
+            file >> name >> texture >> frames >> speed;
+            addAnimation(name, texture, frames, speed);
+        }
+        else if (str == "Font")
+        {
+            std::string name, path;
+            file >> name >> path;
+            addFont(name, path);
+        }
+        else
+        {
+            std::cerr << "Unknown Asset Type: " << str << std::endl;
+        }
+    }
 }
-void Assets::addSound(std::string name, std::string path)
+
+void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth)
 {
-	//TODO
+    m_textureMap[textureName] = sf::Texture();
+
+    if (!m_textureMap[textureName].loadFromFile(path))
+    {
+        std::cerr << "Could not load texture file: " << path << std::endl;
+        m_textureMap.erase(textureName);
+    }
+    else
+    {
+        m_textureMap[textureName].setSmooth(smooth);
+        std::cout << "Loaded Texture: " << path << std::endl;
+    }
 }
-void Assets::addFont(std::string name, std::string path)
+
+
+
+const sf::Texture& Assets::getTexture(const std::string& textureName) const
 {
-	//TODO
+    assert(m_textureMap.find(textureName) != m_textureMap.end());
+    return m_textureMap.at(textureName);
 }
-void Assets::loadFromFile(std::string path)
+
+void Assets::addAnimation(const std::string& animationName, const std::string& textureName, size_t frameCount, size_t speed)
 {
-	//TODO
+    m_animationMap[animationName] = Animation(animationName, getTexture(textureName), frameCount, speed);
 }
-sf::Texture& Assets::getTexture(std::string name)
+
+const Animation& Assets::getAnimation(const std::string& animationName) const
 {
-	//TODO
+    assert(m_animationMap.find(animationName) != m_animationMap.end());
+    return m_animationMap.at(animationName);
 }
-Animation& Assets::getAnimation(std::string name)
+
+void Assets::addFont(const std::string& fontName, const std::string& path)
 {
-	//TODO
+    m_fontMap[fontName] = sf::Font();
+    if (!m_fontMap[fontName].loadFromFile(path))
+    {
+        std::cerr << "Could not load font file: " << path << std::endl;
+        m_fontMap.erase(fontName);
+    }
+    else
+    {
+        std::cout << "Loaded Font:    " << path << std::endl;
+    }
 }
-sf::Sound& Assets::getSound(std::string name)
+
+const sf::Font& Assets::getFont(const std::string& fontName) const
 {
-	//TODO
-}
-sf::Font& Assets::getFont(std::string name)
-{
-	//TODO
+    assert(m_fontMap.find(fontName) != m_fontMap.end());
+    return m_fontMap.at(fontName);
 }

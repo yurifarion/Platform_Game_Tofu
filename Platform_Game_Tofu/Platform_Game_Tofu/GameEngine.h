@@ -1,5 +1,6 @@
 #pragma once
 #include "Assets.h"
+#include "Scene.h"
 #include <memory>
 
 typedef std::map<std::string, std::shared_ptr<Scene>> SceneMap;

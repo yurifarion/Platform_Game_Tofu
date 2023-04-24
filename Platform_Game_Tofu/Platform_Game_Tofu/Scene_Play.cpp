@@ -7,8 +7,8 @@
 
 #include <iostream>
 
-Scene_Play::Scene_Play(std::shared_ptr<GameEngine> gameEngine, const std::string& levelPath)
-	:m_game(gameEngine)
+Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
+	:Scene(game)
 	, m_levelPath(levelPath)
 {
 	init(m_levelPath);
@@ -136,6 +136,10 @@ void Scene_Play::sLifespan()
 void Scene_Play::sCollision()
 {
 	//UM monte de texto do video explicando como a colisao funciona
+}
+void Scene_Play::drawline(Vec2 p1, Vec2 p2)
+{
+	//do line
 }
 void Scene_Play::sDoAction(const Action& action)
 {

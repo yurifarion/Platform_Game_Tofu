@@ -45,6 +45,12 @@
     <ClCompile Include="Assets.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_Menu.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -81,6 +87,9 @@
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
     <ClInclude Include="Assets.h">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
   </ItemGroup>

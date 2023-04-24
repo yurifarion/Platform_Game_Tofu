@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Action.h"
 #include "EntityManager.h"
 
@@ -39,5 +40,4 @@ public:
 
 	bool hasEnded() const;
 	const ActionMap& getActionMap() const;
-	void drawline(const Vec2& p1, const Vec2& p2);
 };

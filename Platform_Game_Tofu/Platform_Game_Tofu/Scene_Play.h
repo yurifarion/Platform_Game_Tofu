@@ -32,7 +32,7 @@ protected:
 	void update();
 
 public:
-	Scene_Play(std::shared_ptr<GameEngine> gameEngine, const std::string& levelPath);
+	Scene_Play(GameEngine * gameEngine, const std::string& levelPath);
 	void spawnPlayer();
 	void spawnBullet(std::shared_ptr<Entity> entity);
 	void sMovement();
@@ -41,4 +41,5 @@ public:
 	void sAnimation();
 	void onEnd();
 	void sRender();
+	void drawline(Vec2 p1,Vec2 p2);
 };

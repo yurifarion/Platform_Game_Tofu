@@ -9,5 +9,3 @@ int main()
 }
 
 //TODO 
-//Create enemies from Config.txt
-//Create bullets from Config.txt
