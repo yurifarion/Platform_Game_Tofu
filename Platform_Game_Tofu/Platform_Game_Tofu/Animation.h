@@ -16,6 +16,7 @@ public:
 	Animation();
 	Animation(const std::string& name, const sf::Texture& t);
 	Animation(const std::string& name, const sf::Texture& t, size_t frameCount, size_t speed);
+	Animation(const std::string& name, const sf::Texture& t,const Vec2& cellsize, const Vec2& origin, size_t frameCount, size_t speed, bool isVertical);
 
 	void update();
 	bool hasEnded() const;

@@ -23,8 +23,8 @@ void Scene_Play::init(const std::string& levelPath)
 
 	//TODO register all other gameplay Actions
 
-	m_gridText.setCharacterSize(12);
-	m_gridText.setFont(m_game->assets().getFont("Tech"));
+	m_gridText.setCharacterSize(6);
+	m_gridText.setFont(m_game->assets().getFont("tech"));
 	loadLevel(levelPath);
 }
 
@@ -53,6 +53,9 @@ void Scene_Play::loadLevel(const std::string& filename)
 	// set up and use entities with the new syntax it should be removed
 	//
 	spawnPlayer();
+
+
+	/*
 
 	//some sample entities
 	auto brick = m_entityManager.addEntity("tile");
@@ -90,6 +93,9 @@ void Scene_Play::loadLevel(const std::string& filename)
 	// now any changes you make to transform2 will be changed inside entity
 	// auto& transform2 = entity->get<CTransform>()
 	//
+
+
+	*/
 }
 
 void Scene_Play::spawnPlayer()
@@ -97,7 +103,7 @@ void Scene_Play::spawnPlayer()
 	//here is a smaple player entity which you can use to construct other entities
 
 	m_player = m_entityManager.addEntity("player");
-	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Stand"), true);
+	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Tofu"), true);
 	m_player->addComponent<CTransform>(Vec2(224, 352));
 	m_player->addComponent<CBoundingBox>(Vec2(48, 48));
 
@@ -138,7 +144,11 @@ void Scene_Play::sCollision()
 }
 void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 {
-	//do line
+	sf::VertexArray lines(sf::LinesStrip, 2);
+	lines[0].position = sf::Vector2f(p1.x, p1.y);
+	lines[1].position = sf::Vector2f(p2.x, p2.y);
+
+	m_game->window().draw(lines);
 }
 void Scene_Play::sDoAction(const Action& action)
 {

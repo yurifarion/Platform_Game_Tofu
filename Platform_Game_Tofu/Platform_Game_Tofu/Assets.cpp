@@ -24,18 +24,16 @@ void Assets::loadFromFile(const std::string& path)
         {
             std::string name, texture;
             size_t frames, speed;
-            file >> name >> texture >> frames >> speed;
-            addAnimation(name, texture, frames, speed);
+            Vec2 cellsize, origin;
+            bool isVertical;
+            file >> name >> texture >> frames >> speed >> cellsize.x>>cellsize.y>>origin.x>>origin.y>>isVertical;
+            addAnimation(name, texture, cellsize, origin, frames, speed, isVertical);
         }
         else if (str == "Font")
         {
             std::string name, path;
             file >> name >> path;
             addFont(name, path);
-        }
-        else
-        {
-            std::cerr << "Unknown Asset Type: " << str << std::endl;
         }
     }
 }
@@ -64,9 +62,9 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
     return m_textureMap.at(textureName);
 }
 
-void Assets::addAnimation(const std::string& animationName, const std::string& textureName, size_t frameCount, size_t speed)
+void Assets::addAnimation(const std::string& animationName, const std::string& textureName,Vec2& cellsize, Vec2& origin, size_t frameCount, size_t speed, bool isVertical)
 {
-    m_animationMap[animationName] = Animation(animationName, getTexture(textureName), frameCount, speed);
+    m_animationMap[animationName] = Animation(animationName, getTexture(textureName), cellsize, origin, frameCount, speed, isVertical);
 }
 
 const Animation& Assets::getAnimation(const std::string& animationName) const

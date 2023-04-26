@@ -24,6 +24,27 @@ Animation::Animation(const std::string& name, const sf::Texture& t, size_t frame
 	m_sprite.setTextureRect(sf::IntRect(std::floor(m_currentFrame) * m_size.x, 0, m_size.x, m_size.y));
 
 }
+Animation::Animation(const std::string& name, const sf::Texture& t, const Vec2& cellsize, const Vec2& origin, size_t frameCount, size_t speed, bool isVertical = false)
+	:m_name(name)
+	, m_sprite(t)
+	, m_frameCount(frameCount)
+	, m_currentFrame(0)
+	, m_speed(speed)
+{
+	if (!isVertical)
+	{
+		m_size = Vec2(cellsize.x + origin.x,cellsize.y + origin.y);
+		m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
+		m_sprite.setTextureRect(sf::IntRect(std::floor(m_currentFrame) * m_size.x, origin.y, m_size.x, m_size.y));
+	}
+	else 
+	{
+		m_size = Vec2(cellsize.x + origin.x, cellsize.y + origin.y);
+		m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
+		m_sprite.setTextureRect(sf::IntRect(origin.x, std::floor(m_currentFrame) * m_size.y, m_size.x, m_size.y));
+	}
+
+}
 
 //Update the animaton to show the next frame depending on its speed
 //animation loops when its reaches the end
