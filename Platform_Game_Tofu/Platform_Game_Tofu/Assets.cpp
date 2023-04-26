@@ -91,6 +91,6 @@ void Assets::addFont(const std::string& fontName, const std::string& path)
 
 const sf::Font& Assets::getFont(const std::string& fontName) const
 {
-    assert(m_fontMap.find(fontName) != m_fontMap.end());
-    return m_fontMap.at(fontName);
+   assert(m_fontMap.find(fontName) != m_fontMap.end());
+   return m_fontMap.at(fontName);
 }

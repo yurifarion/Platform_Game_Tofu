@@ -1,5 +1,6 @@
 #pragma once
 #include "Assets.h"
+#include "Common.h"
 #include "Scene.h"
 #include <memory>
 

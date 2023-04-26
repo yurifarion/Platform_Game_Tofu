@@ -6,7 +6,6 @@
 #include "Action.h"
 
 #include <iostream>
-
 Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 	:Scene(game)
 	, m_levelPath(levelPath)

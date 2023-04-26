@@ -16,7 +16,7 @@ void Scene_Menu::init()
 {
     registerAction(sf::Keyboard::W, "UP");
     registerAction(sf::Keyboard::S, "DOWN");
-    registerAction(sf::Keyboard::D, "ZELDA");
+    registerAction(sf::Keyboard::Enter, "CONFIRM");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
     m_title = "No Name";
@@ -25,8 +25,7 @@ void Scene_Menu::init()
     m_menuStrings.push_back("Level Editor");
     m_menuStrings.push_back("Credits");
     m_menuStrings.push_back("Quit");
-
-    m_menuText.setFont(m_game->assets().getFont("Golem"));
+    m_menuText.setFont(m_game->assets().getFont("tech"));
     m_menuText.setCharacterSize(64);
 
 }
@@ -49,6 +48,7 @@ void Scene_Menu::sDoAction(const Action& action)
         {
             m_selectedMenuIndex = (m_selectedMenuIndex + 1) % m_menuStrings.size();
         }
+        
         else if (action.name() == "QUIT")
         {
             onEnd();
@@ -65,19 +65,19 @@ void Scene_Menu::sRender()
     m_game->window().clear();
 
     // draw background
-    sf::Texture background(m_game->assets().getTexture("TexBackgr2"));
+    /*sf::Texture background(m_game->assets().getTexture("TexBackgr2"));
     sf::Sprite backgroundSprite(background);
     backgroundSprite.setPosition(m_game->window().getView().getCenter().x - 640, m_game->window().getView().getCenter().y - 384);
-    m_game->window().draw(backgroundSprite);
+    m_game->window().draw(backgroundSprite);*/
 
     // draw the game title in the top-left of the screen
     m_menuText.setCharacterSize(100);
     m_menuText.setString(m_title);
     m_menuText.setFillColor(sf::Color(100, 100, 100));
     m_menuText.setPosition(sf::Vector2f(500, 20));
-    m_game->window().draw(m_menuText);
-
     m_menuText.setCharacterSize(50);
+    m_game->window().draw(m_menuText);
+   
 
     // draw all of the menu options
     for (size_t i = 0; i < m_menuStrings.size(); i++)
@@ -93,6 +93,7 @@ void Scene_Menu::sRender()
     m_menuText.setFillColor(sf::Color(100, 100, 100));
     m_menuText.setString("up: w     down: s    play: d      back: esc");
     m_menuText.setPosition(sf::Vector2f(10, 690));
+
     m_game->window().draw(m_menuText);
 }
 

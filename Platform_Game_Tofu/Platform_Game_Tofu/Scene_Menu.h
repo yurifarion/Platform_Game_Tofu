@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Common.h"
 #include<map>
 #include<memory>
 #include <deque>
