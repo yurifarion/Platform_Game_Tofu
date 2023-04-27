@@ -54,6 +54,13 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//
 	spawnPlayer();
 
+	//Create a tile
+	auto block = m_entityManager.addEntity("Tile");
+	block->addComponent<CAnimation>(m_game->assets().getAnimation("Tile"), false);
+	block->addComponent<CTransform>(Vec2(224, 352));
+	block->getComponent<CTransform>().scale = Vec2(4, 4);
+	block->addComponent<CBoundingBox>(Vec2(48, 48));
+
 
 	/*
 
@@ -103,8 +110,9 @@ void Scene_Play::spawnPlayer()
 	//here is a smaple player entity which you can use to construct other entities
 
 	m_player = m_entityManager.addEntity("player");
-	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Tofu"), true);
+	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Tofu"), false);
 	m_player->addComponent<CTransform>(Vec2(224, 352));
+	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
 	m_player->addComponent<CBoundingBox>(Vec2(48, 48));
 
 	//TODO be sure to add the remianing components to the player
@@ -185,11 +193,13 @@ void Scene_Play::sRender()
 	else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
 	//set the viewport of the window to be cented on the player if its far enough right
-	auto& pPos = m_player->getComponent<CTransform>().pos;
-	float windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
-	sf::View view = m_game->window().getView();
-	view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
-
+	//auto& pPos = m_player->getComponent<CTransform>().pos;
+	//float windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
+	//sf::View view = m_game->window().getView();
+	//view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
+	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(320.0f, 192.0f));
+	view.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().pos.x, m_player->getComponent<CTransform>().pos.y));
+	m_game->window().setView(view);
 	//draw all entity textures / animations
 	if (m_drawTextures)
 	{

@@ -4,7 +4,7 @@
 
 int main()
 {
-	GameEngine g("Config.txt");
+	GameEngine g("config.txt");
 	g.run();
     
 }

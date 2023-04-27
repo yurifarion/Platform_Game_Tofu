@@ -1,7 +1,5 @@
-Kind of Asset | Name | Path
 Font tech fonts/tech.ttf
-Texture Tiles Res/oga-tofuman-tiles.png
-Texture characters Res/oga-tofuman-sprites.png
-
-Kind of Asset|Name|Texture|Frames|Speed|Cellsize(x,y)|Origin(x,y)|isVertical
-Animation Tofu characters  5 1 16 16 16 0 true
+Texture Tiles Res/oga-tofuman-tiles.png 0
+Texture characters Res/oga-tofuman-sprites.png 0
+Animation Tofu characters  5 1 16 15 16 0 1
+Animation Tile Tiles 1 0 16 16 0 0 0

@@ -17,8 +17,9 @@ void Assets::loadFromFile(const std::string& path)
         if (str == "Texture")
         {
             std::string name, path;
-            file >> name >> path;
-            addTexture(name, path);
+            bool smooth;
+            file >> name >> path >> smooth;
+            addTexture(name, path, smooth);
         }
         else if (str == "Animation")
         {
@@ -35,7 +36,18 @@ void Assets::loadFromFile(const std::string& path)
             file >> name >> path;
             addFont(name, path);
         }
+        else
+        {
+            std::cerr << "Unknown Asset Type: " << str << std::endl;
+        }
+        std::cout << "k: " << str
+            << "\teof: " << file.eof()
+            << "\tfail: " << file.fail()
+            << "\tbad: " << file.bad()
+            << "\tgood: " << file.good()
+            << std::endl;
     }
+
 }
 
 void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth)
@@ -65,6 +77,7 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
 void Assets::addAnimation(const std::string& animationName, const std::string& textureName,Vec2& cellsize, Vec2& origin, size_t frameCount, size_t speed, bool isVertical)
 {
     m_animationMap[animationName] = Animation(animationName, getTexture(textureName), cellsize, origin, frameCount, speed, isVertical);
+    std::cout << "Added Animation: " << animationName << std::endl;
 }
 
 const Animation& Assets::getAnimation(const std::string& animationName) const
