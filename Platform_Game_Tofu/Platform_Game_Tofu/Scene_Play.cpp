@@ -20,6 +20,7 @@ void Scene_Play::init(const std::string& levelPath)
 	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
+	registerAction(sf::Keyboard::W, "UP");
 
 	//TODO register all other gameplay Actions
 
@@ -36,7 +37,12 @@ Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity
 	// the size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
 	// the bottom-left corner of the animation should laign with the bottom left of the grid cell
 	//
-	return Vec2(0, 0);
+	float spriteWidth = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().width * entity->getComponent<CTransform>().scale.x;
+	float spriteHeight = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
+
+	float x = gridX * m_gridSize.x + (spriteWidth/2);
+	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight/2);
+	return Vec2(x,y);
 
 }
 
@@ -57,8 +63,9 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//Create a tile
 	auto block = m_entityManager.addEntity("Tile");
 	block->addComponent<CAnimation>(m_game->assets().getAnimation("Tile"), false);
-	block->addComponent<CTransform>(Vec2(224, 352));
+	block->addComponent<CTransform>(Vec2(0,0));
 	block->getComponent<CTransform>().scale = Vec2(4, 4);
+	block->getComponent<CTransform>().pos = gridToMidPixel(1, 1, block);
 	block->addComponent<CBoundingBox>(Vec2(48, 48));
 
 
@@ -197,9 +204,6 @@ void Scene_Play::sRender()
 	//float windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
 	//sf::View view = m_game->window().getView();
 	//view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
-	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(320.0f, 192.0f));
-	view.setCenter(sf::Vector2f(m_player->getComponent<CTransform>().pos.x, m_player->getComponent<CTransform>().pos.y));
-	m_game->window().setView(view);
 	//draw all entity textures / animations
 	if (m_drawTextures)
 	{
