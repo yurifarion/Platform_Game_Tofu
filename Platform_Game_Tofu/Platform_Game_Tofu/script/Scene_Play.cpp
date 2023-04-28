@@ -20,8 +20,8 @@ void Scene_Play::init(const std::string& levelPath)
 	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
-	registerAction(sf::Keyboard::W, "UP");
-	registerAction(sf::Keyboard::Up, "UP");
+	registerAction(sf::Keyboard::Space, "JUMP");
+	registerAction(sf::Keyboard::Up, "JUMP");
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::Down, "DOWN");
 	registerAction(sf::Keyboard::A, "LEFT");
@@ -53,7 +53,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//reset the entity managet every time we load a level
 	m_entityManager = EntityManager();
 
-	spawnPlayer();
+	
 	int collumn = 0;
 	int row = 11;
 	std::ifstream file(filename);
@@ -62,10 +62,24 @@ void Scene_Play::loadLevel(const std::string& filename)
 	// 0 - nothing
 	// 1 - tile grass
 	// 2 - Tile_big_tl
-	// 3 -  Tile_big_tr
-	// 4 -  Tile_big_lf
+	// 3 -  Tile_big_ll
+	// 4 -  Tile_big_tr
 	// 5 -  Tile_big_lr
-	// 6 -  Tile_big_lr
+	// 6 -  Tile
+	// 7 -  Tile_grass_tl 
+	// 8 - Tile_grass_tr
+	// 9 - Tile_grass_ll 
+	// 10 - Tile_grass_l
+	//11 - Tile_grass_lr
+	//12 - Tile_grass_ltlr
+	//13 - Tile_mini
+	//14 - Tile_tt 
+	//15 - Tile_ll 
+	//16 - Tile_l 
+	//17 - Tile_r 
+	//18 - bg_1_Tile 
+	//19 - bg_1_Tile_l 
+	//20 - bg_1_Tile_r 
 
 	while (file.good())
 	{
@@ -87,8 +101,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 		else if (str == "2")
 		{
-			auto block = m_entityManager.addEntity("Tile_big_tr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tr"), false);
+			auto block = m_entityManager.addEntity("Tile_big_tl");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tl"), false);
 			block->addComponent<CTransform>(Vec2(0, 0));
 			block->getComponent<CTransform>().scale = Vec2(4, 4);
 			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
@@ -97,8 +111,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 		else if (str == "3")
 		{
-			auto block = m_entityManager.addEntity("Tile_big_lf");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lf"), false);
+			auto block = m_entityManager.addEntity("Tile_big_ll");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_ll"), false);
 			block->addComponent<CTransform>(Vec2(0, 0));
 			block->getComponent<CTransform>().scale = Vec2(4, 4);
 			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
@@ -107,25 +121,16 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 		else if (str == "4")
 		{
-			auto block = m_entityManager.addEntity("Tile_big_lf");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lf"), false);
+			auto block = m_entityManager.addEntity("Tile_big_tr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tr"), false);
 			block->addComponent<CTransform>(Vec2(0, 0));
 			block->getComponent<CTransform>().scale = Vec2(4, 4);
 			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
 			block->addComponent<CBoundingBox>(Vec2(64, 64));
 			collumn++;
 		}
+		
 		else if (str == "5")
-		{
-			auto block = m_entityManager.addEntity("Tile");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "6")
 		{
 			auto block = m_entityManager.addEntity("Tile_big_lr");
 			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lr"), false);
@@ -135,16 +140,164 @@ void Scene_Play::loadLevel(const std::string& filename)
 			block->addComponent<CBoundingBox>(Vec2(64, 64));
 			collumn++;
 		}
+		else if (str == "6")
+		{
+			auto block = m_entityManager.addEntity("Tile");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "7")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_tl");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_tl"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "8")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_tr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_tr"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "9")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_ll");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_ll"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "10")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_l");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_l"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "11")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_lr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_lr"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "12")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass_ltlr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_ltlr"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "13")
+		{
+			auto block = m_entityManager.addEntity("Tile_mini");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_mini"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "14")
+		{
+			auto block = m_entityManager.addEntity("Tile_tt");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_tt"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		
+		}
+		else if (str == "15")
+		{
+			auto block = m_entityManager.addEntity("Tile_ll");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_ll"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "16")
+		{
+			auto block = m_entityManager.addEntity("Tile_l");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_l"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "17")
+		{
+			auto block = m_entityManager.addEntity("Tile_r");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_r"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "18")
+		{
+			auto block = m_entityManager.addEntity("bg_1_Tile");
+			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			collumn++;
+		}
+		else if (str == "19")
+		{
+			auto block = m_entityManager.addEntity("bg_1_Tile_l");
+			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile_l"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			collumn++;
+		}
+		else if (str == "20")
+		{
+			auto block = m_entityManager.addEntity("bg_1_Tile_r");
+			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile_r"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			collumn++;
+		}
 		else if (str == "|")
 		{
 			row--;
 			collumn = 0;
 		}
-		std::cout << "Finish reading and loading map \n";
+		
 	}
+	std::cout << "Finish reading and loading map \n";
 
-
-	
+	spawnPlayer();
 
 	//TODO read in the level file and add the appropriate entities
 	// use the plauyerconfi struct m_playerConfig to store player properties
@@ -309,7 +462,7 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
 		else if (action.name() == "PAUSE") { setPaused(!m_paused); }
 		else if (action.name() == "QUIT") { onEnd(); }
-		else if (action.name() == "UP") { m_player->getComponent<CInput>().up = true; }
+		else if (action.name() == "JUMP") { m_player->getComponent<CInput>().up = true; }
 		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = true; }
 		else if (action.name() == "RIGHT") 
 		{
@@ -324,7 +477,7 @@ void Scene_Play::sDoAction(const Action& action)
 	}
 	else if (action.type() == "END")
 	{
-		 if (action.name() == "UP") { m_player->getComponent<CInput>().up = false; }
+		 if (action.name() == "JUMP") { m_player->getComponent<CInput>().up = false; }
 		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
 		else if (action.name() == "RIGHT") { m_player->getComponent<CInput>().right = false; }
 		else if (action.name() == "LEFT") { m_player->getComponent<CInput>().left = false; }
@@ -347,7 +500,7 @@ void Scene_Play::sRender()
 {
 	//color the background darker so you know that the game is paused
 
-	if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
+	if (!m_paused) { m_game->window().clear(sf::Color(0, 64, 128)); }
 	else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
 	//set the viewport of the window to be cented on the player if its far enough right

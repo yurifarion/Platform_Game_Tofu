@@ -79,6 +79,9 @@ void Assets::addSprite(const std::string& spritename, const std::string& texture
 
 const Sprite& Assets::getSprite(const std::string& spritename) const
 {
+    if (m_spriteMap.find(spritename) == m_spriteMap.end()) {
+        std::cout << "There is no sprite with "<< spritename <<" name\n";
+    }
     assert(m_spriteMap.find(spritename) != m_spriteMap.end());
     return m_spriteMap.at(spritename);
 }
