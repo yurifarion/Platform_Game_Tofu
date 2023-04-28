@@ -31,11 +31,23 @@ Animation::Animation(const std::string& name, const sf::Texture& t, const Vec2& 
 	, m_currentFrame(0)
 	, m_speed(speed)
 {
-	m_size = Vec2(cellsize.x + origin.x, cellsize.y + origin.y);
+	m_size = Vec2(cellsize.x, cellsize.y);
 	m_sprite.setOrigin(cellsize.x / 2.0f, cellsize.y / 2.0f);
 
-	if (!isVertical){m_sprite.setTextureRect(sf::IntRect(std::floor(m_currentFrame) * m_size.x, origin.y, cellsize.x, cellsize.y));}
-	else {m_sprite.setTextureRect(sf::IntRect(origin.x, std::floor(m_currentFrame) * m_size.y, cellsize.x, cellsize.y));}
+	if (!isVertical)
+	{
+		Vec2 pos;
+		pos.x = m_size.x * origin.x;
+		pos.y = cellsize.y * origin.y;
+		m_sprite.setTextureRect(sf::IntRect(pos.x, pos.y, cellsize.x, cellsize.y));
+	}
+	else 
+	{
+		Vec2 pos;
+		pos.x = cellsize.x * origin.x;
+		pos.y = m_size.y * origin.y;
+		m_sprite.setTextureRect(sf::IntRect(pos.x, pos.y, cellsize.x, cellsize.y));
+	}
 
 }
 

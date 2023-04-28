@@ -1,5 +1,0 @@
-Font tech fonts/tech.ttf
-Texture Tiles Res/oga-tofuman-tiles.png 0
-Texture characters Res/oga-tofuman-sprites.png 0
-Animation Tofu characters  1 0 16 16 16 0 1
-Animation Tile Tiles 1 0 16 16 0 0 1

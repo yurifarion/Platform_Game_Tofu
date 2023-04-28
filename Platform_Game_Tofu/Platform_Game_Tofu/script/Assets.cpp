@@ -21,14 +21,12 @@ void Assets::loadFromFile(const std::string& path)
             file >> name >> path >> smooth;
             addTexture(name, path, smooth);
         }
-        else if (str == "Animation")
+        else if (str == "Sprite")
         {
             std::string name, texture;
-            size_t frames, speed;
             Vec2 cellsize, origin;
-            bool isVertical;
-            file >> name >> texture >> frames >> speed >> cellsize.x>>cellsize.y>>origin.x>>origin.y>>isVertical;
-            addAnimation(name, texture, cellsize, origin, frames, speed, isVertical);
+            file >> name >> texture >> cellsize.x>>cellsize.y>>origin.x>>origin.y;
+            addSprite(name, texture, cellsize, origin);
         }
         else if (str == "Font")
         {
@@ -74,16 +72,15 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
     return m_textureMap.at(textureName);
 }
 
-void Assets::addAnimation(const std::string& animationName, const std::string& textureName,Vec2& cellsize, Vec2& origin, size_t frameCount, size_t speed, bool isVertical)
+void Assets::addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin)
 {
-    m_animationMap[animationName] = Animation(animationName, getTexture(textureName), cellsize, origin, frameCount, speed, isVertical);
-    std::cout << "Added Animation: " << animationName << std::endl;
+    m_spriteMap[spritename] = Sprite(spritename, getTexture(textureName), cellsize, origin);
 }
 
-const Animation& Assets::getAnimation(const std::string& animationName) const
+const Sprite& Assets::getSprite(const std::string& spritename) const
 {
-    assert(m_animationMap.find(animationName) != m_animationMap.end());
-    return m_animationMap.at(animationName);
+    assert(m_spriteMap.find(spritename) != m_spriteMap.end());
+    return m_spriteMap.at(spritename);
 }
 
 void Assets::addFont(const std::string& fontName, const std::string& path)

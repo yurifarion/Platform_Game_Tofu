@@ -83,6 +83,16 @@ public:
 		:animation(animation), repeat(r) {}
 };
 
+class CSprite : public Component
+{
+public:
+	Sprite sprite;
+	bool smooth = false;
+	CSprite() {}
+	CSprite(const Sprite& psprite, bool r)
+		:sprite(psprite), smooth(r) {}
+};
+
 class CGravity : public Component
 {
 public:

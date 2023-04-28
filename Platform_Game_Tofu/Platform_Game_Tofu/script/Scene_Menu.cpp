@@ -52,7 +52,7 @@ void Scene_Menu::sDoAction(const Action& action)
         {
             if (m_menuStrings[m_selectedMenuIndex] == "Play")
             {
-                m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game,"path"));
+                m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game,"Levels/Level1.txt"));
             }
             if (m_menuStrings[m_selectedMenuIndex] == "Quit")
             {

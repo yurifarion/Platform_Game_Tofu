@@ -38,8 +38,8 @@ void Scene_Play::init(const std::string& levelPath)
 
 Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
-	float spriteWidth = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().width * entity->getComponent<CTransform>().scale.x;
-	float spriteHeight = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
+	float spriteWidth = entity->getComponent<CSprite>().sprite.getSprite().getGlobalBounds().width * entity->getComponent<CTransform>().scale.x;
+	float spriteHeight = entity->getComponent<CSprite>().sprite.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
 
 	float x = gridX * m_gridSize.x + (spriteWidth/2);
 	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight/2);
@@ -53,6 +53,99 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//reset the entity managet every time we load a level
 	m_entityManager = EntityManager();
 
+	spawnPlayer();
+	int collumn = 0;
+	int row = 11;
+	std::ifstream file(filename);
+	std::string str;
+
+	// 0 - nothing
+	// 1 - tile grass
+	// 2 - Tile_big_tl
+	// 3 -  Tile_big_tr
+	// 4 -  Tile_big_lf
+	// 5 -  Tile_big_lr
+	// 6 -  Tile_big_lr
+
+	while (file.good())
+	{
+		file >> str;
+
+		if (str == "0")
+		{
+			collumn++;
+		}
+		else if (str == "1")
+		{
+			auto block = m_entityManager.addEntity("Tile_grass");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "2")
+		{
+			auto block = m_entityManager.addEntity("Tile_big_tr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tr"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "3")
+		{
+			auto block = m_entityManager.addEntity("Tile_big_lf");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lf"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "4")
+		{
+			auto block = m_entityManager.addEntity("Tile_big_lf");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lf"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "5")
+		{
+			auto block = m_entityManager.addEntity("Tile");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "6")
+		{
+			auto block = m_entityManager.addEntity("Tile_big_lr");
+			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lr"), false);
+			block->addComponent<CTransform>(Vec2(0, 0));
+			block->getComponent<CTransform>().scale = Vec2(4, 4);
+			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
+			block->addComponent<CBoundingBox>(Vec2(64, 64));
+			collumn++;
+		}
+		else if (str == "|")
+		{
+			row--;
+			collumn = 0;
+		}
+		std::cout << "Finish reading and loading map \n";
+	}
+
+
+	
+
 	//TODO read in the level file and add the appropriate entities
 	// use the plauyerconfi struct m_playerConfig to store player properties
 	// this struct is defined at the top of Scene_play.h
@@ -60,16 +153,17 @@ void Scene_Play::loadLevel(const std::string& filename)
 	// NOTE: all of the code below is sample code which shows you how to
 	// set up and use entities with the new syntax it should be removed
 	//
-	spawnPlayer();
+	
 
+	/*
 	//Create a tile
 	auto block = m_entityManager.addEntity("Tile");
 	block->addComponent<CAnimation>(m_game->assets().getAnimation("Tile"), false);
 	block->addComponent<CTransform>(Vec2(0,0));
 	block->getComponent<CTransform>().scale = Vec2(4, 4);
 	block->getComponent<CTransform>().pos = gridToMidPixel(1, 1, block);
-	block->addComponent<CBoundingBox>(Vec2(48, 48));
-
+	block->addComponent<CBoundingBox>(Vec2(64, 64));
+	*/
 
 	/*
 
@@ -119,10 +213,11 @@ void Scene_Play::spawnPlayer()
 	//here is a smaple player entity which you can use to construct other entities
 
 	m_player = m_entityManager.addEntity("player");
-	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Tofu"), false);
+	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu"), false);
 	m_player->addComponent<CTransform>(Vec2(224, 352));
 	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
-	m_player->addComponent<CBoundingBox>(Vec2(48, 48));
+	m_player->addComponent<CGravity>(3.0f);
+	m_player->addComponent<CBoundingBox>(Vec2(64, 64));
 
 	//TODO be sure to add the remianing components to the player
 }
@@ -144,23 +239,25 @@ void Scene_Play::update()
 }
 void Scene_Play::sMovement()
 {
+
+	//Player Moviment
 	Vec2 playerVelocity(0, 0);
 
 	if (m_player->getComponent<CInput>().up)
 	{
-		playerVelocity.y = -3;
+		playerVelocity.y += -10;
 	}
-	if (m_player->getComponent<CInput>().down)
+	if (m_player->hasComponent<CGravity>())
 	{
-		playerVelocity.y = +3;
+		playerVelocity.y += m_player->getComponent<CGravity>().gravity;
 	}
 	if (m_player->getComponent<CInput>().right)
 	{
-		playerVelocity.x = 3;
+		playerVelocity.x += 3;
 	}
 	if (m_player->getComponent<CInput>().left)
 	{
-		playerVelocity.x = -3;
+		playerVelocity.x += -3;
 	}
 	m_player->getComponent<CTransform>().velocity = playerVelocity;
 
@@ -190,7 +287,6 @@ void Scene_Play::sCollision()
 			if (overlap.x > 0 && overlap.y > 0)
 			{
 				auto resolveCol = physics.ResolveCollision(m_player, e);
-				std::cout << "Collision Detected x: "<< resolveCol.x<<" y: "<< resolveCol.y<<"\n";
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
 			}
 		}
@@ -266,13 +362,13 @@ void Scene_Play::sRender()
 		{
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CAnimation>())
+			if (e->hasComponent<CSprite>())
 			{
-				auto& animation = e->getComponent<CAnimation>().animation;
-				animation.getSprite().setRotation(transform.angle);
-				animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
-				animation.getSprite().setScale(transform.scale.x, transform.scale.y);
-				m_game->window().draw(animation.getSprite());
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
 			}
 		}
 	}
