@@ -31,18 +31,11 @@ Animation::Animation(const std::string& name, const sf::Texture& t, const Vec2& 
 	, m_currentFrame(0)
 	, m_speed(speed)
 {
-	if (!isVertical)
-	{
-		m_size = Vec2(cellsize.x + origin.x,cellsize.y + origin.y);
-		m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
-		m_sprite.setTextureRect(sf::IntRect(std::floor(m_currentFrame) * m_size.x, origin.y, m_size.x, m_size.y));
-	}
-	else 
-	{
-		m_size = Vec2(cellsize.x + origin.x, cellsize.y + origin.y);
-		m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
-		m_sprite.setTextureRect(sf::IntRect(origin.x, std::floor(m_currentFrame) * m_size.y, m_size.x, m_size.y));
-	}
+	m_size = Vec2(cellsize.x + origin.x, cellsize.y + origin.y);
+	m_sprite.setOrigin(cellsize.x / 2.0f, cellsize.y / 2.0f);
+
+	if (!isVertical){m_sprite.setTextureRect(sf::IntRect(std::floor(m_currentFrame) * m_size.x, origin.y, cellsize.x, cellsize.y));}
+	else {m_sprite.setTextureRect(sf::IntRect(origin.x, std::floor(m_currentFrame) * m_size.y, cellsize.x, cellsize.y));}
 
 }
 

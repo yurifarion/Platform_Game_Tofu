@@ -21,6 +21,13 @@ void Scene_Play::init(const std::string& levelPath)
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
 	registerAction(sf::Keyboard::W, "UP");
+	registerAction(sf::Keyboard::Up, "UP");
+	registerAction(sf::Keyboard::S, "DOWN");
+	registerAction(sf::Keyboard::Down, "DOWN");
+	registerAction(sf::Keyboard::A, "LEFT");
+	registerAction(sf::Keyboard::Left, "LEFT");
+	registerAction(sf::Keyboard::D, "RIGHT");
+	registerAction(sf::Keyboard::Right, "RIGHT");
 
 	//TODO register all other gameplay Actions
 
@@ -31,17 +38,12 @@ void Scene_Play::init(const std::string& levelPath)
 
 Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
-	//TODO this function takes in a grid(x,y) position and an entity
-	// Return a Vec2 indicating where the CENTER position of the entity should be
-	// you must use the entity animation size to position it correctly
-	// the size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
-	// the bottom-left corner of the animation should laign with the bottom left of the grid cell
-	//
 	float spriteWidth = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().width * entity->getComponent<CTransform>().scale.x;
 	float spriteHeight = entity->getComponent<CAnimation>().animation.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
 
 	float x = gridX * m_gridSize.x + (spriteWidth/2);
 	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight/2);
+
 	return Vec2(x,y);
 
 }
@@ -136,18 +138,39 @@ void Scene_Play::update()
 	//TODO implement pause functionality
 	sMovement();
 	sLifespan();
-	sCollision();
 	sAnimation();
+	sCollision();
 	sRender();
 }
 void Scene_Play::sMovement()
 {
-	//TODO Implement player movement / jumping based on its CInput component
-	//TODO Implement gravity effect on the player
-	// TODO implement the maximum player speed in both x and Y directions
-	// NOTE setting an entitys scale.x to -1 mait face to the left
-	// 
-	//
+	Vec2 playerVelocity(0, 0);
+
+	if (m_player->getComponent<CInput>().up)
+	{
+		playerVelocity.y = -3;
+	}
+	if (m_player->getComponent<CInput>().down)
+	{
+		playerVelocity.y = +3;
+	}
+	if (m_player->getComponent<CInput>().right)
+	{
+		playerVelocity.x = 3;
+	}
+	if (m_player->getComponent<CInput>().left)
+	{
+		playerVelocity.x = -3;
+	}
+	m_player->getComponent<CTransform>().velocity = playerVelocity;
+
+	for (auto e : m_entityManager.getEntities())
+	{
+		if (e->getComponent<CTransform>().velocity != Vec2(0, 0))
+		{
+			e->getComponent<CTransform>().move(e->getComponent<CTransform>().velocity);
+		}
+	}
 }
 void Scene_Play::sLifespan()
 {
@@ -155,7 +178,23 @@ void Scene_Play::sLifespan()
 }
 void Scene_Play::sCollision()
 {
-	//UM monte de texto do video explicando como a colisao funciona
+	Physics physics;
+
+
+	//Check collision with player
+	for (auto e : m_entityManager.getEntities())
+	{
+		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
+		{
+			auto overlap = physics.GetOverlap(m_player, e);
+			if (overlap.x > 0 && overlap.y > 0)
+			{
+				auto resolveCol = physics.ResolveCollision(m_player, e);
+				std::cout << "Collision Detected x: "<< resolveCol.x<<" y: "<< resolveCol.y<<"\n";
+				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
+			}
+		}
+	}
 }
 void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 {
@@ -174,10 +213,25 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
 		else if (action.name() == "PAUSE") { setPaused(!m_paused); }
 		else if (action.name() == "QUIT") { onEnd(); }
+		else if (action.name() == "UP") { m_player->getComponent<CInput>().up = true; }
+		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = true; }
+		else if (action.name() == "RIGHT") 
+		{
+			m_player->getComponent<CInput>().right = true; 
+			m_player->getComponent<CTransform>().flipX(false);
+		}
+		else if (action.name() == "LEFT") 
+		{
+			m_player->getComponent<CInput>().left = true; 
+			m_player->getComponent<CTransform>().flipX(true);
+		}
 	}
 	else if (action.type() == "END")
 	{
-
+		 if (action.name() == "UP") { m_player->getComponent<CInput>().up = false; }
+		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
+		else if (action.name() == "RIGHT") { m_player->getComponent<CInput>().right = false; }
+		else if (action.name() == "LEFT") { m_player->getComponent<CInput>().left = false; }
 	}
 }
 void Scene_Play::sAnimation()
@@ -196,6 +250,7 @@ void Scene_Play::onEnd()
 void Scene_Play::sRender()
 {
 	//color the background darker so you know that the game is paused
+
 	if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
 	else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
@@ -238,6 +293,7 @@ void Scene_Play::sRender()
 				rect.setOutlineColor(sf::Color(255, 255, 255, 255));
 				rect.setOutlineThickness(1);
 				m_game->window().draw(rect);
+
 			}
 		}
 	}

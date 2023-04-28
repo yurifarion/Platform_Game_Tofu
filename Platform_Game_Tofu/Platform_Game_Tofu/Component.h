@@ -26,6 +26,15 @@ public:
 	CTransform(const Vec2& p, const Vec2& sp, const Vec2& sc, float a)
 		:pos(p), prevPos(sp), scale(sc), angle(a)
 	{}
+	void flipX(bool isFaceLeft)
+	{
+		scale.x = isFaceLeft ? abs(scale.x) * -1 : abs(scale.x) * 1;
+	}
+	void move(Vec2 ppos)
+	{
+		prevPos = pos;
+		pos += ppos;
+	}
 
 };
 

@@ -20,3 +20,7 @@ void  Entity::destroy()
 {
 	m_active = false;
 }
+size_t  Entity::id() const
+{
+	return m_id;
+}
