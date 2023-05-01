@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Animation.h"
 #include "Assets.h"
-
+#include "AnimatorMachine.h"
 
 class Component
 {
@@ -73,14 +72,13 @@ public:
 		:size(s), halfSize(s.x/2,s.y/2) {}
 };
 
-class CAnimation : public Component
+class CAnimator : public Component
 {
 public:
-	Animation animation;
-	bool repeat = false;
-	CAnimation(){}
-	CAnimation(const Animation& animation, bool r)
-		:animation(animation), repeat(r) {}
+	AnimatorMachine animator;
+	CAnimator(){}
+	CAnimator(Sprite& currentsprite)
+		:animator(AnimatorMachine(currentsprite)){}
 };
 
 class CSprite : public Component

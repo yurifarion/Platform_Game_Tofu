@@ -18,9 +18,6 @@
     <ClCompile Include="script\Action.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
-    <ClCompile Include="script\Animation.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
     <ClCompile Include="script\Assets.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
@@ -52,6 +49,12 @@
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
     <ClCompile Include="script\Sprite.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
+    <ClCompile Include="script\AnimatorMachine.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Animation.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,6 +99,9 @@
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
     <ClInclude Include="script\Sprite.h">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClInclude>
+    <ClInclude Include="script\AnimatorMachine.h">
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
   </ItemGroup>

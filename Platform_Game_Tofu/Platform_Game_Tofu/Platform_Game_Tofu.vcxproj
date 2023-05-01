@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="script\Action.cpp" />
     <ClCompile Include="script\Animation.cpp" />
+    <ClCompile Include="script\AnimatorMachine.cpp" />
     <ClCompile Include="script\Assets.cpp" />
     <ClCompile Include="script\Entity.cpp" />
     <ClCompile Include="script\EntityManager.cpp" />
@@ -36,6 +37,7 @@
   <ItemGroup>
     <ClInclude Include="script\Action.h" />
     <ClInclude Include="script\Animation.h" />
+    <ClInclude Include="script\AnimatorMachine.h" />
     <ClInclude Include="script\Assets.h" />
     <ClInclude Include="script\Common.h" />
     <ClInclude Include="script\Component.h" />

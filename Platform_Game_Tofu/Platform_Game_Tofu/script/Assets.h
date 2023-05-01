@@ -2,7 +2,7 @@
 #pragma once
 
 #include "Common.h"
-#include "Sprite.h"
+#include "Animation.h"
 
 class Assets
 {

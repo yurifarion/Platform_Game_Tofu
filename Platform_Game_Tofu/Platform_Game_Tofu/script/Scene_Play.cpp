@@ -367,6 +367,23 @@ void Scene_Play::spawnPlayer()
 
 	m_player = m_entityManager.addEntity("player");
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu"), false);
+
+	//set sprite for frames
+	Sprite fr_1(m_game->assets().getSprite("bg_1_Tile"));
+	Sprite fr_2(m_game->assets().getSprite("Tile_l"));
+	Sprite fr_3(m_game->assets().getSprite("Tile_ll"));
+
+	//set animation
+	SpriteVec sv;
+	sv.push_back(fr_1);
+	sv.push_back(fr_2);
+	sv.push_back(fr_3);
+	Animation animClip("Teste",sv, 1.0f);
+
+	//Set animator
+	m_player->addComponent<CAnimator>(m_player->getComponent<CSprite>().sprite);
+	m_player->getComponent<CAnimator>().animator.addAnimation(animClip);
+
 	m_player->addComponent<CTransform>(Vec2(224, 352));
 	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
 	m_player->addComponent<CGravity>(3.0f);
@@ -382,6 +399,8 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 void Scene_Play::update()
 {
 	m_entityManager.update();
+
+	m_player->getComponent<CAnimator>().animator.update();
 
 	//TODO implement pause functionality
 	sMovement();
@@ -485,6 +504,7 @@ void Scene_Play::sDoAction(const Action& action)
 }
 void Scene_Play::sAnimation()
 {
+	m_player->getComponent<CSprite>().sprite = m_player->getComponent<CAnimator>().animator.getCurrentSprite();
 	//TODO Complete the animation class code first
 	//TODO set the animaton of the player based on tis CState component
 	//TODO for each entity with an animation call entity->getComponent<CAnimation>().animation.update()
@@ -517,6 +537,11 @@ void Scene_Play::sRender()
 
 			if (e->hasComponent<CSprite>())
 			{
+				if (e->id() == m_player->id())
+				{
+					std::cout << "Player ";
+					std::cout << "Memory adress: " << &m_player->getComponent<CSprite>().sprite << "\n";
+				}
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
 				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);

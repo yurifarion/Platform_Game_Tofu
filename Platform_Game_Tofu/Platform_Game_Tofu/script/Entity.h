@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Common.h"
 #include <tuple>
 #include <string>
 
@@ -11,7 +12,7 @@ typedef std::tuple<
 	CLifeSpan,
 	CInput,
 	CBoundingBox,
-	CAnimation,
+	CAnimator,
 	CGravity,
 	CState,
 	CSprite
