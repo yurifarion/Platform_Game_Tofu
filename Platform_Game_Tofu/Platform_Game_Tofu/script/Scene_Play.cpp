@@ -366,23 +366,33 @@ void Scene_Play::spawnPlayer()
 	//here is a smaple player entity which you can use to construct other entities
 
 	m_player = m_entityManager.addEntity("player");
-	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu"), false);
+	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
 
-	//set sprite for frames
-	Sprite fr_1(m_game->assets().getSprite("bg_1_Tile"));
-	Sprite fr_2(m_game->assets().getSprite("Tile_l"));
-	Sprite fr_3(m_game->assets().getSprite("Tile_ll"));
+	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
+	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
+	Sprite walk_fr_2(m_game->assets().getSprite("Tofu_walk2"));
+	Sprite walk_fr_3(m_game->assets().getSprite("Tofu_walk3"));
+	Sprite walk_fr_4(m_game->assets().getSprite("Tofu_walk4"));
 
-	//set animation
-	SpriteVec sv;
-	sv.push_back(fr_1);
-	sv.push_back(fr_2);
-	sv.push_back(fr_3);
-	Animation animClip("Teste",sv, 1.0f);
+	Animation walkAnimClip("walk", 6.0f);
+
+	walkAnimClip.addFrame(walk_fr_1);
+	walkAnimClip.addFrame(walk_fr_2);
+	walkAnimClip.addFrame(walk_fr_3);
+	walkAnimClip.addFrame(walk_fr_4);
+
+	Animation jumpAnimClip("jump", 1.0f);
+	jumpAnimClip.addFrame(walk_fr_1);
+
+	Animation idleAnimClip("idle", 1.0f);
+	idleAnimClip.addFrame(idle_fr);
 
 	//Set animator
 	m_player->addComponent<CAnimator>(m_player->getComponent<CSprite>().sprite);
-	m_player->getComponent<CAnimator>().animator.addAnimation(animClip);
+	m_player->getComponent<CAnimator>().animator.addAnimation(walkAnimClip);
+	m_player->getComponent<CAnimator>().animator.addAnimation(jumpAnimClip);
+	m_player->getComponent<CAnimator>().animator.addAnimation(idleAnimClip);
+	m_player->getComponent<CAnimator>().animator.setAnimation("idle");
 
 	m_player->addComponent<CTransform>(Vec2(224, 352));
 	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
@@ -399,9 +409,6 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 void Scene_Play::update()
 {
 	m_entityManager.update();
-
-	m_player->getComponent<CAnimator>().animator.update();
-
 	//TODO implement pause functionality
 	sMovement();
 	sLifespan();
@@ -504,7 +511,19 @@ void Scene_Play::sDoAction(const Action& action)
 }
 void Scene_Play::sAnimation()
 {
+	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
+	//change animations
+	if ((m_player->getComponent<CInput>().right || m_player->getComponent<CInput>().left)) {
+		playeranimator.setAnimation("walk");
+	}
+	else  playeranimator.setAnimation("idle");
+
+	//Update frames
+	m_player->getComponent<CAnimator>().animator.update();
+
+	//change sprites
 	m_player->getComponent<CSprite>().sprite = m_player->getComponent<CAnimator>().animator.getCurrentSprite();
+
 	//TODO Complete the animation class code first
 	//TODO set the animaton of the player based on tis CState component
 	//TODO for each entity with an animation call entity->getComponent<CAnimation>().animation.update()
@@ -537,11 +556,6 @@ void Scene_Play::sRender()
 
 			if (e->hasComponent<CSprite>())
 			{
-				if (e->id() == m_player->id())
-				{
-					std::cout << "Player ";
-					std::cout << "Memory adress: " << &m_player->getComponent<CSprite>().sprite << "\n";
-				}
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
 				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);

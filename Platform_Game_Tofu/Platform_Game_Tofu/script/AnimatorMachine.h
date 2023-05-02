@@ -8,6 +8,7 @@ class AnimatorMachine
 	Animation m_currentAnimation;
 	size_t m_framecount = 1;
 	size_t m_currentframe = 0;
+	bool m_hasEnd = false;
 public:
 	AnimatorMachine();
 	AnimatorMachine(Sprite& currentsprite);
@@ -15,4 +16,6 @@ public:
 	void update();
 	Sprite getCurrentSprite();
 	bool hasEnded();
+	void setAnimation(const std::string& name);
+	bool isAnimationPlaying(const std::string& name);
 };
