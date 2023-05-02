@@ -59,7 +59,6 @@ public:
 	bool canjump = false;
 
 	CInput() {}
-
 };
 
 class CBoundingBox : public Component
@@ -67,6 +66,7 @@ class CBoundingBox : public Component
 public:
 	Vec2 size;
 	Vec2 halfSize;
+	bool isColliding;
 	CBoundingBox() {}
 	CBoundingBox(const Vec2& s)
 		:size(s), halfSize(s.x/2,s.y/2) {}
@@ -95,6 +95,7 @@ class CGravity : public Component
 {
 public:
 	float gravity = 0;
+	bool isGrounded = false;
 	CGravity(){}
 	CGravity(float g) : gravity(g){}
 };

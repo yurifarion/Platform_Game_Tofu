@@ -424,7 +424,7 @@ void Scene_Play::sMovement()
 
 	if (m_player->getComponent<CInput>().up)
 	{
-		playerVelocity.y += -10;
+		if(m_player->getComponent<CGravity>().isGrounded) playerVelocity.y += -100;
 	}
 	if (m_player->hasComponent<CGravity>())
 	{
@@ -456,6 +456,13 @@ void Scene_Play::sCollision()
 {
 	Physics physics;
 
+	//reset colliders
+	if (m_player->hasComponent<CBoundingBox>())
+	{
+		if (m_player->hasComponent<CGravity>()) m_player->getComponent<CGravity>().isGrounded = false;
+		m_player->getComponent<CBoundingBox>().isColliding = false;
+	}
+	
 
 	//Check collision with player
 	for (auto e : m_entityManager.getEntities())
@@ -467,6 +474,8 @@ void Scene_Play::sCollision()
 			{
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
+				m_player->getComponent<CBoundingBox>().isColliding = true;
+				if (m_player->hasComponent<CGravity>() && resolveCol.y < 0) m_player->getComponent<CGravity>().isGrounded = true;
 			}
 		}
 	}
@@ -494,29 +503,44 @@ void Scene_Play::sDoAction(const Action& action)
 		{
 			m_player->getComponent<CInput>().right = true; 
 			m_player->getComponent<CTransform>().flipX(false);
+			m_player->getComponent<CState>().state = "walk";
 		}
 		else if (action.name() == "LEFT") 
 		{
 			m_player->getComponent<CInput>().left = true; 
 			m_player->getComponent<CTransform>().flipX(true);
+			m_player->getComponent<CState>().state = "walk";
 		}
 	}
 	else if (action.type() == "END")
 	{
 		 if (action.name() == "JUMP") { m_player->getComponent<CInput>().up = false; }
 		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
-		else if (action.name() == "RIGHT") { m_player->getComponent<CInput>().right = false; }
-		else if (action.name() == "LEFT") { m_player->getComponent<CInput>().left = false; }
+		else if (action.name() == "RIGHT") 
+		{
+			 m_player->getComponent<CInput>().right = false; 
+			 m_player->getComponent<CState>().state = "idle";
+		}
+		else if (action.name() == "LEFT") 
+		{
+			 m_player->getComponent<CInput>().left = false; 
+			 m_player->getComponent<CState>().state = "idle";
+		}
 	}
 }
 void Scene_Play::sAnimation()
 {
 	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
 	//change animations
-	if ((m_player->getComponent<CInput>().right || m_player->getComponent<CInput>().left)) {
-		playeranimator.setAnimation("walk");
+	if (m_player->getComponent<CState>().state == "walk") {
+		if (m_player->getComponent<CGravity>().isGrounded) playeranimator.setAnimation("walk");
+		else playeranimator.setAnimation("jump");
 	}
-	else  playeranimator.setAnimation("idle");
+	else if(m_player->getComponent<CState>().state == "idle") {
+
+		if(m_player->getComponent<CGravity>().isGrounded) playeranimator.setAnimation("idle");
+		else playeranimator.setAnimation("jump");
+	}
 
 	//Update frames
 	m_player->getComponent<CAnimator>().animator.update();
