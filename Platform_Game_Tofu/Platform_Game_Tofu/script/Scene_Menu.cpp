@@ -1,6 +1,7 @@
 
 #include "Scene_Menu.h"
 #include "Scene_Play.h"
+#include "Scene_Splash.h"
 #include "Assets.h"
 #include "GameEngine.h"
 #include "Action.h"
@@ -54,6 +55,10 @@ void Scene_Menu::sDoAction(const Action& action)
             {
                 m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game,"Levels/Level1.level"));
             }
+            if (m_menuStrings[m_selectedMenuIndex] == "Level Editor")
+            {
+                m_game->changeScene("Level Editor", std::make_shared<Scene_Splash>(m_game));
+            }
             if (m_menuStrings[m_selectedMenuIndex] == "Quit")
             {
                 onEnd();
@@ -74,11 +79,6 @@ void Scene_Menu::sRender()
     m_game->window().setView(m_game->window().getDefaultView());
     m_game->window().clear();
 
-    // draw background
-    /*sf::Texture background(m_game->assets().getTexture("TexBackgr2"));
-    sf::Sprite backgroundSprite(background);
-    backgroundSprite.setPosition(m_game->window().getView().getCenter().x - 640, m_game->window().getView().getCenter().y - 384);
-    m_game->window().draw(backgroundSprite);*/
 
     // draw the game title in the top-left of the screen
     m_menuText.setCharacterSize(100);

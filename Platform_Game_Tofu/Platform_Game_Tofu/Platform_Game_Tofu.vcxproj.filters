@@ -60,6 +60,12 @@
     <ClCompile Include="script\Rigidbody.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
+    <ClCompile Include="script\Scene_LevelEditor.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Scene_Splash.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\Action.h">
@@ -108,6 +114,12 @@
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
     <ClInclude Include="script\Rigidbody.h">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClInclude>
+    <ClInclude Include="script\Scene_LevelEditor.h">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClInclude>
+    <ClInclude Include="script\Scene_Splash.h">
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
   </ItemGroup>
