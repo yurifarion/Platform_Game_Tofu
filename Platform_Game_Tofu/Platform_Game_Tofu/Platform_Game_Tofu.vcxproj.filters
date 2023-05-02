@@ -57,6 +57,9 @@
     <ClCompile Include="script\Animation.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
+    <ClCompile Include="script\Rigidbody.cpp">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\Action.h">
@@ -102,6 +105,9 @@
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
     <ClInclude Include="script\AnimatorMachine.h">
+      <Filter>Arquivos de Recurso</Filter>
+    </ClInclude>
+    <ClInclude Include="script\Rigidbody.h">
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
   </ItemGroup>

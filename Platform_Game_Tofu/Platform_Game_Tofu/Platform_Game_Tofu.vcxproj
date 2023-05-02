@@ -28,6 +28,7 @@
     <ClCompile Include="script\GameEngine.cpp" />
     <ClCompile Include="script\main.cpp" />
     <ClCompile Include="script\Physics.cpp" />
+    <ClCompile Include="script\Rigidbody.cpp" />
     <ClCompile Include="script\Scene.cpp" />
     <ClCompile Include="script\Scene_Menu.cpp" />
     <ClCompile Include="script\Scene_Play.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="script\EntityManager.h" />
     <ClInclude Include="script\GameEngine.h" />
     <ClInclude Include="script\Physics.h" />
+    <ClInclude Include="script\Rigidbody.h" />
     <ClInclude Include="script\Scene.h" />
     <ClInclude Include="script\Scene_Menu.h" />
     <ClInclude Include="script\Scene_Play.h" />

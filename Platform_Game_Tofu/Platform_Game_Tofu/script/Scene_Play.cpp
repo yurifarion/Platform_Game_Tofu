@@ -396,7 +396,7 @@ void Scene_Play::spawnPlayer()
 
 	m_player->addComponent<CTransform>(Vec2(224, 352));
 	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
-	m_player->addComponent<CGravity>(3.0f);
+	m_player->addComponent<CRigidbody>(3.0f);
 	m_player->addComponent<CBoundingBox>(Vec2(64, 64));
 
 	//TODO be sure to add the remianing components to the player
@@ -418,27 +418,33 @@ void Scene_Play::update()
 }
 void Scene_Play::sMovement()
 {
+	//Update all rigibodies
+	auto& rb = m_player->getComponent<CRigidbody>().rigidbody;
 
-	//Player Moviment
-	Vec2 playerVelocity(0, 0);
+	rb.update();
+
+	//Max moviment per frame the player can move
+	Vec2 maxspeed(3.0f, 100.0f);
+	
 
 	if (m_player->getComponent<CInput>().up)
 	{
-		if(m_player->getComponent<CGravity>().isGrounded) playerVelocity.y += -100;
-	}
-	if (m_player->hasComponent<CGravity>())
-	{
-		playerVelocity.y += m_player->getComponent<CGravity>().gravity;
+		if (rb.isGrounded)
+		{
+			rb.addForce(Vec2(0.0f, -10.0f));
+		}
 	}
 	if (m_player->getComponent<CInput>().right)
 	{
-		playerVelocity.x += 3;
+		rb.addForce(Vec2(3.0f, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().left)
 	{
-		playerVelocity.x += -3;
+		rb.addForce(Vec2(-3.0f, 0.0f));
 	}
-	m_player->getComponent<CTransform>().velocity = playerVelocity;
+	
+
+	m_player->getComponent<CTransform>().velocity = rb.getVelocity(maxspeed);
 
 	for (auto e : m_entityManager.getEntities())
 	{
@@ -455,15 +461,9 @@ void Scene_Play::sLifespan()
 void Scene_Play::sCollision()
 {
 	Physics physics;
-
-	//reset colliders
-	if (m_player->hasComponent<CBoundingBox>())
-	{
-		if (m_player->hasComponent<CGravity>()) m_player->getComponent<CGravity>().isGrounded = false;
-		m_player->getComponent<CBoundingBox>().isColliding = false;
-	}
 	
-
+	m_player->getComponent<CRigidbody>().rigidbody.isColliding = false;
+	m_player->getComponent<CRigidbody>().rigidbody.isGrounded = false;
 	//Check collision with player
 	for (auto e : m_entityManager.getEntities())
 	{
@@ -474,8 +474,8 @@ void Scene_Play::sCollision()
 			{
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
-				m_player->getComponent<CBoundingBox>().isColliding = true;
-				if (m_player->hasComponent<CGravity>() && resolveCol.y < 0) m_player->getComponent<CGravity>().isGrounded = true;
+				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
+				if (m_player->hasComponent<CRigidbody>() && resolveCol.y < 0) m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
 			}
 		}
 	}
@@ -497,8 +497,15 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
 		else if (action.name() == "PAUSE") { setPaused(!m_paused); }
 		else if (action.name() == "QUIT") { onEnd(); }
-		else if (action.name() == "JUMP") { m_player->getComponent<CInput>().up = true; }
-		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = true; }
+		else if (action.name() == "JUMP") 
+		{
+			m_player->getComponent<CInput>().up = true; 
+			m_player->getComponent<CState>().state = "jump";
+		}
+		else if (action.name() == "DOWN") 
+		{ 
+			m_player->getComponent<CInput>().down = true; 
+		}
 		else if (action.name() == "RIGHT") 
 		{
 			m_player->getComponent<CInput>().right = true; 
@@ -514,7 +521,10 @@ void Scene_Play::sDoAction(const Action& action)
 	}
 	else if (action.type() == "END")
 	{
-		 if (action.name() == "JUMP") { m_player->getComponent<CInput>().up = false; }
+		 if (action.name() == "JUMP") 
+		 { 
+			 m_player->getComponent<CInput>().up = false;
+		 }
 		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
 		else if (action.name() == "RIGHT") 
 		{
@@ -532,15 +542,19 @@ void Scene_Play::sAnimation()
 {
 	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
 	//change animations
-	if (m_player->getComponent<CState>().state == "walk") {
-		if (m_player->getComponent<CGravity>().isGrounded) playeranimator.setAnimation("walk");
-		else playeranimator.setAnimation("jump");
+	if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+	{
+		playeranimator.setAnimation("jump");
 	}
-	else if(m_player->getComponent<CState>().state == "idle") {
-
-		if(m_player->getComponent<CGravity>().isGrounded) playeranimator.setAnimation("idle");
-		else playeranimator.setAnimation("jump");
+	else if (m_player->getComponent<CState>().state == "walk") 
+	{
+		 playeranimator.setAnimation("walk");
 	}
+	else if(m_player->getComponent<CState>().state == "idle") 
+	{
+		 playeranimator.setAnimation("idle");
+	}
+	else playeranimator.setAnimation("idle");
 
 	//Update frames
 	m_player->getComponent<CAnimator>().animator.update();

@@ -13,9 +13,9 @@ typedef std::tuple<
 	CInput,
 	CBoundingBox,
 	CAnimator,
-	CGravity,
 	CState,
-	CSprite
+	CSprite,
+	CRigidbody
 >ComponentTuple;
 
 

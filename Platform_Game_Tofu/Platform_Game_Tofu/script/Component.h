@@ -2,6 +2,7 @@
 
 #include "Assets.h"
 #include "AnimatorMachine.h"
+#include "Rigidbody.h"
 
 class Component
 {
@@ -66,10 +67,19 @@ class CBoundingBox : public Component
 public:
 	Vec2 size;
 	Vec2 halfSize;
-	bool isColliding;
 	CBoundingBox() {}
 	CBoundingBox(const Vec2& s)
 		:size(s), halfSize(s.x/2,s.y/2) {}
+};
+
+class CRigidbody : public Component
+{
+public:
+	Rigidbody rigidbody;
+	CRigidbody() {}
+	CRigidbody(float grav)
+	:rigidbody(Rigidbody(grav))
+	{}
 };
 
 class CAnimator : public Component
@@ -89,15 +99,6 @@ public:
 	CSprite() {}
 	CSprite(const Sprite& psprite, bool r)
 		:sprite(psprite), smooth(r) {}
-};
-
-class CGravity : public Component
-{
-public:
-	float gravity = 0;
-	bool isGrounded = false;
-	CGravity(){}
-	CGravity(float g) : gravity(g){}
 };
 class CState : public Component
 {
