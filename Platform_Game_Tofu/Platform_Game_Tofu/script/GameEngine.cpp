@@ -2,6 +2,7 @@
 #include "Assets.h"
 #include "Scene_Play.h"
 #include "Scene_Menu.h"
+#include "Scene_Splash.h"
 
 #include <iostream>
 
@@ -17,7 +18,7 @@ void GameEngine::init(const std::string& path)
 	m_window.create(sf::VideoMode(1280, 768), "Definitely not Mario");
 	m_window.setFramerateLimit(60);
 
-	changeScene("MENU", std::make_shared<Scene_Menu>(this));
+	changeScene("SPLASH", std::make_shared<Scene_Splash>(this));
 }
 
 std::shared_ptr<Scene> GameEngine::currentScene()

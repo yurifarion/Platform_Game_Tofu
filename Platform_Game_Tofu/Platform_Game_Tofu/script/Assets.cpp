@@ -34,6 +34,12 @@ void Assets::loadFromFile(const std::string& path)
             file >> name >> path;
             addFont(name, path);
         }
+        else if (str == "Sound")
+        {
+            std::string name, path;
+            file >> name >> path;
+            addSoundBuffer(name, path);
+        }
         else
         {
             std::cerr << "Unknown Asset Type: " << str << std::endl;
@@ -99,9 +105,26 @@ void Assets::addFont(const std::string& fontName, const std::string& path)
         std::cout << "Loaded Font:    " << path << std::endl;
     }
 }
-
+void Assets::addSoundBuffer(const std::string& soundBufferName, const std::string& path)
+{
+    m_soundBufferMap[soundBufferName] = sf::SoundBuffer();
+    if (!m_soundBufferMap[soundBufferName].loadFromFile(path))
+    {
+        std::cerr << "Could not load sound file: " << path << std::endl;
+        m_soundBufferMap.erase(soundBufferName);
+    }
+    else
+    {
+        std::cout << "Loaded Sound:    " << path << std::endl;
+    }
+}
 const sf::Font& Assets::getFont(const std::string& fontName) const
 {
    assert(m_fontMap.find(fontName) != m_fontMap.end());
    return m_fontMap.at(fontName);
+}
+const sf::SoundBuffer& Assets::getSoundBuffer(const std::string& soundBufferName) const
+{
+    assert(m_soundBufferMap.find(soundBufferName) != m_soundBufferMap.end());
+    return m_soundBufferMap.at(soundBufferName);
 }

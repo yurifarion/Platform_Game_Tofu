@@ -9,10 +9,12 @@ class Assets
     std::map<std::string, sf::Texture>      m_textureMap;
     std::map<std::string, Sprite>        m_spriteMap;
     std::map<std::string, sf::Font>         m_fontMap;
+    std::map<std::string, sf::SoundBuffer>         m_soundBufferMap;
 
     void addTexture(const std::string& textureName, const std::string& path, bool smooth = true);
     void addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin);
     void addFont(const std::string& fontName, const std::string& path);
+    void addSoundBuffer(const std::string& soundBufferName, const std::string& path);
 
 public:
 
@@ -23,4 +25,5 @@ public:
     const sf::Texture& getTexture(const std::string& textureName) const;
     const Sprite& getSprite(const std::string& spritename) const;
     const sf::Font& getFont(const std::string& fontName) const;
+    const sf::SoundBuffer& getSoundBuffer(const std::string& soundBufferName) const;
 };

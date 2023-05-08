@@ -20,7 +20,6 @@ protected:
 
 	sf::Texture blur_tex;
 
-	sf::SoundBuffer m_soundbuffer;
 	sf::Sound m_sound;
 
 	float m_dist = 0;

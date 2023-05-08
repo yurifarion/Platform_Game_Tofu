@@ -1,4 +1,5 @@
 #include "Scene_Splash.h"
+#include "Scene_Menu.h"
 #include "Assets.h"
 #include "GameEngine.h"
 #include "Action.h"
@@ -12,16 +13,14 @@ Scene_Splash::Scene_Splash(GameEngine* gameEngine)
 
 void Scene_Splash::init()
 {
+    registerAction(sf::Keyboard::Enter, "PASS");
+
     sf::Vector2f position;
     m_dist = 300.f;
     m_distvel = 10;
 
     //Load sound
-    if (!m_soundbuffer.loadFromFile("Res/splash.ogg"))
-    {
-        std::cout << "Error loading sound \n";
-    }
-    m_sound.setBuffer(m_soundbuffer);
+    m_sound.setBuffer(m_game->assets().getSoundBuffer("splash"));
     m_titleText = "Farion Yuri";
     m_splashTitle_1.setFont(m_game->assets().getFont("tech"));
     m_splashTitle_1.setCharacterSize(64);
@@ -68,13 +67,16 @@ void Scene_Splash::update()
     }
     else if(m_frameCounter >= 0){
         m_frameCounter++;
-        if (m_frameCounter > 60)
+        if (m_frameCounter > 60 && m_frameCounter < 62)
         {
             m_sound.play();
             m_splashTitle_1.setString("Farion Yuri.");
             m_splashTitle_2.setString("Farion Yuri.");
             m_splashTitle_3.setString("Farion Yuri.");
-            m_frameCounter = -1;
+        }
+        else if (m_frameCounter > 120)
+        {
+            m_game->changeScene("Menu", std::make_shared<Scene_Menu>(m_game));
         }
     }
 
@@ -87,19 +89,19 @@ void Scene_Splash::onEnd()
 }
 void Scene_Splash::sDoAction(const Action& action)
 {
-
+    if (action.type() == "START")
+    {
+        if (action.name() == "PASS")
+        {
+            m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+        }
+    }
 }
 void Scene_Splash::sRender()
 {
     // clear the window to a blue
     m_game->window().setView(m_game->window().getDefaultView());
     m_game->window().clear();
-
-    //bg
-    //auto bg = sf::RectangleShape();
-    //bg.setSize(sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
-    //bg.setFillColor(sf::Color(70,73,86));
-   // bg.setPosition(0,0);
 
     //m_game->window().draw(bg);
     m_game->window().draw(m_splashTitle_1, sf::RenderStates(sf::BlendAdd));
