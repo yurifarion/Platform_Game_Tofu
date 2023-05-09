@@ -2,6 +2,7 @@
 #include "Scene_Menu.h"
 #include "Scene_Play.h"
 #include "Scene_Splash.h"
+#include "Scene_LevelEditor.h"
 #include "Assets.h"
 #include "GameEngine.h"
 #include "Action.h"
@@ -57,7 +58,7 @@ void Scene_Menu::sDoAction(const Action& action)
             }
             if (m_menuStrings[m_selectedMenuIndex] == "Level Editor")
             {
-                m_game->changeScene("Level Editor", std::make_shared<Scene_Splash>(m_game));
+                m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditor>(m_game));
             }
             if (m_menuStrings[m_selectedMenuIndex] == "Quit")
             {
