@@ -15,6 +15,7 @@ protected:
 	SceneMap m_sceneMap;
 	size_t m_simulationSpeed = 1;
 	bool m_running = true;
+	sf::View m_camera_view;
 
 	void init(const std::string& path);
 	void sUserInput();
@@ -29,4 +30,8 @@ public:
 	sf::RenderWindow& window();
 	Assets& assets();
 	bool isRunning();
+	void moveCameraView(const Vec2& center);
+	void setCameraViewSize(const Vec2& size);
+	sf::View getCameraView() const;
+	Vec2 windowToWorld(const Vec2& window);
 };

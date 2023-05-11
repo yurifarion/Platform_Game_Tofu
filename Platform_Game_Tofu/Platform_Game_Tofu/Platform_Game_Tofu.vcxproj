@@ -55,7 +55,6 @@
     <ClInclude Include="script\Scene_Play.h" />
     <ClInclude Include="script\Scene_Splash.h" />
     <ClInclude Include="script\Sprite.h" />
-    <ClInclude Include="script\SpriteID.cpp" />
     <ClInclude Include="script\Vec2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

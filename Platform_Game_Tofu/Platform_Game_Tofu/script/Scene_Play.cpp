@@ -453,6 +453,7 @@ void Scene_Play::sMovement()
 			e->getComponent<CTransform>().move(e->getComponent<CTransform>().velocity);
 		}
 	}
+	
 }
 void Scene_Play::sLifespan()
 {

@@ -40,4 +40,6 @@ public:
 
 	bool hasEnded() const;
 	const ActionMap& getActionMap() const;
+
+	
 };

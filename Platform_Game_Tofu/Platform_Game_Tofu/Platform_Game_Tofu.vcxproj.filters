@@ -122,8 +122,5 @@
     <ClInclude Include="script\Scene_Splash.h">
       <Filter>Arquivos de Recurso</Filter>
     </ClInclude>
-    <ClInclude Include="script\SpriteID.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

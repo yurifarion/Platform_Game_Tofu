@@ -11,9 +11,11 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 void Scene_LevelEditor::init()
 {
 	//Set Actions
-	registerAction(sf::Keyboard::D, "NEXT");
+	registerAction(sf::Keyboard::D, "MOVE RIGHT");
+	registerAction(sf::Keyboard::A, "MOVE LEFT");
+	registerAction(sf::Keyboard::W, "MOVE UP");
+	registerAction(sf::Keyboard::S, "MOVE DOWN");
 	registerAction(sf::Keyboard::Right , "NEXT");
-	registerAction(sf::Keyboard::A, "PREVIOUS");
 	registerAction(sf::Keyboard::Left, "PREVIOUS");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
@@ -42,6 +44,7 @@ void Scene_LevelEditor::update()
 	//Update Tile selector
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 	m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+	m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
 }
 void Scene_LevelEditor::onEnd()
 {
@@ -68,9 +71,44 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			m_drawSelectedTile = !m_drawSelectedTile;
 		}
-		if (action.name() == "SELECT")
+		if (action.name() == "MOVE RIGHT")
 		{
-			std::cout << "Test\n";
+			auto currentpos = m_game->getCameraView().getCenter();
+			float speed = m_gridSize.x;
+			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
+			m_game->moveCameraView(newpos);
+		}
+		if (action.name() == "MOVE LEFT")
+		{
+			auto currentpos = m_game->getCameraView().getCenter();
+			float speed = -m_gridSize.x;
+			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
+			m_game->moveCameraView(newpos);
+		}
+		if (action.name() == "MOVE UP")
+		{
+			auto currentpos = m_game->getCameraView().getCenter();
+			float speed = -m_gridSize.x;
+			Vec2 newpos = Vec2(currentpos.x, currentpos.y + speed);
+			m_game->moveCameraView(newpos);
+		}
+		if (action.name() == "MOVE DOWN")
+		{
+			auto currentpos = m_game->getCameraView().getCenter();
+			float speed = m_gridSize.x;
+			Vec2 newpos = Vec2(currentpos.x , currentpos.y + speed);
+			m_game->moveCameraView(newpos);
+		}
+		if (action.name() == "RIGHT_CLICK")
+		{
+			auto m_mapTile = m_entityManager.addEntity("selectedTile");
+			auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
+
+			m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+			m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+			m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+			auto gridpos = pixelToGrid(action.pos());
+			m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 		}
 	}
 }
@@ -140,5 +178,13 @@ Vec2 Scene_LevelEditor::gridToMidPixel(float gridX, float gridY, std::shared_ptr
 	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight / 2);
 
 	return Vec2(x, y);
+
+}
+Vec2 Scene_LevelEditor::pixelToGrid(Vec2 pos)
+{
+	pos.y = m_game->window().getSize().y - pos.y;
+	Vec2 gridpos = Vec2(static_cast<int>(pos.x / m_gridSize.x), static_cast<int>(pos.y / m_gridSize.y));
+
+	return gridpos;
 
 }

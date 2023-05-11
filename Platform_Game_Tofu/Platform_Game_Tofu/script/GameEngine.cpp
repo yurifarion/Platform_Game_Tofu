@@ -17,7 +17,7 @@ void GameEngine::init(const std::string& path)
 
 	m_window.create(sf::VideoMode(1280, 768), "Definitely not Mario");
 	m_window.setFramerateLimit(60);
-
+	m_camera_view = window().getDefaultView();
 	changeScene("SPLASH", std::make_shared<Scene_Splash>(this));
 }
 
@@ -28,7 +28,7 @@ std::shared_ptr<Scene> GameEngine::currentScene()
 
 bool GameEngine::isRunning()
 {
-	return m_running & m_window.isOpen();
+	return m_running && m_window.isOpen();
 }
 
 sf::RenderWindow& GameEngine::window()
@@ -53,21 +53,6 @@ void GameEngine::sUserInput()
 			quit();
 		}
 
-		if (event.type == sf::Event::KeyPressed)
-		{
-			if (event.key.code == sf::Keyboard::X)
-			{
-				std::cout << "Screenshot saved to" << "test.png" << std::endl;
-				sf::Texture texture;
-				texture.create(m_window.getSize().x, m_window.getSize().y);
-				texture.update(m_window);
-				if (texture.copyToImage().saveToFile("test.png"))
-				{
-					std::cout << "Screenshot saved to" << "test.png" << std::endl;
-				}
-			}
-		}
-
 		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)
 		{
 			if(currentScene()->getActionMap().find(event.key.code)==currentScene()->getActionMap().end())
@@ -78,6 +63,26 @@ void GameEngine::sUserInput()
 			const std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
 
 			currentScene()->doAction(Action(currentScene()->getActionMap().at(event.key.code), actionType));
+		}
+
+		auto mousePos = sf::Mouse::getPosition(m_window);
+
+		Vec2 mpos(mousePos.x, mousePos.y);
+
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			switch (event.type == sf::Event::MouseButtonPressed)
+			{
+				case sf::Mouse::Left: { currentScene()->doAction(Action("LEFT_CLICK", "START", mpos)); break; }
+				case sf::Mouse::Middle: { currentScene()->doAction(Action("MIDDLE_CLICK", "START", mpos)); break; }
+				case sf::Mouse::Right: { currentScene()->doAction(Action("RIGHT_CLICK", "START", mpos)); break; }
+				default: break;
+			}
+		}
+
+		if (event.type == sf::Event::MouseMoved)
+		{
+			currentScene()->doAction(Action("MOUSE_MOVE", "START", Vec2(event.mouseMove.x, event.mouseMove.y)));
 		}
 	}
 }
@@ -124,4 +129,26 @@ void GameEngine::quit()
 Assets& GameEngine::assets()
 {
 	return m_assets;
+}
+void GameEngine::moveCameraView(const Vec2& center)
+{
+	m_camera_view.setCenter(sf::Vector2f(center.x, center.y));
+	window().setView(m_camera_view);
+}
+void GameEngine::setCameraViewSize(const Vec2& size)
+{
+	m_camera_view.setSize(sf::Vector2f(size.x, size.y));
+	window().setView(m_camera_view);
+}
+sf::View GameEngine::getCameraView() const 
+{
+	return m_camera_view;
+}
+Vec2 GameEngine::windowToWorld(const Vec2& windowpos)
+{
+	auto view = window().getView();
+	float wx = view.getCenter().x - (window().getSize().x / 2);
+	float wy = view.getCenter().y - (window().getSize().y / 2);
+
+	return Vec2(windowpos.x + wx, windowpos.y + wy);
 }

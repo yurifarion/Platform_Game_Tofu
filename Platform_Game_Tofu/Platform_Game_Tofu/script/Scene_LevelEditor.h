@@ -32,4 +32,5 @@ public:
 	void sRender();
 	void drawline(Vec2 p1, Vec2 p2);
 	Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+	Vec2 pixelToGrid(Vec2 pos);
 };
