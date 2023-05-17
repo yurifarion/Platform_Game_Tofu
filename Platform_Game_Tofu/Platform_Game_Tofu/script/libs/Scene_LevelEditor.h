@@ -21,6 +21,7 @@ protected:
 
 	bool m_drawGrid = true;
 	bool m_drawSelectedTile = true;
+	bool m_drawTileMenu = false;
 
 	void init();
 	void update();

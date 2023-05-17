@@ -107,3 +107,8 @@ public:
 	CState(){}
 	CState(const std::string & s):state(s){}
 };
+class CUI : public Component
+{
+public:
+	CUI() {}
+};

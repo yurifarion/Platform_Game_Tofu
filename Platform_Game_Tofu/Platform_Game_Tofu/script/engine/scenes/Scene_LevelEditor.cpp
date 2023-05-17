@@ -19,6 +19,7 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::Left, "PREVIOUS");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
+	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
 	registerAction(sf::Mouse::Right , "SELECT");
 
 	m_entityManager = EntityManager();
@@ -34,6 +35,21 @@ void Scene_LevelEditor::init()
 	m_selectedTile->getComponent<CTransform>().scale = Vec2(4, 4);
 	m_selectedTile->getComponent<CTransform>().pos = gridToMidPixel(9, 0, m_selectedTile);
 
+	//Init Tile pallete
+	int numberOfTiles = m_game->assets().spriteRef.Count;
+	int j = 0;
+	for (int i = 0; i < numberOfTiles; ++i)
+	{
+		if (i % 5 == 0) ++j;
+		spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(i));
+		auto m_tile = m_entityManager.addEntity("Tile_"+i);
+		m_tile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+		m_tile->addComponent<CTransform>(Vec2(0, 0));
+		m_tile->getComponent<CTransform>().scale = Vec2(4, 4);
+		m_tile->getComponent<CTransform>().pos = gridToMidPixel(i, j, m_tile);
+		m_tile->addComponent<CUI>();
+	}
+
 	
 
 }
@@ -41,7 +57,24 @@ void Scene_LevelEditor::update()
 {
 	m_entityManager.update();
 
+	int i = 0;
+	int j = 0;
 	//Update Tile selector
+	for (auto e : m_entityManager.getEntities())
+	{
+		if (e->hasComponent<CSprite>() && e->hasComponent<CUI>())
+		{
+			
+			if (i % 5 == 0 && i != 0)
+			{
+				i = 0;
+				++j;
+			}
+			e->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, e));
+			i++;
+		}
+	}
+
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 	m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 	m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
@@ -57,7 +90,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		if (action.name() == "NEXT" && m_drawSelectedTile)
 		{
 			auto spriteID = Assets::SpriteIDReference::SPRITEID(m_selectedTileID);
-			if(spriteID != Assets::SpriteIDReference::SPRITEID::Count)m_selectedTileID++;
+			if(spriteID != Assets::SpriteIDReference::SPRITEID::LAST)m_selectedTileID++;
 		}
 		if (action.name() == "PREVIOUS" && m_drawSelectedTile)
 		{
@@ -70,6 +103,10 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		if (action.name() == "TOGGLE_SELECTEDTILE")
 		{
 			m_drawSelectedTile = !m_drawSelectedTile;
+		}
+		if (action.name() == "TOGGLE_TILEMENU")
+		{
+			m_drawTileMenu = !m_drawTileMenu;
 		}
 		if (action.name() == "MOVE RIGHT")
 		{
@@ -110,6 +147,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			auto gridpos = pixelToGrid(action.pos());
 			m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 		}
+		
 	}
 }
 void Scene_LevelEditor::drawline(Vec2 p1, Vec2 p2)
@@ -150,14 +188,31 @@ void Scene_LevelEditor::sRender()
 			}
 		}
 	}
+
 	//Draw entities
 	for (auto e : m_entityManager.getEntities())
 	{
 		auto& transform = e->getComponent<CTransform>();
 
-		if (e->hasComponent<CSprite>())
+		if (e->hasComponent<CSprite>() && !e->hasComponent<CUI>())
 		{
-			if (e->tag() != "selectedTile" || m_drawSelectedTile)
+			
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+		}
+	}
+
+	//Draw UI
+	if (m_drawTileMenu)
+	{
+		for (auto e : m_entityManager.getEntities())
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>() && e->hasComponent<CUI>())
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -165,7 +220,6 @@ void Scene_LevelEditor::sRender()
 				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
 				m_game->window().draw(sprite.getSprite());
 			}
-			
 		}
 	}
 }

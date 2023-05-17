@@ -13,114 +13,123 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Arquivos de Recurso\Engine">
+      <UniqueIdentifier>{4521ed81-6181-4f3e-8b00-1d9041ff8aea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Recurso\Scenes">
+      <UniqueIdentifier>{39f8ea2e-bb24-4f54-8e0d-3c078915e2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Recurso\Engine\Physics">
+      <UniqueIdentifier>{88aac176-ed99-4eed-80b9-de122ff6706f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="script\Action.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Action.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="script\Assets.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Animation.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="script\Entity.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\AnimatorMachine.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="script\EntityManager.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Assets.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="script\GameEngine.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Entity.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\EntityManager.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\GameEngine.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\Sprite.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\Vec2.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\Rigidbody.cpp">
+      <Filter>Arquivos de Recurso\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="script\Engine\Physics.cpp">
+      <Filter>Arquivos de Recurso\Engine\Physics</Filter>
     </ClCompile>
     <ClCompile Include="script\main.cpp">
       <Filter>Arquivos de Recurso</Filter>
     </ClCompile>
-    <ClCompile Include="script\Physics.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Scenes\Scene.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="script\Scene.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Scenes\Scene_LevelEditor.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="script\Scene_Menu.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Scenes\Scene_Menu.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="script\Scene_Play.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Scenes\Scene_Play.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="script\Vec2.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\Sprite.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\AnimatorMachine.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\Animation.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\Rigidbody.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\Scene_LevelEditor.cpp">
-      <Filter>Arquivos de Recurso</Filter>
-    </ClCompile>
-    <ClCompile Include="script\Scene_Splash.cpp">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClCompile Include="script\Engine\Scenes\Scene_Splash.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="script\Action.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Action.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Animation.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Animation.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Assets.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\AnimatorMachine.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Common.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Assets.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Component.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Common.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Entity.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Component.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\EntityManager.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Entity.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\GameEngine.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\EntityManager.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Physics.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\GameEngine.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Scene.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Sprite.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Scene_Menu.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Vec2.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="script\Scene_Play.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Rigidbody.h">
+      <Filter>Arquivos de Recurso\Engine\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="script\Vec2.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Physics.h">
+      <Filter>Arquivos de Recurso\Engine\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="script\Sprite.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Scene.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="script\AnimatorMachine.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Scene_LevelEditor.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="script\Rigidbody.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Scene_Menu.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="script\Scene_LevelEditor.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Scene_Play.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="script\Scene_Splash.h">
-      <Filter>Arquivos de Recurso</Filter>
+    <ClInclude Include="script\libs\Scene_Splash.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

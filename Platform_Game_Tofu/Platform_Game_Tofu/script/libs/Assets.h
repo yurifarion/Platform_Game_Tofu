@@ -53,17 +53,17 @@ public:
             , bg_1_Tile_l
             , bg_1_Tile_r
             , bg_1_shadow_ll
-            , Count
+            , LAST
         };
 
-        SPRITEID type = SPRITEID::Tile;
+        const int Count = 22;
 
         const std::string EnumToStr(SPRITEID sprite)
         {
             switch (sprite)
             {
             case SPRITEID::Tile:   return "Tile";
-            case SPRITEID::Count:   return "Tile";
+            case SPRITEID::LAST:   return "Tile";
             case SPRITEID::Tile_grass:   return "Tile_grass";
             case SPRITEID::Tile_grass_tl: return "Tile_grass_tl";
             case SPRITEID::Tile_grass_tr: return "Tile_grass_tr";

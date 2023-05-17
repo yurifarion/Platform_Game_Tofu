@@ -15,7 +15,8 @@ typedef std::tuple<
 	CAnimator,
 	CState,
 	CSprite,
-	CRigidbody
+	CRigidbody,
+	CUI
 >ComponentTuple;
 
 

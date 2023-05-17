@@ -20,6 +20,9 @@ void Scene_Play::init(const std::string& levelPath)
 	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
+	registerAction(sf::Keyboard::L, "TOGGLE_DEBUG");
+
+
 	registerAction(sf::Keyboard::Space, "JUMP");
 	registerAction(sf::Keyboard::Up, "JUMP");
 	registerAction(sf::Keyboard::S, "DOWN");
@@ -298,67 +301,6 @@ void Scene_Play::loadLevel(const std::string& filename)
 	std::cout << "Finish reading and loading map \n";
 
 	spawnPlayer();
-
-	//TODO read in the level file and add the appropriate entities
-	// use the plauyerconfi struct m_playerConfig to store player properties
-	// this struct is defined at the top of Scene_play.h
-	// 
-	// NOTE: all of the code below is sample code which shows you how to
-	// set up and use entities with the new syntax it should be removed
-	//
-	
-
-	/*
-	//Create a tile
-	auto block = m_entityManager.addEntity("Tile");
-	block->addComponent<CAnimation>(m_game->assets().getAnimation("Tile"), false);
-	block->addComponent<CTransform>(Vec2(0,0));
-	block->getComponent<CTransform>().scale = Vec2(4, 4);
-	block->getComponent<CTransform>().pos = gridToMidPixel(1, 1, block);
-	block->addComponent<CBoundingBox>(Vec2(64, 64));
-	*/
-
-	/*
-
-	//some sample entities
-	auto brick = m_entityManager.addEntity("tile");
-	//IMPORTANT always add the CAnimation component first so that gridToMidPixel can compute correctly
-	brick->addComponent<CAnimation>(m_game->assets().getAnimation("Brick"), true);
-	brick->addComponent<CTransform>(Vec2(96, 480));
-
-	//NOTE your final code should position the entity with the grid x,y position read from the file
-	//brick->addComponent<CTransform>(gridToMidPixel(gridx,gridY,brick);
-
-	if (brick->getComponent<CAnimation>().animation.getName() == "Brick")
-	{
-		std::cout << "This could be a good way of idetifying if a tile is a brick! \n";
-	}
-
-	auto block = m_entityManager.addEntity("tile");
-	block->addComponent<CAnimation>(m_game->assets().getAnimation("Block"), true);
-	block->addComponent<CTransform>(Vec2(224, 480));
-	//add a bounding box, this will now show up if we press the C key
-	block->addComponent<CBoundingBox>(m_game->assets().getAnimation("Block").getSize());
-
-	auto question = m_entityManager.addEntity("tile");
-	question->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
-	question->addComponent<CTransform>(Vec2(352, 480));
-
-	//Components are now returned as references rather than pointers
-	// if you do not specify a reference variable type,it wil copy the component
-	// here is an example:
-	// 
-	// this will copy the transform into the variabel trnasform1 it is incorrect
-	// any changes you make to transform1 will not be changed inside the entity
-	// auto tranform1 = entity->get<CTransform>()
-	// 
-	// this will reference the trnasform with the variable transform2 it is correct
-	// now any changes you make to transform2 will be changed inside entity
-	// auto& transform2 = entity->get<CTransform>()
-	//
-
-
-	*/
 }
 
 void Scene_Play::spawnPlayer()
@@ -409,6 +351,7 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 void Scene_Play::update()
 {
 	m_entityManager.update();
+	m_debugGraph.clear();
 	//TODO implement pause functionality
 	sMovement();
 	sLifespan();
@@ -465,6 +408,8 @@ void Scene_Play::sCollision()
 	
 	m_player->getComponent<CRigidbody>().rigidbody.isColliding = false;
 	m_player->getComponent<CRigidbody>().rigidbody.isGrounded = false;
+
+
 	//Check collision with player
 	for (auto e : m_entityManager.getEntities())
 	{
@@ -476,10 +421,28 @@ void Scene_Play::sCollision()
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
 				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
-				if (m_player->hasComponent<CRigidbody>() && resolveCol.y < 0) m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
 			}
 		}
 	}
+
+	
+	
+	//Check with Raycast if Player is close to the ground
+	Vec2 origin = m_player->getComponent<CTransform>().pos;
+	Vec2 destiny = m_player->getComponent<CTransform>().pos + Vec2(0, 40);
+
+	for (auto e : m_entityManager.getEntities())
+	{
+		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
+		{
+			if (physics.EntityIntersect(origin, destiny, e))
+			{
+				m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
+				debugline(origin, destiny, sf::Color::Red);
+			}
+		}
+	}
+	if(!m_player->getComponent<CRigidbody>().rigidbody.isGrounded) debugline(origin, destiny, sf::Color::Yellow);
 }
 void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 {
@@ -489,60 +452,91 @@ void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 
 	m_game->window().draw(lines);
 }
+
+//Draw a debug line
+void Scene_Play::debugline(Vec2 p1, Vec2 p2, sf::Color color)
+{
+	sf::VertexArray line(sf::LineStrip, 2);
+	line[0].color = color;
+	line[1].color = color;
+
+	line[0].position = sf::Vector2f(p1.x, p1.y);
+	line[1].position = sf::Vector2f(p2.x, p2.y);
+	m_debugGraph.push_back(line);
+}
 void Scene_Play::sDoAction(const Action& action)
 {
+	//When Action start
 	if (action.type() == "START")
 	{
+		//Toggle of textures, Debug etc
 		if (action.name() == "TOGGLE_TEXTURE") { m_drawTextures = !m_drawTextures; }
-		else if (action.name() == "TOGGLE_COLLISION") { m_drawCollision = !m_drawCollision; }
-		else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
-		else if (action.name() == "PAUSE") { setPaused(!m_paused); }
-		else if (action.name() == "QUIT") { onEnd(); }
-		else if (action.name() == "JUMP") 
+		if (action.name() == "TOGGLE_COLLISION") { m_drawCollision = !m_drawCollision; }
+		if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
+		if (action.name() == "TOGGLE_DEBUG") { m_drawDebug = !m_drawDebug; }
+
+		//Game State Input
+		 if (action.name() == "PAUSE") { setPaused(!m_paused); }
+		 if (action.name() == "QUIT") { onEnd(); }
+		 if (action.name() == "JUMP") 
 		{
 			m_player->getComponent<CInput>().up = true; 
 			m_player->getComponent<CState>().state = "jump";
 		}
-		else if (action.name() == "DOWN") 
+
+		 //Game Controls Input
+		 if (action.name() == "DOWN") 
 		{ 
 			m_player->getComponent<CInput>().down = true; 
 		}
-		else if (action.name() == "RIGHT") 
+		 if (action.name() == "RIGHT") 
 		{
 			m_player->getComponent<CInput>().right = true; 
 			m_player->getComponent<CTransform>().flipX(false);
 			m_player->getComponent<CState>().state = "walk";
 		}
-		else if (action.name() == "LEFT") 
+		 if (action.name() == "LEFT") 
 		{
 			m_player->getComponent<CInput>().left = true; 
 			m_player->getComponent<CTransform>().flipX(true);
-			m_player->getComponent<CState>().state = "walk";
 		}
 	}
+	//When Action end
 	else if (action.type() == "END")
 	{
+		//Game Controls Input
 		 if (action.name() == "JUMP") 
 		 { 
 			 m_player->getComponent<CInput>().up = false;
 		 }
-		else if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
-		else if (action.name() == "RIGHT") 
+		 if (action.name() == "DOWN") { m_player->getComponent<CInput>().down = false; }
+		 if (action.name() == "RIGHT") 
 		{
 			 m_player->getComponent<CInput>().right = false; 
-			 m_player->getComponent<CState>().state = "idle";
 		}
-		else if (action.name() == "LEFT") 
+		 if (action.name() == "LEFT") 
 		{
 			 m_player->getComponent<CInput>().left = false; 
-			 m_player->getComponent<CState>().state = "idle";
 		}
 	}
 }
 void Scene_Play::sAnimation()
 {
-	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
+
+	//Set Player animation based on physics
+	if (m_player->getComponent<CTransform>().velocity != Vec2(0, 0) && m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+		m_player->getComponent<CState>().state = "walk";
+
+	else if (m_player->getComponent<CTransform>().velocity == Vec2(0, 0) && m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+		m_player->getComponent<CState>().state = "idle";
+
+	else if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+		m_player->getComponent<CState>().state = "jump";
+
+
+	
 	//change animations
+	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
 	if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
 	{
 		playeranimator.setAnimation("jump");
@@ -563,10 +557,6 @@ void Scene_Play::sAnimation()
 	//change sprites
 	m_player->getComponent<CSprite>().sprite = m_player->getComponent<CAnimator>().animator.getCurrentSprite();
 
-	//TODO Complete the animation class code first
-	//TODO set the animaton of the player based on tis CState component
-	//TODO for each entity with an animation call entity->getComponent<CAnimation>().animation.update()
-	// if the animation is not repeated and it has ended destroy the entity
 }
 void Scene_Play::onEnd()
 {
@@ -581,12 +571,8 @@ void Scene_Play::sRender()
 	if (!m_paused) { m_game->window().clear(sf::Color(0, 64, 128)); }
 	else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
-	//set the viewport of the window to be cented on the player if its far enough right
-	//auto& pPos = m_player->getComponent<CTransform>().pos;
-	//float windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
-	//sf::View view = m_game->window().getView();
-	//view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
-	//draw all entity textures / animations
+	
+	//Draw Entities Textures
 	if (m_drawTextures)
 	{
 		for (auto e : m_entityManager.getEntities())
@@ -604,6 +590,7 @@ void Scene_Play::sRender()
 		}
 	}
 
+	//Draw Entities Collision Box
 	if (m_drawCollision)
 	{
 		for (auto e : m_entityManager.getEntities())
@@ -626,7 +613,6 @@ void Scene_Play::sRender()
 	}
 
 	//draw the grid so that students can easily debug
-
 	if (m_drawGrid)
 	{
 		float leftX = m_game->window().getView().getCenter().x - width() / 2;
@@ -653,4 +639,14 @@ void Scene_Play::sRender()
 		}
 	}
 
+	//Draw Debug Lines
+	if (m_drawDebug)
+	{
+		//draw debug Graphics
+		for (auto db : m_debugGraph)
+		{
+			m_game->window().draw(db);
+		}
+	}
+		
 }

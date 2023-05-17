@@ -19,43 +19,43 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="script\Action.cpp" />
-    <ClCompile Include="script\Animation.cpp" />
-    <ClCompile Include="script\AnimatorMachine.cpp" />
-    <ClCompile Include="script\Assets.cpp" />
-    <ClCompile Include="script\Entity.cpp" />
-    <ClCompile Include="script\EntityManager.cpp" />
-    <ClCompile Include="script\GameEngine.cpp" />
+    <ClCompile Include="script\Engine\Action.cpp" />
+    <ClCompile Include="script\Engine\Animation.cpp" />
+    <ClCompile Include="script\Engine\AnimatorMachine.cpp" />
+    <ClCompile Include="script\Engine\Assets.cpp" />
+    <ClCompile Include="script\Engine\Entity.cpp" />
+    <ClCompile Include="script\Engine\EntityManager.cpp" />
+    <ClCompile Include="script\Engine\GameEngine.cpp" />
+    <ClCompile Include="script\Engine\Physics.cpp" />
+    <ClCompile Include="script\Engine\Rigidbody.cpp" />
+    <ClCompile Include="script\Engine\Scenes\Scene.cpp" />
+    <ClCompile Include="script\Engine\Scenes\Scene_LevelEditor.cpp" />
+    <ClCompile Include="script\Engine\Scenes\Scene_Menu.cpp" />
+    <ClCompile Include="script\Engine\Scenes\Scene_Play.cpp" />
+    <ClCompile Include="script\Engine\Scenes\Scene_Splash.cpp" />
+    <ClCompile Include="script\Engine\Sprite.cpp" />
+    <ClCompile Include="script\Engine\Vec2.cpp" />
     <ClCompile Include="script\main.cpp" />
-    <ClCompile Include="script\Physics.cpp" />
-    <ClCompile Include="script\Rigidbody.cpp" />
-    <ClCompile Include="script\Scene.cpp" />
-    <ClCompile Include="script\Scene_LevelEditor.cpp" />
-    <ClCompile Include="script\Scene_Menu.cpp" />
-    <ClCompile Include="script\Scene_Play.cpp" />
-    <ClCompile Include="script\Scene_Splash.cpp" />
-    <ClCompile Include="script\Sprite.cpp" />
-    <ClCompile Include="script\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="script\Action.h" />
-    <ClInclude Include="script\Animation.h" />
-    <ClInclude Include="script\AnimatorMachine.h" />
-    <ClInclude Include="script\Assets.h" />
-    <ClInclude Include="script\Common.h" />
-    <ClInclude Include="script\Component.h" />
-    <ClInclude Include="script\Entity.h" />
-    <ClInclude Include="script\EntityManager.h" />
-    <ClInclude Include="script\GameEngine.h" />
-    <ClInclude Include="script\Physics.h" />
-    <ClInclude Include="script\Rigidbody.h" />
-    <ClInclude Include="script\Scene.h" />
-    <ClInclude Include="script\Scene_LevelEditor.h" />
-    <ClInclude Include="script\Scene_Menu.h" />
-    <ClInclude Include="script\Scene_Play.h" />
-    <ClInclude Include="script\Scene_Splash.h" />
-    <ClInclude Include="script\Sprite.h" />
-    <ClInclude Include="script\Vec2.h" />
+    <ClInclude Include="script\libs\Action.h" />
+    <ClInclude Include="script\libs\Animation.h" />
+    <ClInclude Include="script\libs\AnimatorMachine.h" />
+    <ClInclude Include="script\libs\Assets.h" />
+    <ClInclude Include="script\libs\Common.h" />
+    <ClInclude Include="script\libs\Component.h" />
+    <ClInclude Include="script\libs\Entity.h" />
+    <ClInclude Include="script\libs\EntityManager.h" />
+    <ClInclude Include="script\libs\GameEngine.h" />
+    <ClInclude Include="script\libs\Physics.h" />
+    <ClInclude Include="script\libs\Rigidbody.h" />
+    <ClInclude Include="script\libs\Scene.h" />
+    <ClInclude Include="script\libs\Scene_LevelEditor.h" />
+    <ClInclude Include="script\libs\Scene_Menu.h" />
+    <ClInclude Include="script\libs\Scene_Play.h" />
+    <ClInclude Include="script\libs\Scene_Splash.h" />
+    <ClInclude Include="script\libs\Sprite.h" />
+    <ClInclude Include="script\libs\Vec2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -109,6 +109,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\yurir\source\repos\Platform_Game_Tofu\Platform_Game_Tofu\Platform_Game_Tofu\script\libs;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\yurir\source\repos\Platform_Game_Tofu\Platform_Game_Tofu\Platform_Game_Tofu\script\libs;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\yurir\source\repos\Platform_Game_Tofu\Platform_Game_Tofu\Platform_Game_Tofu\script\libs;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\yurir\source\repos\Platform_Game_Tofu\Platform_Game_Tofu\Platform_Game_Tofu\script\libs;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
