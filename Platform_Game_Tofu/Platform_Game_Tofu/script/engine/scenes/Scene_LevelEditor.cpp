@@ -37,17 +37,27 @@ void Scene_LevelEditor::init()
 
 	//Init Tile pallete
 	int numberOfTiles = m_game->assets().spriteRef.Count;
-	int j = 0;
+
+	//Position of tiles
+	int tilex = 0;
+    int tiley = 0;
+
 	for (int i = 0; i < numberOfTiles; ++i)
 	{
-		if (i % 5 == 0) ++j;
+		if (tilex % 5 == 0)
+		{
+			++tiley;
+			tilex = 0;
+		}
+
 		spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(i));
 		auto m_tile = m_entityManager.addEntity("Tile_"+i);
 		m_tile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 		m_tile->addComponent<CTransform>(Vec2(0, 0));
 		m_tile->getComponent<CTransform>().scale = Vec2(4, 4);
-		m_tile->getComponent<CTransform>().pos = gridToMidPixel(i, j, m_tile);
+		m_tile->getComponent<CTransform>().pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
 		m_tile->addComponent<CUI>();
+		tilex++;
 	}
 
 	
@@ -57,23 +67,25 @@ void Scene_LevelEditor::update()
 {
 	m_entityManager.update();
 
-	int i = 0;
-	int j = 0;
-	//Update Tile selector
+	//Update position of UI
+	//Position of tiles
+	int tilex = 0;
+	int tiley = 0;
 	for (auto e : m_entityManager.getEntities())
 	{
-		if (e->hasComponent<CSprite>() && e->hasComponent<CUI>())
+		if (e->hasComponent<CUI>())
 		{
-			
-			if (i % 5 == 0 && i != 0)
+			if (tilex % 5 == 0)
 			{
-				i = 0;
-				++j;
+				++tiley;
+				tilex = 0;
 			}
-			e->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, e));
-			i++;
+			Vec2 pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
+			e->getComponent<CTransform>().pos = m_game->windowToWorld(pos);
+			tilex++;
 		}
 	}
+
 
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 	m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
