@@ -34,6 +34,7 @@ void Scene_LevelEditor::init()
 	m_selectedTile->addComponent<CTransform>(Vec2(0, 0));
 	m_selectedTile->getComponent<CTransform>().scale = Vec2(4, 4);
 	m_selectedTile->getComponent<CTransform>().pos = gridToMidPixel(9, 0, m_selectedTile);
+	m_selectedTile->addComponent<CUI>();
 
 	//Init Tile pallete
 	int numberOfTiles = m_game->assets().spriteRef.Count;
@@ -75,21 +76,25 @@ void Scene_LevelEditor::update()
 	{
 		if (e->hasComponent<CUI>())
 		{
-			if (tilex % 5 == 0)
+			if (e->tag() == "selectedTile")
 			{
-				++tiley;
-				tilex = 0;
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
+				m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
 			}
-			Vec2 pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
-			e->getComponent<CTransform>().pos = m_game->windowToWorld(pos);
-			tilex++;
+			else {
+				if (tilex % 5 == 0)
+				{
+					++tiley;
+					tilex = 0;
+				}
+				Vec2 pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
+				e->getComponent<CTransform>().pos = m_game->windowToWorld(pos);
+				tilex++;
+			}
 		}
 	}
-
-
-	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
-	m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-	m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
+	
 }
 void Scene_LevelEditor::onEnd()
 {
@@ -118,7 +123,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		}
 		if (action.name() == "TOGGLE_TILEMENU")
 		{
-			m_drawTileMenu = !m_drawTileMenu;
+			m_drawUI = !m_drawUI;
 		}
 		if (action.name() == "MOVE RIGHT")
 		{
@@ -150,14 +155,46 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		}
 		if (action.name() == "RIGHT_CLICK")
 		{
-			auto m_mapTile = m_entityManager.addEntity("selectedTile");
-			auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
+			if (m_drawUI)
+			{
+				auto gridpos = pixelToGrid(action.pos());
+				int tilex = 0;
+				int tiley = 0;
+				for (auto e : m_entityManager.getEntities())
+				{
+					if (e->hasComponent<CUI>())
+					{
+						if (e->tag() != "selectedTile")
+						{
+							if (gridpos == Vec2(tilex, tiley))
+							{
+								int id = tilex + 5 * tiley;
+								m_selectedTileID = id;
+							}
+							else 
+							{
+								if (tilex % 5 == 0)
+								{
+									++tiley;
+										tilex = 0;
+								}
+								tilex++;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				auto m_mapTile = m_entityManager.addEntity("selectedTile");
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 
-			m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-			m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-			m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
-			auto gridpos = pixelToGrid(action.pos());
-			m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				auto gridpos = pixelToGrid(action.pos());
+				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+			}
 		}
 		
 	}
@@ -195,7 +232,7 @@ void Scene_LevelEditor::sRender()
 				std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
 				std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
 				m_gridText.setString("(" + xCell + "," + yCell + ")");
-				m_gridText.setPosition(x + 3, height() - y - m_gridSize.y + 2);
+				m_gridText.setPosition(x + 3, y + 2);
 				m_game->window().draw(m_gridText);
 			}
 		}
@@ -218,7 +255,7 @@ void Scene_LevelEditor::sRender()
 	}
 
 	//Draw UI
-	if (m_drawTileMenu)
+	if (m_drawUI)
 	{
 		for (auto e : m_entityManager.getEntities())
 		{
@@ -241,14 +278,13 @@ Vec2 Scene_LevelEditor::gridToMidPixel(float gridX, float gridY, std::shared_ptr
 	float spriteHeight = entity->getComponent<CSprite>().sprite.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
 
 	float x = gridX * m_gridSize.x + (spriteWidth / 2);
-	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight / 2);
+	float y = gridY * m_gridSize.y + (spriteHeight / 2);
 
 	return Vec2(x, y);
 
 }
 Vec2 Scene_LevelEditor::pixelToGrid(Vec2 pos)
 {
-	pos.y = m_game->window().getSize().y - pos.y;
 	Vec2 gridpos = Vec2(static_cast<int>(pos.x / m_gridSize.x), static_cast<int>(pos.y / m_gridSize.y));
 
 	return gridpos;
