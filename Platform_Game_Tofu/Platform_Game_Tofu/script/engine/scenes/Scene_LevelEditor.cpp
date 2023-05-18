@@ -155,6 +155,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		}
 		if (action.name() == "RIGHT_CLICK")
 		{
+			//Select Tile based on Location x,y
 			if (m_drawUI)
 			{
 				auto gridpos = pixelToGrid(action.pos());
@@ -173,7 +174,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 							}
 							else 
 							{
-								if (tilex % 5 == 0)
+								if (tilex % 5 == 0 && tilex !=0)
 								{
 									++tiley;
 										tilex = 0;
