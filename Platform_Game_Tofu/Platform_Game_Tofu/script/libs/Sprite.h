@@ -14,6 +14,7 @@ public:
 	Sprite();
 	Sprite(const std::string& name, const sf::Texture& t);
 	Sprite(const std::string& name, const sf::Texture& t, const Vec2& cellsize, const Vec2& origin);
+	
 
 	const std::string& getName() const;
 	const Vec2& getSize() const;

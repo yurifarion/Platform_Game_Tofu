@@ -20,7 +20,6 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
-	registerAction(sf::Mouse::Right , "SELECT");
 
 	m_entityManager = EntityManager();
 	m_gridText.setFont(m_game->assets().getFont("tech"));
@@ -52,12 +51,13 @@ void Scene_LevelEditor::init()
 		}
 
 		spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(i));
-		auto m_tile = m_entityManager.addEntity("Tile_"+i);
+		auto m_tile = m_entityManager.addEntity(spriteName);
 		m_tile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 		m_tile->addComponent<CTransform>(Vec2(0, 0));
 		m_tile->getComponent<CTransform>().scale = Vec2(4, 4);
 		m_tile->getComponent<CTransform>().pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
 		m_tile->addComponent<CUI>();
+		m_tile->addComponent<CTileMap>(i);
 		tilex++;
 	}
 
@@ -153,35 +153,27 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			Vec2 newpos = Vec2(currentpos.x , currentpos.y + speed);
 			m_game->moveCameraView(newpos);
 		}
-		if (action.name() == "RIGHT_CLICK")
+
+		//If we select with left click
+		if (action.name() == "LEFT_CLICK")
 		{
 			//Select Tile based on Location x,y
 			if (m_drawUI)
 			{
-				auto gridpos = pixelToGrid(action.pos());
-				int tilex = 0;
-				int tiley = 0;
 				for (auto e : m_entityManager.getEntities())
 				{
-					if (e->hasComponent<CUI>())
+					auto& transform = e->getComponent<CTransform>();
+
+					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
 					{
-						if (e->tag() != "selectedTile")
-						{
-							if (gridpos == Vec2(tilex, tiley))
-							{
-								int id = tilex + 5 * tiley;
-								m_selectedTileID = id;
-							}
-							else 
-							{
-								if (tilex % 5 == 0 && tilex !=0)
-								{
-									++tiley;
-										tilex = 0;
-								}
-								tilex++;
-							}
-						}
+						Vec2 mousepos = action.pos();
+						Vec2 Tilepos = e->getComponent<CTransform>().pos;
+						float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+						float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+						bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+							&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+
+						if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
 					}
 				}
 			}
@@ -195,9 +187,31 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
 				auto gridpos = pixelToGrid(action.pos());
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
 			}
 		}
 		
+	}
+
+	//Copy id to selected ID if clicked with right click
+	if (action.name() == "RIGHT_CLICK")
+	{
+		for (auto e : m_entityManager.getEntities())
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+			{
+				Vec2 mousepos = action.pos();
+				Vec2 Tilepos = e->getComponent<CTransform>().pos;
+				float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+				float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+				bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+					             && mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+
+				if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+			}
+		}
 	}
 }
 void Scene_LevelEditor::drawline(Vec2 p1, Vec2 p2)

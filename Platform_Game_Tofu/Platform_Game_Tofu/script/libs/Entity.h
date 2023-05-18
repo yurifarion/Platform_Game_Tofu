@@ -16,7 +16,8 @@ typedef std::tuple<
 	CState,
 	CSprite,
 	CRigidbody,
-	CUI
+	CUI,
+	CTileMap
 >ComponentTuple;
 
 

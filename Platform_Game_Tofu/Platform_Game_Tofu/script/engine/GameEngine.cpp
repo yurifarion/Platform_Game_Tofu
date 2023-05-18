@@ -69,21 +69,24 @@ void GameEngine::sUserInput()
 
 		Vec2 mpos(mousePos.x, mousePos.y);
 
-		if (event.type == sf::Event::MouseButtonPressed)
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			switch (event.type == sf::Event::MouseButtonPressed)
-			{
-				case sf::Mouse::Left: { currentScene()->doAction(Action("LEFT_CLICK", "START", mpos)); break; }
-				case sf::Mouse::Middle: { currentScene()->doAction(Action("MIDDLE_CLICK", "START", mpos)); break; }
-				case sf::Mouse::Right: { currentScene()->doAction(Action("RIGHT_CLICK", "START", mpos)); break; }
-				default: break;
-			}
+			currentScene()->doAction(Action("LEFT_CLICK", "START", mpos));
 		}
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+		{
+			currentScene()->doAction(Action("RIGHT_CLICK", "START", mpos));
+		}
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+		{
+			currentScene()->doAction(Action("MIDDLE_CLICK", "START", mpos));
+		}
+		
 
-		if (event.type == sf::Event::MouseMoved)
+		/*if (event.type == sf::Event::MouseMoved)
 		{
 			currentScene()->doAction(Action("MOUSE_MOVE", "START", Vec2(event.mouseMove.x, event.mouseMove.y)));
-		}
+		}*/
 	}
 }
 

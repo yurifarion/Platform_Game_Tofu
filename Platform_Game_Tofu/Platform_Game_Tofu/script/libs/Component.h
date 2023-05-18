@@ -110,5 +110,14 @@ public:
 class CUI : public Component
 {
 public:
+	std::string name = "NONE";
 	CUI() {}
+	CUI(const std::string& n) :name(n) {}
+}; 
+class CTileMap : public Component
+{
+public:
+	int spriteID = 0;
+	CTileMap() {}
+	CTileMap(const int si) :spriteID(si) {}
 };
