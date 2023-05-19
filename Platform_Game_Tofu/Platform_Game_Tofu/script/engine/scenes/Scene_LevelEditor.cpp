@@ -160,22 +160,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			//Select Tile based on Location x,y
 			if (m_drawUI)
 			{
-				for (auto e : m_entityManager.getEntities())
-				{
-					auto& transform = e->getComponent<CTransform>();
-
-					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
-					{
-						Vec2 mousepos = action.pos();
-						Vec2 Tilepos = e->getComponent<CTransform>().pos;
-						float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-						float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-						bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-							&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
-
-						if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
-					}
-				}
+				m_drawUI = false;
 			}
 			else
 			{
@@ -188,6 +173,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				auto gridpos = pixelToGrid(action.pos());
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
+				
 			}
 		}
 		
@@ -202,7 +188,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 			if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
 			{
-				Vec2 mousepos = action.pos();
+				Vec2 mousepos = m_game->windowToWorld(action.pos());
 				Vec2 Tilepos = e->getComponent<CTransform>().pos;
 				float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
 				float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
@@ -212,6 +198,31 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
 			}
 		}
+	}
+
+	//Delete Tile of that position
+	if (action.name() == "MIDDLE_CLICK")
+	{
+		if (!m_drawUI)
+		{
+			for (auto e : m_entityManager.getEntities())
+			{
+				auto& transform = e->getComponent<CTransform>();
+
+				if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+				{
+					Vec2 mousepos = m_game->windowToWorld(action.pos());
+					Vec2 Tilepos = e->getComponent<CTransform>().pos;
+					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+
+					if (isInside) e->destroy();
+				}
+			}
+		}
+		else m_drawUI = false;
 	}
 }
 void Scene_LevelEditor::drawline(Vec2 p1, Vec2 p2)
