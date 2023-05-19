@@ -75,6 +75,9 @@
     <ClCompile Include="script\Engine\Scenes\Scene_Splash.cpp">
       <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="script\engine\MapLevel.cpp">
+      <Filter>Arquivos de Recurso\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\libs\Action.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="script\libs\Scene_Splash.h">
       <Filter>Arquivos de Recurso\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="script\libs\MapLevel.h">
+      <Filter>Arquivos de Recurso\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,6 +10,8 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 }
 void Scene_LevelEditor::init()
 {
+	m_maplevel = MapLevel(10, 10);
+	m_maplevel.createMapFile();
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
 	registerAction(sf::Keyboard::A, "MOVE LEFT");
@@ -209,7 +211,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			{
 				auto& transform = e->getComponent<CTransform>();
 
-				if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+				if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>() && !e->hasComponent<CUI>())
 				{
 					Vec2 mousepos = m_game->windowToWorld(action.pos());
 					Vec2 Tilepos = e->getComponent<CTransform>().pos;
@@ -237,6 +239,23 @@ void Scene_LevelEditor::sRender()
 {
 	m_game->window().clear(sf::Color(50, 50, 150));
 
+	
+
+	//Draw entities
+	for (auto e : m_entityManager.getEntities())
+	{
+		auto& transform = e->getComponent<CTransform>();
+
+		if (e->hasComponent<CSprite>() && !e->hasComponent<CUI>())
+		{
+			
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+		}
+	}
 	//Draw grid
 	if (m_drawGrid)
 	{
@@ -261,22 +280,6 @@ void Scene_LevelEditor::sRender()
 				m_gridText.setPosition(x + 3, y + 2);
 				m_game->window().draw(m_gridText);
 			}
-		}
-	}
-
-	//Draw entities
-	for (auto e : m_entityManager.getEntities())
-	{
-		auto& transform = e->getComponent<CTransform>();
-
-		if (e->hasComponent<CSprite>() && !e->hasComponent<CUI>())
-		{
-			
-				auto& sprite = e->getComponent<CSprite>().sprite;
-				sprite.getSprite().setRotation(transform.angle);
-				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
-				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
-				m_game->window().draw(sprite.getSprite());
 		}
 	}
 

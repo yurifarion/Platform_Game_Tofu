@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Common.h"
 #include "Assets.h"
+#include "MapLevel.h"
 #include "GameEngine.h"
 #include "Action.h"
 #include<map>
@@ -15,6 +16,7 @@ class Scene_LevelEditor : public Scene
 protected:
 
 	int m_selectedTileID = 0;
+	MapLevel m_maplevel;
 	std::shared_ptr<Entity> m_selectedTile;
 	const Vec2 m_gridSize = { 64,64 };
 	sf::Text m_gridText;

@@ -26,6 +26,7 @@
     <ClCompile Include="script\Engine\Entity.cpp" />
     <ClCompile Include="script\Engine\EntityManager.cpp" />
     <ClCompile Include="script\Engine\GameEngine.cpp" />
+    <ClCompile Include="script\engine\MapLevel.cpp" />
     <ClCompile Include="script\Engine\Physics.cpp" />
     <ClCompile Include="script\Engine\Rigidbody.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="script\libs\Entity.h" />
     <ClInclude Include="script\libs\EntityManager.h" />
     <ClInclude Include="script\libs\GameEngine.h" />
+    <ClInclude Include="script\libs\MapLevel.h" />
     <ClInclude Include="script\libs\Physics.h" />
     <ClInclude Include="script\libs\Rigidbody.h" />
     <ClInclude Include="script\libs\Scene.h" />
