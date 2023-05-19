@@ -44,7 +44,7 @@ void Scene_LevelEditor::init()
 
 	for (int i = 0; i < numberOfTiles; ++i)
 	{
-		if (tilex % 5 == 0)
+		if (tilex % 9 == 0)
 		{
 			++tiley;
 			tilex = 0;
@@ -83,7 +83,7 @@ void Scene_LevelEditor::update()
 				m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
 			}
 			else {
-				if (tilex % 5 == 0)
+				if (tilex % 9 == 0)
 				{
 					++tiley;
 					tilex = 0;

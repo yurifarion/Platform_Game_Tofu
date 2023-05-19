@@ -31,60 +31,152 @@ public:
 
     struct SpriteIDReference {
         enum class SPRITEID {
-            Tile
-            , Tile_grass
-            , Tile_grass_tl
-            , Tile_grass_tr
-            , Tile_grass_ll
+            Tile_basic
+            , Tile_basic_grass
+            , Tile_dirt_tl
+            , Tile_dirt_tr
+            , Tile_dirt_ctl
+            , Tile_dirt_ctr
+            , Tile_dirt_t
+            , Tile_dirt_r
+            , Tile_spike_d
+            , Tile_dirt_tlrd
+            , Tile_dirt_tlrdd
+            , Tile_dirt_ld
+            , Tile_dirt_rd
+            , Tile_dirt_cld
+            , Tile_dirt_crd
+            , Tile_dirt_l
+            , Tile_dirt_d
+            , Tile_spike_l
+            , Tile_darkbasic
+            , Tile_darkbasic_grass
             , Tile_grass_l
-            , Tile_grass_lr
-            , Tile_grass_ltlr
-            , Tile_big_tl
-            , Tile_big_tr
-            , Tile_big_ll
-            , Tile_big_lr
-            , Tile_big_l
-            , Tile_mini
-            , Tile_tt
-            , Tile_ll
-            , Tile_l
-            , Tile_r
-            , bg_1_Tile
-            , bg_1_Tile_l
-            , bg_1_Tile_r
-            , bg_1_shadow_ll
+            , Tile_grass_r
+            , Tile_grass_ld
+            , Tile_grass_d
+            , Tile_grass_dr
+            , Tile_grass_dlr
+            , Tile_spike_t
+            , Tile_darkdirt_tlrd
+            , Tile_darkdirt_tlrdd
+            , Tile_darkdirt_tl
+            , Tile_darkdirt_tr
+            , Tile_darkdirt_ctl
+            , Tile_darkdirt_ctr
+            , Tile_darkdirt_t
+            , Tile_darkdirt_r
+            , Tile_spike_r
+            , Tile_darkdirt_ld
+            , Tile_darkdirt_rd
+            , Tile_darkdirt_cld
+            , Tile_darkdirt_crd
+            , Tile_darkdirt_l
+            , Tile_darkdirt_d
+            , Tile_black
+            , Tile_darkestbasic
+            , Tile_darkestbasic_grass
+            , Tile_darkgrass_l
+            , Tile_darkgrass_r
+            , Tile_darkgrass_ld
+            , Tile_darkgrass_d
+            , Tile_darkgrass_dr
+            , Tile_darkgrass_dlr
+            , Tile_darkestdirt_tlrd
+            , Tile_darkestdirt_tlrdd
+            , Tile_darkestdirt_tl
+            , Tile_darkestdirt_tr
+            , Tile_darkestdirt_ctl
+            , Tile_darkestdirt_ctr
+            , Tile_darkestdirt_t
+            , Tile_darkestdirt_r
+            , Tile_darkestgrass_l
+            , Tile_darkestgrass_r
+            , Tile_darkestdirt_ld
+            , Tile_darkestdirt_rd
+            , Tile_darkestdirt_cld
+            , Tile_darkestdirt_crd
+            , Tile_darkestdirt_l
+            , Tile_darkestdirt_d
+            , Tile_clear
             , LAST
         };
 
-        const int Count = 22;
+        const int Count = 68;
 
         const std::string EnumToStr(SPRITEID sprite)
         {
             switch (sprite)
             {
-            case SPRITEID::Tile:   return "Tile";
+            case SPRITEID::Tile_basic:   return "Tile_basic";
             case SPRITEID::LAST:   return "Tile";
-            case SPRITEID::Tile_grass:   return "Tile_grass";
-            case SPRITEID::Tile_grass_tl: return "Tile_grass_tl";
-            case SPRITEID::Tile_grass_tr: return "Tile_grass_tr";
-            case SPRITEID::Tile_grass_ll: return "Tile_grass_ll";
+            case SPRITEID::Tile_basic_grass:   return "Tile_basic_grass";
+            case SPRITEID::Tile_dirt_tl: return "Tile_dirt_tl";
+            case SPRITEID::Tile_dirt_tr: return "Tile_dirt_tr";
+            case SPRITEID::Tile_dirt_ctl: return "Tile_dirt_ctl";
+            case SPRITEID::Tile_dirt_ctr: return "Tile_dirt_ctr";
+            case SPRITEID::Tile_dirt_t: return "Tile_dirt_t";
+            case SPRITEID::Tile_dirt_r: return "Tile_dirt_r";
+            case SPRITEID::Tile_spike_d: return "Tile_spike_d";
+            case SPRITEID::Tile_dirt_tlrd: return "Tile_dirt_tlrd";
+            case SPRITEID::Tile_dirt_tlrdd: return "Tile_dirt_tlrdd";
+            case SPRITEID::Tile_dirt_ld: return "Tile_dirt_ld";
+            case SPRITEID::Tile_dirt_rd: return "Tile_dirt_rd";
+            case SPRITEID::Tile_dirt_cld: return "Tile_dirt_cld";
+            case SPRITEID::Tile_dirt_crd: return "Tile_dirt_crd";
+            case SPRITEID::Tile_dirt_l: return "Tile_dirt_l";
+            case SPRITEID::Tile_dirt_d: return "Tile_dirt_d";
+            case SPRITEID::Tile_spike_l: return "Tile_spike_l";
+            case SPRITEID::Tile_darkbasic: return "Tile_darkbasic";
+            case SPRITEID::Tile_darkbasic_grass: return "Tile_darkbasic_grass";
             case SPRITEID::Tile_grass_l: return "Tile_grass_l";
-            case SPRITEID::Tile_grass_lr: return "Tile_grass_lr";
-            case SPRITEID::Tile_grass_ltlr: return "Tile_grass_ltlr";
-            case SPRITEID::Tile_big_tl: return "Tile_big_tl";
-            case SPRITEID::Tile_big_tr: return "Tile_big_tr";
-            case SPRITEID::Tile_big_ll: return "Tile_big_ll";
-            case SPRITEID::Tile_big_lr: return "Tile_big_lr";
-            case SPRITEID::Tile_big_l: return "Tile_big_l";
-            case SPRITEID::Tile_mini: return "Tile_mini";
-            case SPRITEID::Tile_tt: return "Tile_tt";
-            case SPRITEID::Tile_ll: return "Tile_ll";
-            case SPRITEID::Tile_l: return "Tile_l";
-            case SPRITEID::Tile_r: return "Tile_r";
-            case SPRITEID::bg_1_Tile: return "bg_1_Tile";
-            case SPRITEID::bg_1_Tile_l: return "bg_1_Tile_l";
-            case SPRITEID::bg_1_Tile_r: return "bg_1_Tile_r";
-            case SPRITEID::bg_1_shadow_ll: return "bg_1_shadow_ll";
+            case SPRITEID::Tile_grass_r: return "Tile_grass_r";
+            case SPRITEID::Tile_grass_ld:   return "Tile_grass_ld";
+            case SPRITEID::Tile_grass_d:   return "Tile_grass_d";
+            case SPRITEID::Tile_grass_dr:   return "Tile_grass_dr";
+            case SPRITEID::Tile_grass_dlr: return "Tile_grass_dlr";
+            case SPRITEID::Tile_spike_t: return "Tile_spike_t";
+            case SPRITEID::Tile_darkdirt_tlrd: return "Tile_darkdirt_tlrd";
+            case SPRITEID::Tile_darkdirt_tlrdd: return "Tile_darkdirt_tlrdd";
+            case SPRITEID::Tile_darkdirt_tl: return "Tile_darkdirt_tl";
+            case SPRITEID::Tile_darkdirt_tr: return "Tile_darkdirt_tr";
+            case SPRITEID::Tile_darkdirt_ctl: return "Tile_darkdirt_ctl";
+            case SPRITEID::Tile_darkdirt_ctr: return "Tile_darkdirt_ctr";
+            case SPRITEID::Tile_darkdirt_t: return "Tile_darkdirt_t";
+            case SPRITEID::Tile_darkdirt_r: return "Tile_darkdirt_r";
+            case SPRITEID::Tile_spike_r: return "Tile_spike_r";
+            case SPRITEID::Tile_darkdirt_ld: return "Tile_darkdirt_ld";
+            case SPRITEID::Tile_darkdirt_rd: return "Tile_darkdirt_rd";
+            case SPRITEID::Tile_darkdirt_cld: return "Tile_darkdirt_cld";
+            case SPRITEID::Tile_darkdirt_crd: return "Tile_darkdirt_crd";
+            case SPRITEID::Tile_darkdirt_l: return "Tile_darkdirt_l";
+            case SPRITEID::Tile_darkdirt_d: return "Tile_darkdirt_d";
+            case SPRITEID::Tile_black: return "Tile_black";
+            case SPRITEID::Tile_darkestbasic: return "Tile_darkestbasic";
+            case SPRITEID::Tile_darkestbasic_grass: return "Tile_darkestbasic_grass";
+            case SPRITEID::Tile_darkgrass_l:   return "Tile_darkgrass_l";
+            case SPRITEID::Tile_darkgrass_r:   return "Tile_darkgrass_r";
+            case SPRITEID::Tile_darkgrass_ld:   return "Tile_darkgrass_ld";
+            case SPRITEID::Tile_darkgrass_d: return "Tile_darkgrass_d";
+            case SPRITEID::Tile_darkgrass_dr: return "Tile_darkgrass_dr";
+            case SPRITEID::Tile_darkgrass_dlr: return "Tile_darkgrass_dlr";
+            case SPRITEID::Tile_darkestdirt_tlrd: return "Tile_darkestdirt_tlrd";
+            case SPRITEID::Tile_darkestdirt_tlrdd: return "Tile_darkestdirt_tlrdd";
+            case SPRITEID::Tile_darkestdirt_tl: return "Tile_darkestdirt_tl";
+            case SPRITEID::Tile_darkestdirt_tr: return "Tile_darkestdirt_tr";
+            case SPRITEID::Tile_darkestdirt_ctl: return "Tile_darkestdirt_ctl";
+            case SPRITEID::Tile_darkestdirt_ctr: return "Tile_darkestdirt_ctr";
+            case SPRITEID::Tile_darkestdirt_t: return "Tile_darkestdirt_t";
+            case SPRITEID::Tile_darkestdirt_r: return "Tile_darkestdirt_r";
+            case SPRITEID::Tile_darkestgrass_l: return "Tile_darkestgrass_l";
+            case SPRITEID::Tile_darkestgrass_r: return "Tile_darkestgrass_r";
+            case SPRITEID::Tile_darkestdirt_ld: return "Tile_darkestdirt_ld";
+            case SPRITEID::Tile_darkestdirt_rd: return "Tile_darkestdirt_rd";
+            case SPRITEID::Tile_darkestdirt_cld: return "Tile_darkestdirt_cld";
+            case SPRITEID::Tile_darkestdirt_crd: return "Tile_darkestdirt_crd";
+            case SPRITEID::Tile_darkestdirt_l: return "Tile_darkestdirt_l";
+            case SPRITEID::Tile_darkestdirt_d: return "Tile_darkestdirt_d";
+            case SPRITEID::Tile_clear: return "Tile_clear";
             }
         }
     };
