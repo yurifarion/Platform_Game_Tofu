@@ -10,7 +10,7 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 }
 void Scene_LevelEditor::init()
 {
-	m_maplevel = MapLevel(10, 10);
+	m_maplevel = MapLevel(100, 100);
 	m_maplevel.createMapFile();
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
@@ -22,6 +22,7 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
+	registerAction(sf::Keyboard::L, "SAVE_MAP");
 
 	m_entityManager = EntityManager();
 	m_gridText.setFont(m_game->assets().getFont("tech"));
@@ -127,6 +128,10 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			m_drawUI = !m_drawUI;
 		}
+		if (action.name() == "SAVE_MAP")
+		{
+			m_maplevel.saveMapFile();
+		}
 		if (action.name() == "MOVE RIGHT")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
@@ -175,6 +180,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				auto gridpos = pixelToGrid(action.pos());
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
+				m_maplevel.setIndex(gridpos.x, gridpos.y, m_selectedTileID);
 				
 			}
 		}
