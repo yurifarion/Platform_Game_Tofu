@@ -26,7 +26,10 @@ void Scene_LevelEditor::init()
 	m_entityManager = EntityManager();
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 	m_gridText.setCharacterSize(6);
-	loadLevel("Anotherlevel.txt");
+
+	//m_maplevel = MapLevel(100, 100);
+	//m_maplevel.createMapFile("Levels/Example.level");
+	loadLevel("Levels/Example.level");
 	
 	//Init Selected tile
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));

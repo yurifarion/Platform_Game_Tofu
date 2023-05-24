@@ -31,7 +31,12 @@ public:
 
     struct SpriteIDReference {
         enum class SPRITEID {
-            Tile_basic = 1
+              PLAYER = 1
+            , ENEMY
+            , GEM_BLUE
+            , GEM_GREEN
+            , GEM_RED
+            , Tile_basic 
             , Tile_basic_grass
             , Tile_dirt_tl
             , Tile_dirt_tr
@@ -102,12 +107,17 @@ public:
             , LAST
         };
 
-        const int Count = 69;
+        const int Count = 74;
 
         const std::string EnumToStr(SPRITEID sprite)
         {
             switch (sprite)
             {
+            case SPRITEID::PLAYER:   return "Tofu_stand";
+            case SPRITEID::ENEMY:   return "Enemy_stand";
+            case SPRITEID::GEM_BLUE:   return "Gem_Blue_0";
+            case SPRITEID::GEM_GREEN:   return "Gem_Green_0";
+            case SPRITEID::GEM_RED:   return "Gem_Red_0";
             case SPRITEID::Tile_basic:   return "Tile_basic";
             case SPRITEID::LAST:   return "Tile";
             case SPRITEID::Tile_basic_grass:   return "Tile_basic_grass";
