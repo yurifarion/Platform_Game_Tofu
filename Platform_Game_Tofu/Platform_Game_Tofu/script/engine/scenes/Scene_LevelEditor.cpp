@@ -10,8 +10,7 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 }
 void Scene_LevelEditor::init()
 {
-	m_maplevel = MapLevel(100, 100);
-	m_maplevel.createMapFile();
+	
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
 	registerAction(sf::Keyboard::A, "MOVE LEFT");
@@ -27,7 +26,7 @@ void Scene_LevelEditor::init()
 	m_entityManager = EntityManager();
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 	m_gridText.setCharacterSize(6);
-
+	loadLevel("Anotherlevel.txt");
 	
 	//Init Selected tile
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
@@ -45,7 +44,7 @@ void Scene_LevelEditor::init()
 	int tilex = 0;
     int tiley = 0;
 
-	for (int i = 0; i < numberOfTiles; ++i)
+	for (int i = 1; i < numberOfTiles; ++i)
 	{
 		if (tilex % 9 == 0)
 		{
@@ -101,7 +100,7 @@ void Scene_LevelEditor::update()
 }
 void Scene_LevelEditor::onEnd()
 {
-
+	
 }
 void Scene_LevelEditor::sDoAction(const Action& action)
 {
@@ -226,7 +225,12 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
 						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
 
-					if (isInside) e->destroy();
+					if (isInside)
+					{
+						e->destroy();
+						auto gridpos = pixelToGrid(action.pos());
+						m_maplevel.setIndex(gridpos.x, gridpos.y, 0);
+					}
 				}
 			}
 		}
@@ -323,5 +327,37 @@ Vec2 Scene_LevelEditor::pixelToGrid(Vec2 pos)
 	Vec2 gridpos = Vec2(static_cast<int>(pos.x / m_gridSize.x), static_cast<int>(pos.y / m_gridSize.y));
 
 	return gridpos;
+
+}
+void Scene_LevelEditor::loadLevel(const std::string& path)
+{
+	int rowp = 100;
+	int collumnp = 100;
+	m_maplevel = MapLevel(rowp, collumnp);
+	//m_maplevel.createMapFile(path);
+	m_maplevel.loadfromMapFile(path);
+
+	auto mapdata = m_maplevel.getMapData();
+
+	//Populate entities
+	// Write to the file
+	for (int row = 0; row < mapdata.size(); ++row)
+	{
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+				auto m_mapTile = m_entityManager.addEntity("selectedTile");
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->addComponent<CTileMap>(mapdata[row][collumn]);
+			}
+		}
+	}
+
 
 }

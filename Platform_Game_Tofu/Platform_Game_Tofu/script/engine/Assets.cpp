@@ -46,12 +46,12 @@ void Assets::loadFromFile(const std::string& path)
         {
             std::cerr << "Unknown Asset Type: " << str << std::endl;
         }
-        std::cout << "k: " << str
-            << "\teof: " << file.eof()
-            << "\tfail: " << file.fail()
-            << "\tbad: " << file.bad()
-            << "\tgood: " << file.good()
-            << std::endl;
+      //  std::cout << "k: " << str
+        //    << "\teof: " << file.eof()
+        //    << "\tfail: " << file.fail()
+        //    << "\tbad: " << file.bad()
+        //    << "\tgood: " << file.good()
+        //    << std::endl;
     }
 
 }

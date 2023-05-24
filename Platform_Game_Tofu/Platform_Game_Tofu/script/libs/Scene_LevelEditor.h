@@ -15,7 +15,7 @@ class Scene_LevelEditor : public Scene
 {
 protected:
 
-	int m_selectedTileID = 0;
+	int m_selectedTileID = 1;
 	MapLevel m_maplevel;
 	std::shared_ptr<Entity> m_selectedTile;
 	const Vec2 m_gridSize = { 64,64 };
@@ -36,4 +36,5 @@ public:
 	void drawline(Vec2 p1, Vec2 p2);
 	Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
 	Vec2 pixelToGrid(Vec2 pos);
+	void loadLevel(const std::string& path);
 };

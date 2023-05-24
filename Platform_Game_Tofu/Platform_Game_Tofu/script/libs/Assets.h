@@ -31,7 +31,7 @@ public:
 
     struct SpriteIDReference {
         enum class SPRITEID {
-            Tile_basic
+            Tile_basic = 1
             , Tile_basic_grass
             , Tile_dirt_tl
             , Tile_dirt_tr
@@ -102,7 +102,7 @@ public:
             , LAST
         };
 
-        const int Count = 68;
+        const int Count = 69;
 
         const std::string EnumToStr(SPRITEID sprite)
         {
