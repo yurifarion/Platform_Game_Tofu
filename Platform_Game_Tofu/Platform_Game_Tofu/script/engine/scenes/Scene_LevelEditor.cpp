@@ -10,7 +10,6 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 }
 void Scene_LevelEditor::init()
 {
-	
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
 	registerAction(sf::Keyboard::A, "MOVE LEFT");
@@ -56,7 +55,7 @@ void Scene_LevelEditor::init()
 		}
 
 		spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(i));
-		auto m_tile = m_entityManager.addEntity(spriteName);
+		auto m_tile = m_entityManager.addEntity("TilePalette");
 		m_tile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 		m_tile->addComponent<CTransform>(Vec2(0, 0));
 		m_tile->getComponent<CTransform>().scale = Vec2(4, 4);
@@ -85,7 +84,7 @@ void Scene_LevelEditor::update()
 			{
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 				m_selectedTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-				m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(9, 0, m_selectedTile));
+				m_selectedTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(19, 0, m_selectedTile));
 			}
 			else {
 				if (tilex % 9 == 0)
@@ -198,14 +197,28 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 			if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
 			{
-				Vec2 mousepos = m_game->windowToWorld(action.pos());
-				Vec2 Tilepos = e->getComponent<CTransform>().pos;
-				float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-				float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-				bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-					             && mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+				if (!m_drawUI)
+				{
+					Vec2 mousepos = m_game->windowToWorld(action.pos());
+					Vec2 Tilepos = e->getComponent<CTransform>().pos;
+					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
 
-				if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+					if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+				}
+				else if (e->hasComponent<CUI>())
+				{
+					Vec2 mousepos = m_game->windowToWorld(action.pos());
+					Vec2 Tilepos = e->getComponent<CTransform>().pos;
+					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+
+					if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+				}
 			}
 		}
 	}
@@ -259,7 +272,7 @@ void Scene_LevelEditor::sRender()
 	{
 		auto& transform = e->getComponent<CTransform>();
 
-		if (e->hasComponent<CSprite>() && !e->hasComponent<CUI>())
+		if (e->hasComponent<CSprite>() && e->tag() != "TilePalette")
 		{
 			
 				auto& sprite = e->getComponent<CSprite>().sprite;
@@ -297,13 +310,33 @@ void Scene_LevelEditor::sRender()
 	}
 
 	//Draw UI
+	
 	if (m_drawUI)
-	{
-		for (auto e : m_entityManager.getEntities())
+	{ 
+		auto windowPos = m_game->windowToWorld(Vec2(0,0));
+		sf::RectangleShape UI_BG(sf::Vector2f(windowPos.x, windowPos.y));
+		UI_BG.setSize(sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
+		UI_BG.setFillColor(sf::Color(0, 0, 0, 200));
+		m_game->window().draw(UI_BG);
+		for (auto e : m_entityManager.getEntities("TilePalette"))
 		{
 			auto& transform = e->getComponent<CTransform>();
 
 			if (e->hasComponent<CSprite>() && e->hasComponent<CUI>())
+			{
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
+
+		for (auto e : m_entityManager.getEntities("selectedTile"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -350,7 +383,7 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				auto m_mapTile = m_entityManager.addEntity("selectedTile");
+				auto m_mapTile = m_entityManager.addEntity("mapTile");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);

@@ -8,7 +8,6 @@
 #include<map>
 #include<memory>
 #include <deque>
-
 #include "EntityManager.h"
 
 class Scene_LevelEditor : public Scene
