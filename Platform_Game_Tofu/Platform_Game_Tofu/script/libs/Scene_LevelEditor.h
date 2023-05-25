@@ -9,6 +9,7 @@
 #include<memory>
 #include <deque>
 #include "EntityManager.h"
+#include "tinyfiledialogs.h"
 
 class Scene_LevelEditor : public Scene
 {

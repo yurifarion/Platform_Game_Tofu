@@ -10,6 +10,8 @@ Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
 }
 void Scene_LevelEditor::init()
 {
+	
+
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
 	registerAction(sf::Keyboard::A, "MOVE LEFT");
@@ -26,9 +28,20 @@ void Scene_LevelEditor::init()
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 	m_gridText.setCharacterSize(6);
 
+	
+
+	//Open file dialog
+	char const* path;
+	char const* fileter[2] = { "*txt","*.text" };
+	path = tinyfd_openFileDialog("Title", "DefaultPath", 0, fileter, "Level file", 0);
+
+	if (path == NULL)
+	{
+		std::cout << "Null file";
+	}
+	else loadLevel(path);
 	//m_maplevel = MapLevel(100, 100);
-	//m_maplevel.createMapFile("Levels/Example.level");
-	loadLevel("Levels/Example.level");
+	//m_maplevel.createMapFile("Levels/Example_2.level");
 	
 	//Init Selected tile
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));

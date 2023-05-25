@@ -37,6 +37,7 @@
     <ClCompile Include="script\Engine\Sprite.cpp" />
     <ClCompile Include="script\Engine\Vec2.cpp" />
     <ClCompile Include="script\main.cpp" />
+    <ClCompile Include="script\utils\tinyfiledialogs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\libs\Action.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="script\libs\Scene_Splash.h" />
     <ClInclude Include="script\libs\Sprite.h" />
     <ClInclude Include="script\libs\Vec2.h" />
+    <ClInclude Include="script\utils\tinyfiledialogs.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

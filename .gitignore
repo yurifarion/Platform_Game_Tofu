@@ -275,3 +275,4 @@ examples/*/*.xml
 *.suo
 *.csproj.user
 *.VC.db
+Platform_Game_Tofu/Platform_Game_Tofu/Levels/Example_2.level
