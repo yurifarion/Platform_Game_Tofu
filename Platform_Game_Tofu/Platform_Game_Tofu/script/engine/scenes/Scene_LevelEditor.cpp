@@ -198,7 +198,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			}
 			else
 			{
-				auto m_mapTile = m_entityManager.addEntity("selectedTile");
+				auto m_mapTile = m_entityManager.addEntity("TileMap");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
