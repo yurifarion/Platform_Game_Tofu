@@ -84,6 +84,9 @@
     <ClCompile Include="script\utils\tinyfiledialogs.c">
       <Filter>Arquivos de Recurso\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="script\engine\scenes\Scene_LevelEditorMenu.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\libs\Action.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="script\utils\tinyfiledialogs.h">
       <Filter>Arquivos de Recurso\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="script\libs\Scene_LevelEditorMenu.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

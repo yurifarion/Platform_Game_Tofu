@@ -1,42 +1,39 @@
-#include "Scene_Menu.h"
-#include "Scene_Play.h"
-#include "Scene_Splash.h"
 #include "Scene_LevelEditorMenu.h"
+#include "Scene_LevelEditor.h"
+#include "Scene_Menu.h"
 #include "Assets.h"
 #include "GameEngine.h"
 #include "Action.h"
 
 
-Scene_Menu::Scene_Menu(GameEngine* gameEngine)
+Scene_LevelEditorMenu::Scene_LevelEditorMenu(GameEngine* gameEngine)
     : Scene(gameEngine)
 {
     init();
 }
 
-void Scene_Menu::init()
+void Scene_LevelEditorMenu::init()
 {
     registerAction(sf::Keyboard::W, "UP");
     registerAction(sf::Keyboard::S, "DOWN");
     registerAction(sf::Keyboard::Enter, "CONFIRM");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
-    m_title = "No Name";
-    m_menuStrings.push_back("Play");
-    m_menuStrings.push_back("Options");
-    m_menuStrings.push_back("Level Editor");
-    m_menuStrings.push_back("Credits");
-    m_menuStrings.push_back("Quit");
+    m_title = "Level Editor";
+    m_menuStrings.push_back("New Level");
+    m_menuStrings.push_back("Load Level");
+    m_menuStrings.push_back("Back To Menu");
     m_menuText.setFont(m_game->assets().getFont("tech"));
     m_menuText.setCharacterSize(64);
 
 }
 
-void Scene_Menu::update()
+void Scene_LevelEditorMenu::update()
 {
     m_entityManager.update();
 }
 
-void Scene_Menu::sDoAction(const Action& action)
+void Scene_LevelEditorMenu::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
@@ -51,27 +48,49 @@ void Scene_Menu::sDoAction(const Action& action)
         }
         else if (action.name() == "CONFIRM")
         {
-            if (m_menuStrings[m_selectedMenuIndex] == "Play")
+            if (m_menuStrings[m_selectedMenuIndex] == "New Level")
             {
-                m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game,"Levels/Level1.level"));
+                char const* path;
+                char const* fileter[2] = { "*Level","*.Level" };
+               
+                path = tinyfd_saveFileDialog("New Level", "Level/", 0, fileter, "Level Files");
+
+                if (path == NULL)
+                {
+                    std::cout << "Null file";
+                }
+                else  m_game->changeScene("MENU", std::make_shared<Scene_LevelEditor>(path,true,m_game));
             }
-            if (m_menuStrings[m_selectedMenuIndex] == "Level Editor")
+            if (m_menuStrings[m_selectedMenuIndex] == "Load Level")
             {
-                m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditorMenu>(m_game));
+                char const* path;
+                char const* fileter[2] = { "*Level","*.Level" };
+                path = tinyfd_openFileDialog("Load Level", "", 0, fileter, "Level file", 0);
+
+                if (path == NULL)
+                {
+                    std::cout << "Null file";
+                }
+                else  m_game->changeScene("MENU", std::make_shared<Scene_LevelEditor>(path,false,m_game));
+                
             }
-            if (m_menuStrings[m_selectedMenuIndex] == "Quit")
+            if (m_menuStrings[m_selectedMenuIndex] == "Back To Menu")
             {
                 onEnd();
             }
         }
-        else if (action.name() == "QUIT"|| action.name() == "CLOSE_WINDOW")
+        else if (action.name() == "QUIT")
         {
             onEnd();
+        }
+        else if (action.name() == "CLOSE_WINDOW")
+        {
+            m_game->quit();
         }
     }
 }
 
-void Scene_Menu::sRender()
+void Scene_LevelEditorMenu::sRender()
 {
 
 
@@ -87,7 +106,7 @@ void Scene_Menu::sRender()
     m_menuText.setPosition(sf::Vector2f(500, 20));
     m_menuText.setCharacterSize(50);
     m_game->window().draw(m_menuText);
-   
+
 
     // draw all of the menu options
     for (size_t i = 0; i < m_menuStrings.size(); i++)
@@ -107,8 +126,9 @@ void Scene_Menu::sRender()
     m_game->window().draw(m_menuText);
 }
 
-void Scene_Menu::onEnd()
+void Scene_LevelEditorMenu::onEnd()
 {
     m_hasEnded = true;
-    m_game->quit();
+    m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+    //m_game->quit();
 }

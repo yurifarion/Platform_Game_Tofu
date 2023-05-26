@@ -50,7 +50,8 @@ void GameEngine::sUserInput()
 	{
 		if (event.type == sf::Event::Closed)
 		{
-			quit();
+			currentScene()->doAction(Action("CLOSE_WINDOW", "START"));
+			//quit();
 		}
 
 		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)

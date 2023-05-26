@@ -31,6 +31,7 @@
     <ClCompile Include="script\Engine\Rigidbody.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene_LevelEditor.cpp" />
+    <ClCompile Include="script\engine\scenes\Scene_LevelEditorMenu.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene_Menu.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene_Play.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene_Splash.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="script\libs\Rigidbody.h" />
     <ClInclude Include="script\libs\Scene.h" />
     <ClInclude Include="script\libs\Scene_LevelEditor.h" />
+    <ClInclude Include="script\libs\Scene_LevelEditorMenu.h" />
     <ClInclude Include="script\libs\Scene_Menu.h" />
     <ClInclude Include="script\libs\Scene_Play.h" />
     <ClInclude Include="script\libs\Scene_Splash.h" />

@@ -9,6 +9,7 @@
 #include<memory>
 #include <deque>
 #include "EntityManager.h"
+#include "Scene_Menu.h"
 #include "tinyfiledialogs.h"
 
 class Scene_LevelEditor : public Scene
@@ -20,6 +21,10 @@ protected:
 	std::shared_ptr<Entity> m_selectedTile;
 	const Vec2 m_gridSize = { 64,64 };
 	sf::Text m_gridText;
+	std::string m_levelPath;
+	bool m_isLevelSaved = false;
+	bool m_isLevelModified = false;
+	bool m_isNewLevel = false;
 
 	bool m_drawGrid = true;
 	bool m_drawSelectedTile = true;
@@ -31,7 +36,7 @@ protected:
 	void sDoAction(const Action& action);
 
 public:
-	Scene_LevelEditor(GameEngine* gameEngine = nullptr);
+	Scene_LevelEditor(const std::string& path,bool isNewLevel, GameEngine* gameEngine = nullptr);
 	void sRender();
 	void drawline(Vec2 p1, Vec2 p2);
 	Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);

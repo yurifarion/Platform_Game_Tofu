@@ -3,15 +3,14 @@
 
 
 
-Scene_LevelEditor::Scene_LevelEditor(GameEngine* gameEngine)
-    : Scene(gameEngine)
+Scene_LevelEditor::Scene_LevelEditor(const std::string& path,bool isNewLevel, GameEngine* gameEngine)
+	: m_levelPath(path),m_isNewLevel(isNewLevel), Scene(gameEngine)
 {
-    init();
+	init();
 }
 void Scene_LevelEditor::init()
 {
 	
-
 	//Set Actions
 	registerAction(sf::Keyboard::D, "MOVE RIGHT");
 	registerAction(sf::Keyboard::A, "MOVE LEFT");
@@ -23,25 +22,22 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
 	registerAction(sf::Keyboard::L, "SAVE_MAP");
+	registerAction(sf::Keyboard::Escape, "QUIT");
 
 	m_entityManager = EntityManager();
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 	m_gridText.setCharacterSize(6);
 
-	
 
-	//Open file dialog
-	char const* path;
-	char const* fileter[2] = { "*txt","*.text" };
-	path = tinyfd_openFileDialog("Title", "DefaultPath", 0, fileter, "Level file", 0);
-
-	if (path == NULL)
+	//Create or Load level
+	if(!m_isNewLevel)loadLevel(m_levelPath);
+    
+	else
 	{
-		std::cout << "Null file";
+		m_maplevel = MapLevel(100, 100);
+		m_maplevel.createMapFile(m_levelPath);
 	}
-	else loadLevel(path);
-	//m_maplevel = MapLevel(100, 100);
-	//m_maplevel.createMapFile("Levels/Example_2.level");
+	
 	
 	//Init Selected tile
 	auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
@@ -113,10 +109,7 @@ void Scene_LevelEditor::update()
 	}
 	
 }
-void Scene_LevelEditor::onEnd()
-{
-	
-}
+
 void Scene_LevelEditor::sDoAction(const Action& action)
 {
 	if (action.type() == "START")
@@ -126,48 +119,68 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			auto spriteID = Assets::SpriteIDReference::SPRITEID(m_selectedTileID);
 			if(spriteID != Assets::SpriteIDReference::SPRITEID::LAST)m_selectedTileID++;
 		}
-		if (action.name() == "PREVIOUS" && m_drawSelectedTile)
+		else if (action.name() == "PREVIOUS" && m_drawSelectedTile)
 		{
 			if(m_selectedTileID > 0) m_selectedTileID--;
 		}
-		if (action.name() == "TOGGLE_GRID")
+		else if (action.name() == "TOGGLE_GRID")
 		{
 			m_drawGrid = !m_drawGrid;
 		}
-		if (action.name() == "TOGGLE_SELECTEDTILE")
+		else if (action.name() == "TOGGLE_SELECTEDTILE")
 		{
 			m_drawSelectedTile = !m_drawSelectedTile;
 		}
-		if (action.name() == "TOGGLE_TILEMENU")
+		else if (action.name() == "TOGGLE_TILEMENU")
 		{
 			m_drawUI = !m_drawUI;
 		}
-		if (action.name() == "SAVE_MAP")
+		else if (action.name() == "SAVE_MAP")
 		{
 			m_maplevel.saveMapFile();
+			m_isLevelSaved = true;
 		}
-		if (action.name() == "MOVE RIGHT")
+		else if (action.name() == "QUIT")
+		{
+			onEnd();
+		}
+		else if (action.name() == "CLOSE_WINDOW")
+		{
+			if (!m_isLevelSaved && m_isLevelModified)
+			{
+				auto warning = tinyfd_messageBox("Leaving Level Editor?", "You are leaving the editor without saving, are you sure?", "okcancel", "question", 0);
+				if (warning == 1)
+				{
+					m_hasEnded = true;
+					m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+				}
+			}
+			else {
+			    m_game->quit();
+			}
+		}
+		else if (action.name() == "MOVE RIGHT")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = m_gridSize.x;
 			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
 			m_game->moveCameraView(newpos);
 		}
-		if (action.name() == "MOVE LEFT")
+		else if (action.name() == "MOVE LEFT")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = -m_gridSize.x;
 			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
 			m_game->moveCameraView(newpos);
 		}
-		if (action.name() == "MOVE UP")
+		else if (action.name() == "MOVE UP")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = -m_gridSize.x;
 			Vec2 newpos = Vec2(currentpos.x, currentpos.y + speed);
 			m_game->moveCameraView(newpos);
 		}
-		if (action.name() == "MOVE DOWN")
+		else if (action.name() == "MOVE DOWN")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = m_gridSize.x;
@@ -176,7 +189,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		}
 
 		//If we select with left click
-		if (action.name() == "LEFT_CLICK")
+		else if (action.name() == "LEFT_CLICK")
 		{
 			//Select Tile based on Location x,y
 			if (m_drawUI)
@@ -195,7 +208,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
 				m_maplevel.setIndex(gridpos.x, gridpos.y, m_selectedTileID);
-				
+				m_isLevelModified = true;
 			}
 		}
 		
@@ -259,6 +272,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 						e->destroy();
 						auto gridpos = pixelToGrid(action.pos());
 						m_maplevel.setIndex(gridpos.x, gridpos.y, 0);
+						m_isLevelModified = true;
 					}
 				}
 			}
@@ -409,4 +423,21 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 	}
 
 
+}
+void Scene_LevelEditor::onEnd()
+{
+	if (!m_isLevelSaved && m_isLevelModified)
+	{
+		auto warning = tinyfd_messageBox("Leaving Level Editor?", "You are leaving the editor without saving, are you sure?", "okcancel", "question", 0);
+		if (warning == 1)
+		{
+			m_hasEnded = true;
+			m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+		}
+	}
+	else {
+		m_hasEnded = true;
+		m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
+		//m_game->quit();
+	}
 }
