@@ -9,7 +9,7 @@
 Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 	:Scene(game)
 {
-	init("Levels/Example.level");
+	init(levelPath);
 }
 
 void Scene_Play::init(const std::string& levelPath)

@@ -53,7 +53,16 @@ void Scene_Menu::sDoAction(const Action& action)
         {
             if (m_menuStrings[m_selectedMenuIndex] == "Play")
             {
-                m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game,"Levels/Level1.level"));
+                char const* path;
+                char const* fileter[2] = { "*Level","*.Level" };
+                path = tinyfd_openFileDialog("Load Level", "", 0, fileter, "Level file", 0);
+
+                if (path == NULL)
+                {
+                    std::cout << "Null file";
+                }
+                else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+                
             }
             if (m_menuStrings[m_selectedMenuIndex] == "Level Editor")
             {
