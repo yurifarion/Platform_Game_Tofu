@@ -68,7 +68,7 @@ void Scene_LevelEditor::init()
 		m_tile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 		m_tile->addComponent<CTransform>(Vec2(0, 0));
 		m_tile->getComponent<CTransform>().scale = Vec2(4, 4);
-		m_tile->getComponent<CTransform>().pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
+		m_tile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(tilex, tiley, m_tile));
 		m_tile->addComponent<CUI>();
 		m_tile->addComponent<CTileMap>(i);
 		tilex++;
@@ -101,7 +101,7 @@ void Scene_LevelEditor::update()
 					++tiley;
 					tilex = 0;
 				}
-				Vec2 pos = Vec2((tilex * 64) + 32, (tiley * 64) - 32);
+				Vec2 pos = m_game->windowToWorld(gridToMidPixel(tilex, tiley, e));
 				e->getComponent<CTransform>().pos = m_game->windowToWorld(pos);
 				tilex++;
 			}

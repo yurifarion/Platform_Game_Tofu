@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include <map>
 #include <memory>
-
+#include "MapLevel.h"
 #include "EntityManager.h"
 
 class Scene_Play : public Scene
@@ -15,7 +15,7 @@ class Scene_Play : public Scene
 protected:
 
 	std::shared_ptr<Entity> m_player;
-	std::string m_levelPath;
+	MapLevel m_maplevel;
 	PlayerConfig m_playerConfig;
 	bool m_drawTextures = true;
 	bool m_drawCollision = false;
@@ -35,7 +35,7 @@ protected:
 
 public:
 	Scene_Play(GameEngine * gameEngine, const std::string& levelPath);
-	void spawnPlayer();
+	void spawnPlayer(Vec2& position);
 	void spawnBullet(std::shared_ptr<Entity> entity);
 	void sMovement();
 	void sLifespan();

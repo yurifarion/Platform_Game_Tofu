@@ -8,9 +8,8 @@
 #include <iostream>
 Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 	:Scene(game)
-	, m_levelPath(levelPath)
 {
-	init(m_levelPath);
+	init("Levels/Example.level");
 }
 
 void Scene_Play::init(const std::string& levelPath)
@@ -44,10 +43,10 @@ Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity
 	float spriteWidth = entity->getComponent<CSprite>().sprite.getSprite().getGlobalBounds().width * entity->getComponent<CTransform>().scale.x;
 	float spriteHeight = entity->getComponent<CSprite>().sprite.getSprite().getGlobalBounds().height * entity->getComponent<CTransform>().scale.y;
 
-	float x = gridX * m_gridSize.x + (spriteWidth/2);
-	float y = m_game->window().getSize().y - (gridY * m_gridSize.y + spriteHeight/2);
+	float x = gridX * m_gridSize.x + (spriteWidth / 2);
+	float y = gridY * m_gridSize.y + (spriteHeight / 2);
 
-	return Vec2(x,y);
+	return Vec2(x, y);
 
 }
 
@@ -56,254 +55,59 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//reset the entity managet every time we load a level
 	m_entityManager = EntityManager();
 
-	
-	int collumn = 0;
-	int row = 11;
-	std::ifstream file(filename);
-	std::string str;
+	int rowp = 100;
+	int collumnp = 100;
+	m_maplevel = MapLevel(rowp, collumnp);
 
-	// 0 - nothing
-	// 1 - tile grass
-	// 2 - Tile_big_tl
-	// 3 -  Tile_big_ll
-	// 4 -  Tile_big_tr
-	// 5 -  Tile_big_lr
-	// 6 -  Tile
-	// 7 -  Tile_grass_tl 
-	// 8 - Tile_grass_tr
-	// 9 - Tile_grass_ll 
-	// 10 - Tile_grass_l
-	//11 - Tile_grass_lr
-	//12 - Tile_grass_ltlr
-	//13 - Tile_mini
-	//14 - Tile_tt 
-	//15 - Tile_ll 
-	//16 - Tile_l 
-	//17 - Tile_r 
-	//18 - bg_1_Tile 
-	//19 - bg_1_Tile_l 
-	//20 - bg_1_Tile_r 
+	m_maplevel.loadfromMapFile(filename);
 
-	while (file.good())
+	auto mapdata = m_maplevel.getMapData();
+
+	bool isPlayerSpawned = false;
+	//Populate entities
+	// Write to the file
+	for (int row = 0; row < mapdata.size(); ++row)
 	{
-		file >> str;
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+				
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+				std::shared_ptr<Entity> m_mapTile;
+				// if it is dark so its part of background tile and it doenst need colliders
+				if (spriteName.find("dark") == std::string::npos)
+				{
+					m_mapTile = m_entityManager.addEntity("foreground_tile");
+					m_mapTile->addComponent<CBoundingBox>(Vec2(64, 64));
+				}
+				else
+				{
+					m_mapTile = m_entityManager.addEntity("background_tile");
+				}
+					
+					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+					m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+					Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+					m_mapTile->getComponent<CTransform>().pos = position;
 
-		if (str == "0")
-		{
-			collumn++;
+					if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::PLAYER && !isPlayerSpawned)
+					{
+						isPlayerSpawned = true;
+						m_mapTile->destroy();
+						spawnPlayer(position);
+					}
+					
+			}
 		}
-		else if (str == "1")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "2")
-		{
-			auto block = m_entityManager.addEntity("Tile_big_tl");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tl"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "3")
-		{
-			auto block = m_entityManager.addEntity("Tile_big_ll");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_ll"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "4")
-		{
-			auto block = m_entityManager.addEntity("Tile_big_tr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_tr"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		
-		else if (str == "5")
-		{
-			auto block = m_entityManager.addEntity("Tile_big_lr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_big_lr"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "6")
-		{
-			auto block = m_entityManager.addEntity("Tile");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "7")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_tl");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_tl"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "8")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_tr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_tr"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "9")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_ll");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_ll"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "10")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_l");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_l"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "11")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_lr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_lr"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "12")
-		{
-			auto block = m_entityManager.addEntity("Tile_grass_ltlr");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_grass_ltlr"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "13")
-		{
-			auto block = m_entityManager.addEntity("Tile_mini");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_mini"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "14")
-		{
-			auto block = m_entityManager.addEntity("Tile_tt");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_tt"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		
-		}
-		else if (str == "15")
-		{
-			auto block = m_entityManager.addEntity("Tile_ll");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_ll"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "16")
-		{
-			auto block = m_entityManager.addEntity("Tile_l");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_l"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "17")
-		{
-			auto block = m_entityManager.addEntity("Tile_r");
-			block->addComponent<CSprite>(m_game->assets().getSprite("Tile_r"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			block->addComponent<CBoundingBox>(Vec2(64, 64));
-			collumn++;
-		}
-		else if (str == "18")
-		{
-			auto block = m_entityManager.addEntity("bg_1_Tile");
-			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			collumn++;
-		}
-		else if (str == "19")
-		{
-			auto block = m_entityManager.addEntity("bg_1_Tile_l");
-			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile_l"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			collumn++;
-		}
-		else if (str == "20")
-		{
-			auto block = m_entityManager.addEntity("bg_1_Tile_r");
-			block->addComponent<CSprite>(m_game->assets().getSprite("bg_1_Tile_r"), false);
-			block->addComponent<CTransform>(Vec2(0, 0));
-			block->getComponent<CTransform>().scale = Vec2(4, 4);
-			block->getComponent<CTransform>().pos = gridToMidPixel(collumn, row, block);
-			collumn++;
-		}
-		else if (str == "|")
-		{
-			row--;
-			collumn = 0;
-		}
-		
 	}
-	std::cout << "Finish reading and loading map \n";
 
-	spawnPlayer();
+
+	
 }
 
-void Scene_Play::spawnPlayer()
+void Scene_Play::spawnPlayer(Vec2& position)
 {
 	//here is a smaple player entity which you can use to construct other entities
 
@@ -336,7 +140,7 @@ void Scene_Play::spawnPlayer()
 	m_player->getComponent<CAnimator>().animator.addAnimation(idleAnimClip);
 	m_player->getComponent<CAnimator>().animator.setAnimation("idle");
 
-	m_player->addComponent<CTransform>(Vec2(224, 352));
+	m_player->addComponent<CTransform>(position);
 	m_player->getComponent<CTransform>().scale = Vec2(4, 4);
 	m_player->addComponent<CRigidbody>(3.0f);
 	m_player->addComponent<CBoundingBox>(Vec2(64, 64));
@@ -575,7 +379,35 @@ void Scene_Play::sRender()
 	//Draw Entities Textures
 	if (m_drawTextures)
 	{
-		for (auto e : m_entityManager.getEntities())
+		for (auto e : m_entityManager.getEntities("background_tile"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
+
+		for (auto e : m_entityManager.getEntities("foreground_tile"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
+
+		for (auto e : m_entityManager.getEntities("player"))
 		{
 			auto& transform = e->getComponent<CTransform>();
 
