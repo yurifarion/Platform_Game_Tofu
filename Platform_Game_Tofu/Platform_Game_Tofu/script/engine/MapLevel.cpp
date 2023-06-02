@@ -6,11 +6,16 @@ MapLevel::MapLevel()
 MapLevel::MapLevel(const int row, const int collumn)
 {
     Map2D vec(row, std::vector<int>(collumn, 0));
-    m_mapdata = vec;
+    m_mapdatabackground = vec;
+    m_mapdataforeground = vec;
 }
-void MapLevel::setIndex(const int row, const int collumn, const int value)
+void MapLevel::setIndexBackground(const int row, const int collumn, const int value)
 {
-    m_mapdata[row][collumn] = value;
+    m_mapdatabackground[row][collumn] = value;
+}
+void MapLevel::setIndexForeground(const int row, const int collumn, const int value)
+{
+    m_mapdataforeground[row][collumn] = value;
 }
 void MapLevel::createMapFile(const std::string& path)
 {
@@ -26,11 +31,19 @@ void MapLevel::createMapFile(const std::string& path)
         std::ofstream MyFile(m_path);
 
         // Write to the file
-        for (int row = 0; row < m_mapdata.size(); ++row)
+        for (int row = 0; row < m_mapdatabackground.size(); ++row)
         {
-            for (int collum = 0; collum < m_mapdata[row].size(); collum++)
+            for (int collum = 0; collum < m_mapdatabackground[row].size(); collum++)
             {
-                MyFile << m_mapdata[row][collum] << " ";
+                MyFile << m_mapdatabackground[row][collum] << " ";
+            }
+            MyFile << std::endl;
+        }
+        for (int row = 0; row < m_mapdataforeground.size(); ++row)
+        {
+            for (int collum = 0; collum < m_mapdataforeground[row].size(); collum++)
+            {
+                MyFile << m_mapdataforeground[row][collum] << " ";
             }
             MyFile << std::endl;
         }
@@ -47,11 +60,20 @@ void MapLevel::saveMapFile()
     std::ofstream MyFile(m_path);
 
     // Write to the file
-    for (int row = 0; row < m_mapdata.size(); ++row)
+    for (int row = 0; row < m_mapdatabackground.size(); ++row)
     {
-        for (int collum = 0; collum < m_mapdata[row].size(); collum++)
+        for (int collum = 0; collum < m_mapdatabackground[row].size(); collum++)
         {
-            MyFile << m_mapdata[row][collum] << " ";
+            MyFile << m_mapdatabackground[row][collum] << " ";
+        }
+        MyFile << std::endl;
+    }
+    
+    for (int row = 0; row < m_mapdataforeground.size(); ++row)
+    {
+        for (int collum = 0; collum < m_mapdataforeground[row].size(); collum++)
+        {
+            MyFile << m_mapdataforeground[row][collum] << " ";
         }
         MyFile << std::endl;
     }
@@ -68,7 +90,7 @@ void MapLevel::loadfromMapFile(const std::string& path)
     int row = 0;
     int collumn = 0;
 
-    bool isOutLimit = row >= m_mapdata.size() && collumn >= m_mapdata[0].size();
+    bool isOutLimit = row >= m_mapdatabackground.size() * 2 && collumn >= m_mapdatabackground[0].size();
 
     if (file.fail())
     {
@@ -78,21 +100,33 @@ void MapLevel::loadfromMapFile(const std::string& path)
     {
         file >> str;
         
-        if (collumn != 0 && collumn % m_mapdata[0].size() == 0)
+        if (collumn != 0 && collumn % m_mapdatabackground[0].size() == 0)
         {
             row++;
             collumn = 0;
         }
-        isOutLimit = row >= m_mapdata.size() || collumn >= m_mapdata[0].size();
-        if(!isOutLimit) m_mapdata[row][collumn] = std::stoi(str);
-        
+        isOutLimit = row >= (m_mapdatabackground.size() * 2 )|| collumn >= m_mapdatabackground[0].size();
+        if (!isOutLimit)
+        {
+            if (row >= m_mapdatabackground.size())
+            {
+                auto rowsize = m_mapdataforeground.size();
+                m_mapdataforeground[row - rowsize][collumn] = std::stoi(str);
+            }
+            else
+            {
+                m_mapdatabackground[row][collumn] = std::stoi(str);
+            }
+        }
         collumn++;
-    
-        
     }
     std::cout << "Loaded map file from " << m_path<<std::endl;
 }
-Map2D& MapLevel::getMapData()
+Map2D& MapLevel::getMapDataBackground()
 {
-    return m_mapdata;
+    return m_mapdatabackground;
+}
+Map2D& MapLevel::getMapDataForeground()
+{
+    return m_mapdataforeground;
 }

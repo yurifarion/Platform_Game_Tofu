@@ -207,7 +207,15 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				auto gridpos = pixelToGrid(action.pos());
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
-				m_maplevel.setIndex(gridpos.x, gridpos.y, m_selectedTileID);
+
+				if (spriteName.find("dark") == std::string::npos)
+				{
+					m_maplevel.setIndexForeground(gridpos.x, gridpos.y, m_selectedTileID);
+				}
+				else
+				{
+					m_maplevel.setIndexBackground(gridpos.x, gridpos.y, m_selectedTileID);
+				}
 				m_isLevelModified = true;
 			}
 		}
@@ -269,10 +277,20 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 					if (isInside)
 					{
-						e->destroy();
 						auto gridpos = pixelToGrid(action.pos());
-						m_maplevel.setIndex(gridpos.x, gridpos.y, 0);
-						m_isLevelModified = true;
+						if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0)
+						{
+							e->destroy();
+							m_maplevel.setIndexForeground(gridpos.x, gridpos.y, 0);
+							m_isLevelModified = true;
+						}
+						else
+						{
+							e->destroy();
+							m_maplevel.setIndexBackground(gridpos.x, gridpos.y, 0);
+							m_isLevelModified = true;
+						}
+						
 					}
 				}
 			}
@@ -400,10 +418,29 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 	//m_maplevel.createMapFile(path);
 	m_maplevel.loadfromMapFile(path);
 
-	auto mapdata = m_maplevel.getMapData();
+	auto mapdata = m_maplevel.getMapDataBackground();
 
 	//Populate entities
 	// Write to the file
+	//Background
+	for (int row = 0; row < mapdata.size(); ++row)
+	{
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+				auto m_mapTile = m_entityManager.addEntity("mapTile");
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->addComponent<CTileMap>(mapdata[row][collumn]);
+			}
+		}
+	}
+	mapdata = m_maplevel.getMapDataForeground();
 	for (int row = 0; row < mapdata.size(); ++row)
 	{
 		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)

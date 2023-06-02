@@ -61,48 +61,59 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	m_maplevel.loadfromMapFile(filename);
 
-	auto mapdata = m_maplevel.getMapData();
+	auto mapdata = m_maplevel.getMapDataBackground();
 
-	bool isPlayerSpawned = false;
 	//Populate entities
 	// Write to the file
+
+	//Background
 	for (int row = 0; row < mapdata.size(); ++row)
 	{
 		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
-				std::shared_ptr<Entity> m_mapTile;
-				// if it is dark so its part of background tile and it doenst need colliders
-				if (spriteName.find("dark") == std::string::npos)
-				{
-					m_mapTile = m_entityManager.addEntity("foreground_tile");
-					m_mapTile->addComponent<CBoundingBox>(Vec2(64, 64));
-				}
-				else
-				{
-					m_mapTile = m_entityManager.addEntity("background_tile");
-				}
-					
-					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-					m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
-					Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
-					m_mapTile->getComponent<CTransform>().pos = position;
-
-					if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::PLAYER && !isPlayerSpawned)
-					{
-						isPlayerSpawned = true;
-						m_mapTile->destroy();
-						spawnPlayer(position);
-					}
-					
+				auto m_mapTile = m_entityManager.addEntity("background_tile");
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->getComponent<CTransform>().pos = position;	
 			}
 		}
 	}
 
+	mapdata = m_maplevel.getMapDataForeground();
+	bool isPlayerSpawned = false;
+	
+	// Foreground
+	for (int row = 0; row < mapdata.size(); ++row)
+	{
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+				auto m_mapTile = m_entityManager.addEntity("foreground_tile");
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				m_mapTile->addComponent<CBoundingBox>(Vec2(64, 64));
+				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->getComponent<CTransform>().pos = position;
+
+				if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::PLAYER && !isPlayerSpawned)
+				{
+					isPlayerSpawned = true;
+					m_mapTile->destroy();
+					spawnPlayer(position);
+				}
+
+			}
+		}
+	}
 
 	
 }
