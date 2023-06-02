@@ -38,9 +38,9 @@ Vec2 Physics::ResolveCollision(std::shared_ptr<Entity> a, std::shared_ptr<Entity
 	auto apos = a->getComponent<CTransform>().pos;
 	auto bpos = b->getComponent<CTransform>().pos;
 
-	if (overlap.x > 0 && overlap.y > 0)
+	if (overlap.x > 0)
 	{
-		if (prevOverlap.x > 0)
+		if (prevOverlap.x > prevOverlap.y)
 		{
 			if (bpos.y < apos.y)
 			{
