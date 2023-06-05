@@ -225,36 +225,44 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 	//Copy id to selected ID if clicked with right click
 	if (action.name() == "RIGHT_CLICK")
 	{
-		for (auto e : m_entityManager.getEntities())
-		{
-			auto& transform = e->getComponent<CTransform>();
-
-			if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+		
+			if (!m_drawUI)
 			{
-				if (!m_drawUI)
+				for (auto e : m_entityManager.getEntities("TileMap"))
 				{
-					Vec2 mousepos = m_game->windowToWorld(action.pos());
-					Vec2 Tilepos = e->getComponent<CTransform>().pos;
-					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+					auto& transform = e->getComponent<CTransform>();
 
-					if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
-				}
-				else if (e->hasComponent<CUI>())
-				{
-					Vec2 mousepos = m_game->windowToWorld(action.pos());
-					Vec2 Tilepos = e->getComponent<CTransform>().pos;
-					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
-
-					if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+					{
+							Vec2 mousepos = m_game->windowToWorld(action.pos());
+							Vec2 Tilepos = e->getComponent<CTransform>().pos;
+							float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+							float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+							bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+								&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+							if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+					}
 				}
 			}
-		}
+			else
+			{
+				for (auto e : m_entityManager.getEntities("TilePalette"))
+				{
+					auto& transform = e->getComponent<CTransform>();
+
+					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
+					{
+						Vec2 mousepos = m_game->windowToWorld(action.pos());
+						Vec2 Tilepos = e->getComponent<CTransform>().pos;
+						float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+						float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+						bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+							&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+						if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+					}
+				}
+			}
+		
 	}
 
 	//Delete Tile of that position
@@ -429,7 +437,7 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				auto m_mapTile = m_entityManager.addEntity("mapTile");
+				auto m_mapTile = m_entityManager.addEntity("TileMap");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
@@ -447,7 +455,7 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				auto m_mapTile = m_entityManager.addEntity("mapTile");
+				auto m_mapTile = m_entityManager.addEntity("TileMap");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
