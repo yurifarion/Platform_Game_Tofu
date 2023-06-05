@@ -96,6 +96,7 @@ class CSprite : public Component
 public:
 	Sprite sprite;
 	bool smooth = false;
+	bool visible = true;
 	CSprite() {}
 	CSprite(const Sprite& psprite, bool r)
 		:sprite(psprite), smooth(r) {}
