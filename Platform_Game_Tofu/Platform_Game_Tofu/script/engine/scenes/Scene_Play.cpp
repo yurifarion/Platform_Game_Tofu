@@ -221,18 +221,18 @@ void Scene_Play::sLifespan()
 void Scene_Play::sCameraMovement()
 {
 	//Only move camera if player already passed half screen
-	auto playerPos = m_player->getComponent<CTransform>().pos;
+	auto targetpos = m_player->getComponent<CTransform>().pos + Vec2(300.0,0); // target is slightly ahead of player
 	float speed = 1.5f;
 
-	if (playerPos.x > m_game->window().getSize().x / 2)
+	if (targetpos.x > m_game->window().getSize().x / 2)
 	{
 		auto currentCamPos = m_game->getCameraView().getCenter();
 		float distance = m_game->window().getSize().x * 0.05;
-		float distanceFromPlayer = currentCamPos.x - playerPos.x;
+		float distanceFromTarget = currentCamPos.x - targetpos.x;
 
-		if (abs(distanceFromPlayer) > distance)
+		if (abs(distanceFromTarget) > distance)
 		{
-			float movement = ((playerPos.x + ((distanceFromPlayer/abs(distanceFromPlayer)) * distance)) - currentCamPos.x) * m_game->deltaTime * speed;
+			float movement = ((targetpos.x + ((distanceFromTarget /abs(distanceFromTarget)) * distance)) - currentCamPos.x) * m_game->deltaTime * speed;
 			m_game->moveCameraView(Vec2(movement, 0));
 		}
 	}
@@ -271,7 +271,7 @@ void Scene_Play::sCollision()
 	
 	//Check with Raycast if Player is close to the ground
 	Vec2 origin = m_player->getComponent<CTransform>().pos;
-	Vec2 destiny = m_player->getComponent<CTransform>().pos + Vec2(0, 40);
+	Vec2 destiny = m_player->getComponent<CTransform>().pos + Vec2(0, 32);
 
 	for (auto e : m_entityManager.getEntities())
 	{
