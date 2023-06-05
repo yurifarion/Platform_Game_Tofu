@@ -117,11 +117,11 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		if (action.name() == "NEXT" && m_drawSelectedTile)
 		{
 			auto spriteID = Assets::SpriteIDReference::SPRITEID(m_selectedTileID);
-			if(spriteID != Assets::SpriteIDReference::SPRITEID::LAST)m_selectedTileID++;
+			if (spriteID != Assets::SpriteIDReference::SPRITEID::LAST)m_selectedTileID++;
 		}
 		else if (action.name() == "PREVIOUS" && m_drawSelectedTile)
 		{
-			if(m_selectedTileID > 0) m_selectedTileID--;
+			if (m_selectedTileID > 0) m_selectedTileID--;
 		}
 		else if (action.name() == "TOGGLE_GRID")
 		{
@@ -156,22 +156,20 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				}
 			}
 			else {
-			    m_game->quit();
+				m_game->quit();
 			}
 		}
 		else if (action.name() == "MOVE RIGHT")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = m_gridSize.x;
-			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
-			m_game->moveCameraView(newpos);
+			m_game->moveCameraView(Vec2(speed, 0));
 		}
 		else if (action.name() == "MOVE LEFT")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
-			float speed = -m_gridSize.x;
-			Vec2 newpos = Vec2(currentpos.x + speed, currentpos.y);
-			m_game->moveCameraView(newpos);
+			float speed = m_gridSize.x;
+			m_game->moveCameraView(Vec2(-speed, 0));
 		}
 		else if (action.name() == "MOVE UP")
 		{
@@ -184,7 +182,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = m_gridSize.x;
-			Vec2 newpos = Vec2(currentpos.x , currentpos.y + speed);
+			Vec2 newpos = Vec2(currentpos.x, currentpos.y + speed);
 			m_game->moveCameraView(newpos);
 		}
 
@@ -207,7 +205,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				auto gridpos = pixelToGrid(action.pos());
 				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
 				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
-
+				gridpos = pixelToGrid(m_mapTile->getComponent<CTransform>().pos);
 				if (spriteName.find("dark") == std::string::npos)
 				{
 					m_maplevel.setIndexForeground(gridpos.x, gridpos.y, m_selectedTileID);
@@ -219,13 +217,13 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				m_isLevelModified = true;
 			}
 		}
-		
-	}
 
-	//Copy id to selected ID if clicked with right click
-	if (action.name() == "RIGHT_CLICK")
-	{
-		
+
+
+		//Copy id to selected ID if clicked with right click
+		if (action.name() == "RIGHT_CLICK")
+		{
+
 			if (!m_drawUI)
 			{
 				for (auto e : m_entityManager.getEntities("TileMap"))
@@ -234,13 +232,13 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>())
 					{
-							Vec2 mousepos = m_game->windowToWorld(action.pos());
-							Vec2 Tilepos = e->getComponent<CTransform>().pos;
-							float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-							float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-							bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-								&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
-							if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
+						Vec2 mousepos = m_game->windowToWorld(action.pos());
+						Vec2 Tilepos = e->getComponent<CTransform>().pos;
+						float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+						float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+						bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+							&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+						if (isInside) m_selectedTileID = e->getComponent<CTileMap>().spriteID;
 					}
 				}
 			}
@@ -262,48 +260,49 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 					}
 				}
 			}
-		
-	}
 
-	//Delete Tile of that position
-	if (action.name() == "MIDDLE_CLICK")
-	{
-		if (!m_drawUI)
+		}
+
+		//Delete Tile of that position
+		if (action.name() == "MIDDLE_CLICK")
 		{
-			for (auto e : m_entityManager.getEntities())
+			if (!m_drawUI)
 			{
-				auto& transform = e->getComponent<CTransform>();
-
-				if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>() && !e->hasComponent<CUI>())
+				for (auto e : m_entityManager.getEntities())
 				{
-					Vec2 mousepos = m_game->windowToWorld(action.pos());
-					Vec2 Tilepos = e->getComponent<CTransform>().pos;
-					float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
-					float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
-					bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
-						&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+					auto& transform = e->getComponent<CTransform>();
 
-					if (isInside)
+					if (e->hasComponent<CSprite>() && e->hasComponent<CTileMap>() && !e->hasComponent<CUI>())
 					{
-						auto gridpos = pixelToGrid(action.pos());
-						if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0)
+						Vec2 mousepos = m_game->windowToWorld(action.pos());
+						Vec2 Tilepos = e->getComponent<CTransform>().pos;
+						float halfwidth = e->getComponent<CSprite>().sprite.getSize().x / 2 * e->getComponent<CTransform>().scale.x;
+						float halfheight = e->getComponent<CSprite>().sprite.getSize().y / 2 * e->getComponent<CTransform>().scale.y;
+						bool  isInside = mousepos.x > (Tilepos.x - halfwidth) && mousepos.x < (Tilepos.x + halfwidth)
+							&& mousepos.y >(Tilepos.y - halfheight) && mousepos.y < (Tilepos.y + halfheight);
+
+						if (isInside)
 						{
-							e->destroy();
-							m_maplevel.setIndexForeground(gridpos.x, gridpos.y, 0);
-							m_isLevelModified = true;
+							auto gridpos = pixelToGrid(action.pos());
+							if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0)
+							{
+								e->destroy();
+								m_maplevel.setIndexForeground(gridpos.x, gridpos.y, 0);
+								m_isLevelModified = true;
+							}
+							else
+							{
+								e->destroy();
+								m_maplevel.setIndexBackground(gridpos.x, gridpos.y, 0);
+								m_isLevelModified = true;
+							}
+
 						}
-						else
-						{
-							e->destroy();
-							m_maplevel.setIndexBackground(gridpos.x, gridpos.y, 0);
-							m_isLevelModified = true;
-						}
-						
 					}
 				}
 			}
+			else m_drawUI = false;
 		}
-		else m_drawUI = false;
 	}
 }
 void Scene_LevelEditor::drawline(Vec2 p1, Vec2 p2)

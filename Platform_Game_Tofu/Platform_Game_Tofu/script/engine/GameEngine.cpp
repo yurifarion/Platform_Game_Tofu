@@ -117,6 +117,8 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
 
 void GameEngine::update()
 {
+	//fix delta time;
+	deltaTime = m_clock.restart().asSeconds();
 	if (!isRunning()) { return; }
 
 	if (m_sceneMap.empty()) { return; }
@@ -135,9 +137,10 @@ Assets& GameEngine::assets()
 {
 	return m_assets;
 }
-void GameEngine::moveCameraView(const Vec2& center)
+void GameEngine::moveCameraView(const Vec2& movement)
 {
-	m_camera_view.setCenter(sf::Vector2f(center.x, center.y));
+	auto currentCenter = m_camera_view.getCenter();
+	m_camera_view.setCenter(sf::Vector2f(currentCenter.x + movement.x, currentCenter.y + movement.y));
 	window().setView(m_camera_view);
 }
 void GameEngine::setCameraViewSize(const Vec2& size)

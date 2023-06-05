@@ -172,6 +172,7 @@ void Scene_Play::update()
 	sLifespan();
 	sAnimation();
 	sCollision();
+	sCameraMovement();
 	sRender();
 }
 void Scene_Play::sMovement()
@@ -216,6 +217,32 @@ void Scene_Play::sMovement()
 void Scene_Play::sLifespan()
 {
 	//TODO check lifespawn of entities that have them, destroy them if they go over
+}
+void Scene_Play::sCameraMovement()
+{
+	//Only move camera if player already passed half screen
+	auto playerPos = m_player->getComponent<CTransform>().pos;
+	float speed = 1.5f;
+
+	if (playerPos.x > m_game->window().getSize().x / 2)
+	{
+		auto currentCamPos = m_game->getCameraView().getCenter();
+		float distance = m_game->window().getSize().x * 0.05;
+		float distanceFromPlayer = currentCamPos.x - playerPos.x;
+
+		if (abs(distanceFromPlayer) > distance)
+		{
+			float movement = ((playerPos.x + ((distanceFromPlayer/abs(distanceFromPlayer)) * distance)) - currentCamPos.x) * m_game->deltaTime * speed;
+			m_game->moveCameraView(Vec2(movement, 0));
+		}
+	}
+	else 
+	{
+		auto currentCamPos = m_game->getCameraView().getCenter();
+		float movement = (m_game->window().getSize().x / 2 - currentCamPos.x) * m_game->deltaTime * speed;
+		m_game->moveCameraView(Vec2(movement, 0));
+	}
+	
 }
 void Scene_Play::sCollision()
 {
@@ -375,8 +402,8 @@ void Scene_Play::sAnimation()
 }
 void Scene_Play::onEnd()
 {
-	//TODO when the scene ends change back to the MENU scene
-	// use m_game->changeScene(correct params)
+	m_hasEnded = true;
+	m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 }
 
 void Scene_Play::sRender()

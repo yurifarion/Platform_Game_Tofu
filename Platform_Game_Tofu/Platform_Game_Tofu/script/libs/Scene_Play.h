@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Scene_Menu.h"
 #include <map>
 #include <memory>
 #include "MapLevel.h"
@@ -39,6 +40,7 @@ public:
 	void spawnBullet(std::shared_ptr<Entity> entity);
 	void sMovement();
 	void sLifespan();
+	void sCameraMovement();
 	void sCollision();
 	void sAnimation();
 	void onEnd();
