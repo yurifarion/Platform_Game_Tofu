@@ -195,11 +195,11 @@ void Scene_Play::sMovement()
 	}
 	if (m_player->getComponent<CInput>().right)
 	{
-		rb.addForce(Vec2(3.0f, 0.0f));
+		rb.addForce(Vec2(5.0f, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().left)
 	{
-		rb.addForce(Vec2(-3.0f, 0.0f));
+		rb.addForce(Vec2(-5.0f, 0.0f));
 	}
 	
 
@@ -223,6 +223,8 @@ void Scene_Play::sCameraMovement()
 	//Only move camera if player already passed half screen
 	auto targetpos = m_player->getComponent<CTransform>().pos + Vec2(300.0,0); // target is slightly ahead of player
 	float speed = 1.5f;
+	float parallaxeMovement = 0;
+
 
 	if (targetpos.x > m_game->window().getSize().x / 2)
 	{
@@ -233,16 +235,27 @@ void Scene_Play::sCameraMovement()
 		if (abs(distanceFromTarget) > distance)
 		{
 			float movement = ((targetpos.x + ((distanceFromTarget /abs(distanceFromTarget)) * distance)) - currentCamPos.x) * m_game->deltaTime * speed;
+			parallaxeMovement = 0.2*movement;
 			m_game->moveCameraView(Vec2(movement, 0));
+
 		}
 	}
 	else 
 	{
 		auto currentCamPos = m_game->getCameraView().getCenter();
 		float movement = (m_game->window().getSize().x / 2 - currentCamPos.x) * m_game->deltaTime * speed;
+		parallaxeMovement = 0.2 * movement;
 		m_game->moveCameraView(Vec2(movement, 0));
 	}
 	
+	//Parallaxe movement on the background
+	for (auto e : m_entityManager.getEntities("background_tile"))
+	{
+		if (e->hasComponent<CTransform>())
+		{
+			e->getComponent<CTransform>().move(Vec2(parallaxeMovement,0));
+		}
+	}
 }
 void Scene_Play::sCollision()
 {
