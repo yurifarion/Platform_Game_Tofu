@@ -27,6 +27,8 @@ protected:
 	bool m_isNewLevel = false;
 
 	bool m_drawGrid = true;
+	bool m_drawBackground = true;
+	bool m_drawForeground = true;
 	bool m_drawSelectedTile = true;
 	bool m_drawUI = false;
 

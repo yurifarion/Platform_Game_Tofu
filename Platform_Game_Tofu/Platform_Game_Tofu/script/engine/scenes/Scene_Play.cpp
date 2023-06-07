@@ -248,12 +248,15 @@ void Scene_Play::sCameraMovement()
 		m_game->moveCameraView(Vec2(movement, 0));
 	}
 	
-	//Parallaxe movement on the background
-	for (auto e : m_entityManager.getEntities("background_tile"))
+	if (parallaxeMovement != 0)
 	{
-		if (e->hasComponent<CTransform>())
+		//Parallaxe movement on the background
+		for (auto e : m_entityManager.getEntities("background_tile"))
 		{
-			e->getComponent<CTransform>().move(Vec2(parallaxeMovement,0));
+			if (e->hasComponent<CTransform>())
+			{
+				e->getComponent<CTransform>().move(Vec2(parallaxeMovement, 0));
+			}
 		}
 	}
 }

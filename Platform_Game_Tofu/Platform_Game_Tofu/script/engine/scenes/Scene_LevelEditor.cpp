@@ -22,6 +22,8 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
 	registerAction(sf::Keyboard::L, "SAVE_MAP");
+	registerAction(sf::Keyboard::B, "TOGGLE_BACKGROUND");
+	registerAction(sf::Keyboard::N, "TOGGLE_FOREGROUND");
 	registerAction(sf::Keyboard::Escape, "QUIT");
 
 	m_entityManager = EntityManager();
@@ -131,6 +133,14 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			m_drawSelectedTile = !m_drawSelectedTile;
 		}
+		else if (action.name() == "TOGGLE_BACKGROUND")
+		{
+			m_drawBackground = !m_drawBackground;
+		}
+		else if (action.name() == "TOGGLE_FOREGROUND")
+		{
+			m_drawForeground = !m_drawForeground;
+		}
 		else if (action.name() == "TOGGLE_TILEMENU")
 		{
 			m_drawUI = !m_drawUI;
@@ -196,25 +206,40 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 			}
 			else
 			{
-				auto m_mapTile = m_entityManager.addEntity("TileMap");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
-
-				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
 				auto gridpos = pixelToGrid(action.pos());
-				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
-				m_mapTile->addComponent<CTileMap>(m_selectedTileID);
-				gridpos = pixelToGrid(m_mapTile->getComponent<CTransform>().pos);
-				if (spriteName.find("dark") == std::string::npos)
+
+				if (spriteName.find("dark") != std::string::npos)
 				{
-					m_maplevel.setIndexForeground(gridpos.x, gridpos.y, m_selectedTileID);
+					auto m_mapTile = m_entityManager.addEntity("TileMapBG");
+					
+					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+					m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+					m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+					m_mapTile->addComponent<CTileMap>(m_selectedTileID);
+					gridpos = pixelToGrid(m_mapTile->getComponent<CTransform>().pos);
+					m_maplevel.setIndexBackground(gridpos.x, gridpos.y, m_selectedTileID);
+					m_isLevelModified = true;
 				}
 				else
 				{
-					m_maplevel.setIndexBackground(gridpos.x, gridpos.y, m_selectedTileID);
+					auto m_mapTile = m_entityManager.addEntity("TileMapFG");
+					
+					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+					m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+					m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+					m_mapTile->addComponent<CTileMap>(m_selectedTileID);
+					gridpos = pixelToGrid(m_mapTile->getComponent<CTransform>().pos);
+					m_maplevel.setIndexForeground(gridpos.x, gridpos.y, m_selectedTileID);
+					m_isLevelModified = true;
 				}
-				m_isLevelModified = true;
+
+				
+				
+
+				
 			}
 		}
 
@@ -226,7 +251,16 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 			if (!m_drawUI)
 			{
-				for (auto e : m_entityManager.getEntities("TileMap"))
+				std::string entitytag = "NONE";
+				if (m_drawForeground)
+				{
+					entitytag = "TileMapFG";
+				}
+				else if (m_drawBackground)
+				{
+					entitytag = "TileMapBG";
+				}
+				for (auto e : m_entityManager.getEntities(entitytag))
 				{
 					auto& transform = e->getComponent<CTransform>();
 
@@ -268,7 +302,16 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			if (!m_drawUI)
 			{
-				for (auto e : m_entityManager.getEntities())
+				std::string entitytag = "NONE";
+				if (m_drawForeground)
+				{
+					entitytag = "TileMapFG";
+				}
+				else if (m_drawBackground)
+				{
+					entitytag = "TileMapBG";
+				}
+				for (auto e : m_entityManager.getEntities(entitytag))
 				{
 					auto& transform = e->getComponent<CTransform>();
 
@@ -300,6 +343,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 						}
 					}
 				}
+				
 			}
 			else m_drawUI = false;
 		}
@@ -318,20 +362,41 @@ void Scene_LevelEditor::sRender()
 	m_game->window().clear(sf::Color(50, 50, 150));
 
 	
-
-	//Draw entities
-	for (auto e : m_entityManager.getEntities())
+	
+	if (m_drawBackground)
 	{
-		auto& transform = e->getComponent<CTransform>();
-
-		if (e->hasComponent<CSprite>() && e->tag() != "TilePalette")
+		//Draw entities
+		for (auto e : m_entityManager.getEntities("TileMapBG"))
 		{
-			
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
 				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
 				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
 				m_game->window().draw(sprite.getSprite());
+			}
+		}
+	}
+	if (m_drawForeground)
+	{
+		//Draw entities
+		for (auto e : m_entityManager.getEntities("TileMapFG"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
 		}
 	}
 	//Draw grid
@@ -387,19 +452,19 @@ void Scene_LevelEditor::sRender()
 				m_game->window().draw(sprite.getSprite());
 			}
 		}
+		
+	}
+	for (auto e : m_entityManager.getEntities("selectedTile"))
+	{
+		auto& transform = e->getComponent<CTransform>();
 
-		for (auto e : m_entityManager.getEntities("selectedTile"))
+		if (e->hasComponent<CSprite>())
 		{
-			auto& transform = e->getComponent<CTransform>();
-
-			if (e->hasComponent<CSprite>())
-			{
-				auto& sprite = e->getComponent<CSprite>().sprite;
-				sprite.getSprite().setRotation(transform.angle);
-				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
-				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
-				m_game->window().draw(sprite.getSprite());
-			}
+			auto& sprite = e->getComponent<CSprite>().sprite;
+			sprite.getSprite().setRotation(transform.angle);
+			sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+			sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+			m_game->window().draw(sprite.getSprite());
 		}
 	}
 }
@@ -440,7 +505,7 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				auto m_mapTile = m_entityManager.addEntity("TileMap");
+				auto m_mapTile = m_entityManager.addEntity("TileMapBG");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
@@ -458,7 +523,7 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
-				auto m_mapTile = m_entityManager.addEntity("TileMap");
+				auto m_mapTile = m_entityManager.addEntity("TileMapFG");
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
 
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
