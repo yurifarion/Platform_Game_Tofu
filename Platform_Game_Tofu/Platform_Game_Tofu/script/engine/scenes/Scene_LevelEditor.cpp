@@ -102,7 +102,7 @@ void Scene_LevelEditor::update()
 					tilex = 0;
 				}
 				Vec2 pos = m_game->windowToWorld(gridToMidPixel(tilex, tiley, e));
-				e->getComponent<CTransform>().pos = m_game->windowToWorld(pos);
+				e->getComponent<CTransform>().pos = pos;
 				tilex++;
 			}
 		}
@@ -283,7 +283,7 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 
 						if (isInside)
 						{
-							auto gridpos = pixelToGrid(action.pos());
+							auto gridpos = pixelToGrid(e->getComponent<CTransform>().pos);
 							if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0)
 							{
 								e->destroy();
@@ -365,11 +365,15 @@ void Scene_LevelEditor::sRender()
 	
 	if (m_drawUI)
 	{ 
+		//Create black background and reposition it
 		auto windowPos = m_game->windowToWorld(Vec2(0,0));
 		sf::RectangleShape UI_BG(sf::Vector2f(windowPos.x, windowPos.y));
 		UI_BG.setSize(sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
 		UI_BG.setFillColor(sf::Color(0, 0, 0, 200));
+		Vec2 fixedPos = m_game->windowToWorld(Vec2(UI_BG.getPosition().x, UI_BG.getPosition().y));
+		UI_BG.setPosition(sf::Vector2f(fixedPos.x, fixedPos.y));
 		m_game->window().draw(UI_BG);
+
 		for (auto e : m_entityManager.getEntities("TilePalette"))
 		{
 			auto& transform = e->getComponent<CTransform>();
