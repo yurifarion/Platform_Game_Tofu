@@ -18,6 +18,7 @@ public:
 	Vec2 scale = { 1.0,1.0 };
 	Vec2 velocity = { 0.0,0.0 };
 	float angle = 0;
+	bool isFaceLeft = false;
 
 	CTransform()
 		{}
@@ -26,8 +27,9 @@ public:
 	CTransform(const Vec2& p, const Vec2& sp, const Vec2& sc, float a)
 		:pos(p), prevPos(sp), scale(sc), angle(a)
 	{}
-	void flipX(bool isFaceLeft)
+	void flipX(bool isFaceLeftp)
 	{
+		isFaceLeft = isFaceLeftp;
 		scale.x = isFaceLeft ? abs(scale.x) * -1 : abs(scale.x) * 1;
 	}
 	void move(Vec2 ppos)
@@ -55,6 +57,7 @@ public:
 	bool left = false;
 	bool right = false;
 	bool down = false;
+	bool dash = false;
 	bool shoot = false;
 	bool canshoot = false;
 	bool canjump = false;

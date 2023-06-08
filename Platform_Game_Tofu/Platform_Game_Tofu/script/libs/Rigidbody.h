@@ -6,6 +6,7 @@ class Rigidbody
 {
 	Vec2 m_appliedForce;
 	float m_gravityspeed = 0;
+	float m_groundFriction = 0.1f;//how much percent it lose per frame
 
 public:
 	float gravity = 0;
