@@ -26,9 +26,9 @@ void Assets::loadFromFile(const std::string& path)
         else if (str == "Sprite")
         {
             std::string name, texture;
-            Vec2 cellsize, origin;
-            file >> name >> texture >> cellsize.x>>cellsize.y>>origin.x>>origin.y;
-            addSprite(name, texture, cellsize, origin);
+            Vec2 cellsize, origin, anchorsize;
+            file >> name >> texture >> cellsize.x>>cellsize.y>>origin.x>>origin.y>>anchorsize.x>>anchorsize.y;
+            addSprite(name, texture, cellsize, origin,anchorsize);
         }
         else if (str == "Font")
         {
@@ -80,9 +80,9 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
     return m_textureMap.at(textureName);
 }
 
-void Assets::addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin)
+void Assets::addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin, Vec2& anchorsize)
 {
-    m_spriteMap[spritename] = Sprite(spritename, getTexture(textureName), cellsize, origin);
+    m_spriteMap[spritename] = Sprite(spritename, getTexture(textureName), cellsize, origin, anchorsize);
 }
 
 const Sprite& Assets::getSprite(const std::string& spritename) const
