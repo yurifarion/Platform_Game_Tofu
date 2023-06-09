@@ -185,15 +185,13 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = -m_gridSize.x;
-			Vec2 newpos = Vec2(currentpos.x, currentpos.y + speed);
-			m_game->moveCameraView(newpos);
+			m_game->moveCameraView(Vec2(0, speed));
 		}
 		else if (action.name() == "MOVE DOWN")
 		{
 			auto currentpos = m_game->getCameraView().getCenter();
 			float speed = m_gridSize.x;
-			Vec2 newpos = Vec2(currentpos.x, currentpos.y + speed);
-			m_game->moveCameraView(newpos);
+			m_game->moveCameraView(Vec2(0, speed));
 		}
 
 		//If we select with left click

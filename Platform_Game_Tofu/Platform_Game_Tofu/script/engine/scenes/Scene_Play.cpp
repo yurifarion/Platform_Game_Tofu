@@ -127,7 +127,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
-	Sprite dash_fr(m_game->assets().getSprite("Tofu_dash"));
+	Sprite dash_fr(m_game->assets().getSprite("Tofu_walk1_jump"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
 	Sprite walk_fr_2(m_game->assets().getSprite("Tofu_walk2"));
 	Sprite walk_fr_3(m_game->assets().getSprite("Tofu_walk3"));

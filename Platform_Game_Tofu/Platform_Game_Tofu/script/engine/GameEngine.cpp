@@ -113,6 +113,10 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
 	}
 
 	m_currentScene = sceneName;
+
+	//Reset camera to initial position
+	Vec2 initialpos = Vec2(m_window.getSize().x / 2, m_window.getSize().y / 2);
+	setCameraPosition(initialpos);
 }
 
 void GameEngine::update()
@@ -141,6 +145,12 @@ void GameEngine::moveCameraView(const Vec2& movement)
 {
 	auto currentCenter = m_camera_view.getCenter();
 	m_camera_view.setCenter(sf::Vector2f(currentCenter.x + movement.x, currentCenter.y + movement.y));
+	window().setView(m_camera_view);
+}
+void GameEngine::setCameraPosition(const Vec2& position)
+{
+	auto currentCenter = m_camera_view.getCenter();
+	m_camera_view.setCenter(sf::Vector2f(position.x, position.y));
 	window().setView(m_camera_view);
 }
 void GameEngine::setCameraViewSize(const Vec2& size)

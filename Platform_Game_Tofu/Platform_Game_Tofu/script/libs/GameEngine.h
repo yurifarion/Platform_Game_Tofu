@@ -34,6 +34,7 @@ public:
 	Assets& assets();
 	bool isRunning();
 	void moveCameraView(const Vec2& movement);
+	void setCameraPosition(const Vec2& position);
 	void setCameraViewSize(const Vec2& size);
 	sf::View getCameraView() const;
 	Vec2 windowToWorld(const Vec2& window);
