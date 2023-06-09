@@ -127,7 +127,6 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
-	Sprite dash_fr(m_game->assets().getSprite("Tofu_walk1_jump"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
 	Sprite walk_fr_2(m_game->assets().getSprite("Tofu_walk2"));
 	Sprite walk_fr_3(m_game->assets().getSprite("Tofu_walk3"));
@@ -146,15 +145,11 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	Animation idleAnimClip("idle", 1.0f);
 	idleAnimClip.addFrame(idle_fr);
 
-	Animation dashAnimClip("dash", 1.0f);
-	dashAnimClip.addFrame(dash_fr);
-
 	//Set animator
 	m_player->addComponent<CAnimator>(m_player->getComponent<CSprite>().sprite);
 	m_player->getComponent<CAnimator>().animator.addAnimation(walkAnimClip);
 	m_player->getComponent<CAnimator>().animator.addAnimation(jumpAnimClip);
 	m_player->getComponent<CAnimator>().animator.addAnimation(idleAnimClip);
-	m_player->getComponent<CAnimator>().animator.addAnimation(dashAnimClip);
 	m_player->getComponent<CAnimator>().animator.setAnimation("idle");
 
 	m_player->addComponent<CTransform>(position);
@@ -372,7 +367,6 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "DASH")
 		{
 			m_player->getComponent<CInput>().dash = true;
-			m_player->getComponent<CState>().state = "dash";
 		}
 	}
 	//When Action end
@@ -402,25 +396,18 @@ void Scene_Play::sAnimation()
 {
 
 	//Set Player animation based on physics
-	if (m_player->getComponent<CState>().state != "dash" || m_player->getComponent<CTransform>().velocity == Vec2(0, 0))
-	{
-		if (m_player->getComponent<CTransform>().velocity != Vec2(0, 0) && m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
-			m_player->getComponent<CState>().state = "walk";
+	if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+		m_player->getComponent<CState>().state = "jump";
+	else if (m_player->getComponent<CInput>().right || m_player->getComponent<CInput>().left)
+		m_player->getComponent<CState>().state = "walk";
+	else
+		m_player->getComponent<CState>().state = "idle";
 
-		else if (m_player->getComponent<CTransform>().velocity == Vec2(0, 0) && m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
-			m_player->getComponent<CState>().state = "idle";
-
-		else if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
-			m_player->getComponent<CState>().state = "jump";
-	}
+	
 	
 	//change animations
 	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
-	if (m_player->getComponent<CState>().state == "dash")
-	{
-		playeranimator.setAnimation("dash");
-	}
-	else if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+	 if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
 	{
 		playeranimator.setAnimation("jump");
 	}
