@@ -66,20 +66,22 @@ public:
 };
 class CPlayer : public Component
 {
-	float dashenergy = 0;
-
+	float maxdashenergy = 0;
 public:
 	float speed = 0;
 	float jumpforce = 0;
 	float dashforce = 0;
+	float dashenergy = 0;
 	CPlayer() {}
-	CPlayer(const float s, const float j, const float d)
-		:speed(s), jumpforce(j), dashforce(d)
-	{}
-
-	void ConsumeDash(float amount)
+	CPlayer(const float s, const float j, const float d,const float de)
+		:speed(s), jumpforce(j), dashforce(d), dashenergy(de)
 	{
-		dashenergy -= amount;
+		maxdashenergy = dashenergy;
+	}
+
+	void addDash(float amount)
+	{
+		dashenergy = std::clamp(dashenergy + amount, 0.0f, maxdashenergy);
 	}
 };
 class CBoundingBox : public Component

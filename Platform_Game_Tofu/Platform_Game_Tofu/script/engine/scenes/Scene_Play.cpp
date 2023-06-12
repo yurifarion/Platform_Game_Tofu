@@ -125,7 +125,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 
 	m_player = m_entityManager.addEntity("player");
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
-	m_player->addComponent<CPlayer>(40.0f, 600.0f, 1000.0f);
+	m_player->addComponent<CPlayer>(40.0f, 600.0f, 1000.0f,0.3);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
@@ -205,8 +205,12 @@ void Scene_Play::sMovement()
 	}
 	if (m_player->getComponent<CInput>().dash)
 	{
-		Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
-		rb.addForce(dir);
+		if (m_player->getComponent<CPlayer>().dashenergy > 0)
+		{
+			Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
+			rb.addForce(dir);
+		}
+		
 	}
 	
 
@@ -223,7 +227,10 @@ void Scene_Play::sMovement()
 }
 void Scene_Play::sLifespan()
 {
-	//TODO check lifespawn of entities that have them, destroy them if they go over
+	//Consume and recover of dash amount
+	if(m_player->getComponent<CInput>().dash) m_player->getComponent<CPlayer>().addDash(-1 * m_game->deltaTime);
+	else m_player->getComponent<CPlayer>().addDash(0.1f * m_game->deltaTime);
+	
 }
 void Scene_Play::sCameraMovement()
 {
