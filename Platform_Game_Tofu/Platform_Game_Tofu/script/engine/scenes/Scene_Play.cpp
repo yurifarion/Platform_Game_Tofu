@@ -125,6 +125,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 
 	m_player = m_entityManager.addEntity("player");
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
+	m_player->addComponent<CPlayer>(40.0f, 600.0f, 1000.0f);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
@@ -180,7 +181,7 @@ void Scene_Play::sMovement()
 {
 	//Update all rigibodies
 	auto& rb = m_player->getComponent<CRigidbody>().rigidbody;
-
+	auto& playerData = m_player->getComponent<CPlayer>();
 	rb.update();
 
 	//Max moviment per frame the player can move
@@ -191,20 +192,20 @@ void Scene_Play::sMovement()
 	{
 		if (rb.isGrounded)
 		{
-			rb.addForce(Vec2(0.0f, -600.0f));
+			rb.addForce(Vec2(0.0f, -playerData.jumpforce));
 		}
 	}
 	if (m_player->getComponent<CInput>().right)
 	{
-		rb.addForce(Vec2(40.0f, 0.0f));
+		rb.addForce(Vec2(playerData.speed, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().left)
 	{
-		rb.addForce(Vec2(-40.0f, 0.0f));
+		rb.addForce(Vec2(-playerData.speed, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().dash)
 	{
-		Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-1000.0f, 0.0f) : Vec2(1000.0f, 0.0f);
+		Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
 		rb.addForce(dir);
 	}
 	

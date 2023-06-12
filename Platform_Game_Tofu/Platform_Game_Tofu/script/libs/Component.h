@@ -64,7 +64,24 @@ public:
 
 	CInput() {}
 };
+class CPlayer : public Component
+{
+	float dashenergy = 0;
 
+public:
+	float speed = 0;
+	float jumpforce = 0;
+	float dashforce = 0;
+	CPlayer() {}
+	CPlayer(const float s, const float j, const float d)
+		:speed(s), jumpforce(j), dashforce(d)
+	{}
+
+	void ConsumeDash(float amount)
+	{
+		dashenergy -= amount;
+	}
+};
 class CBoundingBox : public Component
 {
 public:
@@ -125,3 +142,4 @@ public:
 	CTileMap() {}
 	CTileMap(const int si) :spriteID(si) {}
 };
+

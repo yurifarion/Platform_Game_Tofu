@@ -9,6 +9,5 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include <tuple>
 
 #include "Vec2.h"

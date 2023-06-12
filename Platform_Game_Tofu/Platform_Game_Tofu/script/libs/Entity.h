@@ -11,6 +11,7 @@ typedef std::tuple<
 	CTransform,
 	CLifeSpan,
 	CInput,
+	CPlayer,
 	CBoundingBox,
 	CAnimator,
 	CState,
