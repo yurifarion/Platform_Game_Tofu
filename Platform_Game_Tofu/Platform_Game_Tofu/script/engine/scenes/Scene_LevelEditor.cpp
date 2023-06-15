@@ -22,6 +22,7 @@ void Scene_LevelEditor::init()
 	registerAction(sf::Keyboard::H, "TOGGLE_SELECTEDTILE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TILEMENU");
 	registerAction(sf::Keyboard::L, "SAVE_MAP");
+	registerAction(sf::Keyboard::V, "TOGGLE_DARKESTBACKGROUND");
 	registerAction(sf::Keyboard::B, "TOGGLE_BACKGROUND");
 	registerAction(sf::Keyboard::N, "TOGGLE_FOREGROUND");
 	registerAction(sf::Keyboard::Escape, "QUIT");
@@ -133,6 +134,10 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 		{
 			m_drawSelectedTile = !m_drawSelectedTile;
 		}
+		else if (action.name() == "TOGGLE_DARKESTBACKGROUND")
+		{
+			m_drawDarkestBackground = !m_drawDarkestBackground;
+		}
 		else if (action.name() == "TOGGLE_BACKGROUND")
 		{
 			m_drawBackground = !m_drawBackground;
@@ -207,7 +212,20 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(m_selectedTileID));
 				auto gridpos = pixelToGrid(action.pos());
 
-				if (spriteName.find("dark") != std::string::npos)
+				if (spriteName.find("darkest") != std::string::npos)
+				{
+					auto m_mapTile = m_entityManager.addEntity("TileMapDBG");
+
+					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+					m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+					m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(gridpos.x, gridpos.y, m_mapTile));
+					m_mapTile->addComponent<CTileMap>(m_selectedTileID);
+					gridpos = pixelToGrid(m_mapTile->getComponent<CTransform>().pos);
+					m_maplevel.setIndexDarkestBackground(gridpos.x, gridpos.y, m_selectedTileID);
+					m_isLevelModified = true;
+				}
+				else if (spriteName.find("dark") != std::string::npos)
 				{
 					auto m_mapTile = m_entityManager.addEntity("TileMapBG");
 					
@@ -233,11 +251,6 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 					m_maplevel.setIndexForeground(gridpos.x, gridpos.y, m_selectedTileID);
 					m_isLevelModified = true;
 				}
-
-				
-				
-
-				
 			}
 		}
 
@@ -257,6 +270,10 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				else if (m_drawBackground)
 				{
 					entitytag = "TileMapBG";
+				}
+				else if (m_drawDarkestBackground)
+				{
+					entitytag = "TileMapDBG";
 				}
 				for (auto e : m_entityManager.getEntities(entitytag))
 				{
@@ -309,6 +326,10 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 				{
 					entitytag = "TileMapBG";
 				}
+				else if (m_drawDarkestBackground)
+				{
+					entitytag = "TileMapDBG";
+				}
 				for (auto e : m_entityManager.getEntities(entitytag))
 				{
 					auto& transform = e->getComponent<CTransform>();
@@ -325,16 +346,22 @@ void Scene_LevelEditor::sDoAction(const Action& action)
 						if (isInside)
 						{
 							auto gridpos = pixelToGrid(e->getComponent<CTransform>().pos);
-							if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0)
+							if (m_maplevel.getMapDataForeground()[gridpos.x][gridpos.y] != 0 && m_drawForeground)
 							{
 								e->destroy();
 								m_maplevel.setIndexForeground(gridpos.x, gridpos.y, 0);
 								m_isLevelModified = true;
 							}
-							else
+							else if (m_maplevel.getMapDataBackground()[gridpos.x][gridpos.y] != 0 && m_drawBackground)
 							{
 								e->destroy();
 								m_maplevel.setIndexBackground(gridpos.x, gridpos.y, 0);
+								m_isLevelModified = true;
+							}
+							else if (m_drawDarkestBackground)
+							{
+								e->destroy();
+								m_maplevel.setIndexDarkestBackground(gridpos.x, gridpos.y, 0);
 								m_isLevelModified = true;
 							}
 
@@ -359,7 +386,24 @@ void Scene_LevelEditor::sRender()
 {
 	m_game->window().clear(sf::Color(50, 50, 150));
 
-	
+	if (m_drawDarkestBackground)
+	{
+		//Draw entities
+		for (auto e : m_entityManager.getEntities("TileMapDBG"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
+	}
 	
 	if (m_drawBackground)
 	{
@@ -492,10 +536,31 @@ void Scene_LevelEditor::loadLevel(const std::string& path)
 	//m_maplevel.createMapFile(path);
 	m_maplevel.loadfromMapFile(path);
 
-	auto mapdata = m_maplevel.getMapDataBackground();
+	
 
 	//Populate entities
 	// Write to the file
+	auto mapdata = m_maplevel.getMapDataDarkestBackground();
+
+	// Darkest Background
+	for (int row = 0; row < mapdata.size(); ++row)
+	{
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+				auto m_mapTile = m_entityManager.addEntity("TileMapDBG");
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				m_mapTile->getComponent<CTransform>().pos = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->addComponent<CTileMap>(mapdata[row][collumn]);
+			}
+		}
+	}
+	mapdata = m_maplevel.getMapDataBackground();
 	//Background
 	for (int row = 0; row < mapdata.size(); ++row)
 	{

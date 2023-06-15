@@ -62,11 +62,27 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	m_maplevel.loadfromMapFile(filename);
 
-	auto mapdata = m_maplevel.getMapDataBackground();
-
+	
+	auto mapdata = m_maplevel.getMapDataDarkestBackground();
 	//Populate entities
 	// Write to the file
-
+	for (int row = 0; row < mapdata.size(); ++row)
+	{
+		for (int collumn = 0; collumn < mapdata[row].size(); collumn++)
+		{
+			if (mapdata[row][collumn] != 0)
+			{
+				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+				auto m_mapTile = m_entityManager.addEntity("darkestbackground_tile");
+				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(4, 4);
+				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+				m_mapTile->getComponent<CTransform>().pos = position;
+			}
+		}
+	}
+	mapdata = m_maplevel.getMapDataBackground();
 	//Background
 	for (int row = 0; row < mapdata.size(); ++row)
 	{
@@ -265,6 +281,14 @@ void Scene_Play::sCameraMovement()
 	if (parallaxeMovement != 0)
 	{
 		//Parallaxe movement on the background
+		for (auto e : m_entityManager.getEntities("darkestbackground_tile"))
+		{
+			if (e->hasComponent<CTransform>())
+			{
+				e->getComponent<CTransform>().move(Vec2(parallaxeMovement * 1.5f, 0));
+			}
+		}
+		
 		for (auto e : m_entityManager.getEntities("background_tile"))
 		{
 			if (e->hasComponent<CTransform>())
@@ -450,9 +474,22 @@ void Scene_Play::sRender()
 	else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
 	
-	//Draw Entities Textures
+	//Draw Entities Textures 
 	if (m_drawTextures)
 	{
+		for (auto e : m_entityManager.getEntities("darkestbackground_tile"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
 		for (auto e : m_entityManager.getEntities("background_tile"))
 		{
 			auto& transform = e->getComponent<CTransform>();

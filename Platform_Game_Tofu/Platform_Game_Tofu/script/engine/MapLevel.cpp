@@ -6,8 +6,13 @@ MapLevel::MapLevel()
 MapLevel::MapLevel(const int row, const int collumn)
 {
     Map2D vec(row, std::vector<int>(collumn, 0));
+    m_mapdatadarkestbackground = vec;
     m_mapdatabackground = vec;
     m_mapdataforeground = vec;
+}
+void MapLevel::setIndexDarkestBackground(const int row, const int collumn, const int value)
+{
+    m_mapdatadarkestbackground[row][collumn] = value;
 }
 void MapLevel::setIndexBackground(const int row, const int collumn, const int value)
 {
@@ -31,6 +36,14 @@ void MapLevel::createMapFile(const std::string& path)
         std::ofstream MyFile(m_path);
 
         // Write to the file
+        for (int row = 0; row < m_mapdatadarkestbackground.size(); ++row)
+        {
+            for (int collum = 0; collum < m_mapdatadarkestbackground[row].size(); collum++)
+            {
+                MyFile << m_mapdatadarkestbackground[row][collum] << " ";
+            }
+            MyFile << std::endl;
+        }
         for (int row = 0; row < m_mapdatabackground.size(); ++row)
         {
             for (int collum = 0; collum < m_mapdatabackground[row].size(); collum++)
@@ -47,6 +60,7 @@ void MapLevel::createMapFile(const std::string& path)
             }
             MyFile << std::endl;
         }
+        
 
         // Close the file
         MyFile.close();
@@ -60,6 +74,15 @@ void MapLevel::saveMapFile()
     std::ofstream MyFile(m_path);
 
     // Write to the file
+    for (int row = 0; row < m_mapdatadarkestbackground.size(); ++row)
+    {
+        for (int collum = 0; collum < m_mapdatadarkestbackground[row].size(); collum++)
+        {
+            MyFile << m_mapdatadarkestbackground[row][collum] << " ";
+        }
+        MyFile << std::endl;
+    }
+
     for (int row = 0; row < m_mapdatabackground.size(); ++row)
     {
         for (int collum = 0; collum < m_mapdatabackground[row].size(); collum++)
@@ -90,7 +113,7 @@ void MapLevel::loadfromMapFile(const std::string& path)
     int row = 0;
     int collumn = 0;
 
-    bool isOutLimit = row >= m_mapdatabackground.size() * 2 && collumn >= m_mapdatabackground[0].size();
+    bool isOutLimit = row >= m_mapdatabackground.size() * 3 && collumn >= m_mapdatabackground[0].size();
 
     if (file.fail())
     {
@@ -105,22 +128,31 @@ void MapLevel::loadfromMapFile(const std::string& path)
             row++;
             collumn = 0;
         }
-        isOutLimit = row >= (m_mapdatabackground.size() * 2 )|| collumn >= m_mapdatabackground[0].size();
+        isOutLimit = row >= (m_mapdatabackground.size() * 3 )|| collumn >= m_mapdatabackground[0].size();
         if (!isOutLimit)
         {
-            if (row >= m_mapdatabackground.size())
+            if (row >= (m_mapdatadarkestbackground.size() + m_mapdatabackground.size()))
             {
-                auto rowsize = m_mapdataforeground.size();
+                auto rowsize = m_mapdatadarkestbackground.size() + m_mapdatabackground.size();
                 m_mapdataforeground[row - rowsize][collumn] = std::stoi(str);
+            }
+            else if (row >= m_mapdatadarkestbackground.size())
+            {
+                auto rowsize = m_mapdatabackground.size();
+                m_mapdatabackground[row - rowsize][collumn] = std::stoi(str);
             }
             else
             {
-                m_mapdatabackground[row][collumn] = std::stoi(str);
+                m_mapdatadarkestbackground[row][collumn] = std::stoi(str);
             }
         }
         collumn++;
     }
     std::cout << "Loaded map file from " << m_path<<std::endl;
+}
+Map2D& MapLevel::getMapDataDarkestBackground()
+{
+    return m_mapdatadarkestbackground;
 }
 Map2D& MapLevel::getMapDataBackground()
 {
