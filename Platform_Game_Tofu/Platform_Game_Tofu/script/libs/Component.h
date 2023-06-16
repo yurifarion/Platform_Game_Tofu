@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Assets.h"
+#include "PanelUI.h"
 #include "AnimatorMachine.h"
 #include "Rigidbody.h"
 
@@ -137,6 +138,14 @@ public:
 	CUI() {}
 	CUI(const std::string& n) :name(n) {}
 }; 
+class CPanelUI : public Component
+{
+public:
+	PanelUI panelui;
+	CPanelUI() {}
+	CPanelUI(const PanelUI panel) 
+		:panelui(panel) {}
+};
 class CTileMap : public Component
 {
 public:

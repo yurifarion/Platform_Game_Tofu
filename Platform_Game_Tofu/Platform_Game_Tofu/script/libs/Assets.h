@@ -15,6 +15,7 @@ class Assets
 
     void addTexture(const std::string& textureName, const std::string& path, bool smooth = true);
     void addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin, Vec2& anchorsize);
+    void addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin);
     void addFont(const std::string& fontName, const std::string& path);
     void addSoundBuffer(const std::string& soundBufferName, const std::string& path);
 

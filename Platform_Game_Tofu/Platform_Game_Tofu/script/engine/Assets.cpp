@@ -30,6 +30,13 @@ void Assets::loadFromFile(const std::string& path)
             file >> name >> texture >> cellsize.x>>cellsize.y>>origin.x>>origin.y>>anchorsize.x>>anchorsize.y;
             addSprite(name, texture, cellsize, origin,anchorsize);
         }
+        else if (str == "UI")
+        {
+            std::string name, texture;
+            Vec2 size, origin;
+            file >> name >> texture >> size.x >> size.y >> origin.x >> origin.y;
+            addSprite(name, texture, size, origin);
+        }
         else if (str == "Font")
         {
             std::string name, path;
@@ -83,6 +90,10 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
 void Assets::addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin, Vec2& anchorsize)
 {
     m_spriteMap[spritename] = Sprite(spritename, getTexture(textureName), cellsize, origin, anchorsize);
+}
+void Assets::addSprite(const std::string& spritename, const std::string& textureName, Vec2& cellsize, Vec2& origin)
+{
+    m_spriteMap[spritename] = Sprite(spritename, getTexture(textureName), cellsize, origin);
 }
 
 const Sprite& Assets::getSprite(const std::string& spritename) const
