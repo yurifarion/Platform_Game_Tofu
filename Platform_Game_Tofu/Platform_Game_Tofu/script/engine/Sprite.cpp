@@ -14,6 +14,15 @@ Sprite::Sprite(const std::string& name, const sf::Texture& t)
 	m_sprite.setOrigin(t.getSize().x / 2.0f, t.getSize().y / 2.0f);
 	m_sprite.setTextureRect(sf::IntRect(0, 0, t.getSize().x, t.getSize().y));
 }
+Sprite::Sprite(const std::string& name, const sf::Texture& t, const Vec2& size, const Vec2& origin)
+	:m_name(name)
+	, m_sprite(t)
+{
+	m_size = Vec2(size.x, size.y);
+	m_sprite.setOrigin(size.x / 2.0f, size.y / 2.0f);
+
+	m_sprite.setTextureRect(sf::IntRect(origin.x, origin.y,size.x,size.y));
+}
 Sprite::Sprite(const std::string& name, const sf::Texture& t, const Vec2& cellsize, const Vec2& origin, const Vec2& anchorsize)
 	:m_name(name)
 	, m_sprite(t)

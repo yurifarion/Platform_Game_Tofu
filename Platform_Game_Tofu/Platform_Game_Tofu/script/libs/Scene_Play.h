@@ -43,6 +43,7 @@ public:
 	void sCameraMovement();
 	void sCollision();
 	void sAnimation();
+	void sUI();
 	void onEnd();
 	void sRender();
 	void drawline(Vec2 p1,Vec2 p2);

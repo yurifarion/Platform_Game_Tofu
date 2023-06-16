@@ -25,6 +25,9 @@
     <Filter Include="Arquivos de Recurso\Utils">
       <UniqueIdentifier>{047d6cfd-6727-493e-8a5d-2fca2f48d9bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Arquivos de Recurso\Engine\UI">
+      <UniqueIdentifier>{8b8c9f9a-6482-41b1-a9ed-b0e26fb7ea78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="script\Engine\Action.cpp">
@@ -86,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="script\engine\scenes\Scene_LevelEditorMenu.cpp">
       <Filter>Arquivos de Recurso\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="script\engine\PanelUI.cpp">
+      <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="script\libs\Scene_LevelEditorMenu.h">
       <Filter>Arquivos de Recurso\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="script\libs\PanelUI.h">
+      <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

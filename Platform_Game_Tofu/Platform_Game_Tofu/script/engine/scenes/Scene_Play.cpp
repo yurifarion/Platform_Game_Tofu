@@ -37,6 +37,7 @@ void Scene_Play::init(const std::string& levelPath)
 	m_gridText.setCharacterSize(6);
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 	loadLevel(levelPath);
+
 }
 
 Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
@@ -132,7 +133,12 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 	}
 
-	
+
+	//TEST FOR UI
+	auto panelGO = m_entityManager.addEntity("UI");
+	PanelUI panel(m_game->assets().getSprite("panel"), Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
+	panelGO->addComponent<CPanelUI>(panel);
+	panelGO->addComponent<CUI>();
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -191,6 +197,7 @@ void Scene_Play::update()
 	sAnimation();
 	sCollision();
 	sCameraMovement();
+	sUI();
 	sRender();
 }
 void Scene_Play::sMovement()
@@ -460,6 +467,17 @@ void Scene_Play::sAnimation()
 	m_player->getComponent<CSprite>().sprite = m_player->getComponent<CAnimator>().animator.getCurrentSprite();
 
 }
+void Scene_Play::sUI()
+{
+	//Make UI follow the camera;
+	for (auto e : m_entityManager.getEntities("UI"))
+	{
+		if (e->hasComponent<CPanelUI>())
+		{
+			e->getComponent<CPanelUI>().panelui.setposition(m_game->windowToWorld(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2)));
+		}
+	}
+}
 void Scene_Play::onEnd()
 {
 	m_hasEnded = true;
@@ -533,6 +551,22 @@ void Scene_Play::sRender()
 		}
 	}
 
+	//Draw UI
+	for (auto e : m_entityManager.getEntities("UI"))
+	{
+		if (e->hasComponent<CUI>())
+		{
+			if (e->hasComponent<CPanelUI>())
+			{
+				auto& image = e->getComponent<CPanelUI>().panelui.getimage();
+				auto& panel = e->getComponent<CPanelUI>().panelui;
+				image.getSprite().setRotation(panel.getangle());
+				image.getSprite().setPosition(panel.getposition().x, panel.getposition().y);
+				image.getSprite().setScale(panel.getscale().x, panel.getscale().y);
+				m_game->window().draw(image.getSprite());
+			}
+		}
+	}
 	//Draw Entities Collision Box
 	if (m_drawCollision)
 	{

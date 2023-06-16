@@ -13,6 +13,7 @@ class Sprite
 public:
 	Sprite();
 	Sprite(const std::string& name, const sf::Texture& t);
+	Sprite(const std::string& name, const sf::Texture& t, const Vec2& size, const Vec2& origin);
 	Sprite(const std::string& name, const sf::Texture& t, const Vec2& cellsize, const Vec2& origin, const Vec2& anchorsize);
 	
 
