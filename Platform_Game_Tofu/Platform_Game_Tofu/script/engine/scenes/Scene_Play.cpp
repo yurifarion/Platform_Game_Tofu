@@ -136,9 +136,9 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//TEST FOR UI
 	auto panelGO = m_entityManager.addEntity("UI");
-	PanelUI panel(m_game->assets().getSprite("panel"), Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
+	PanelUI panel(m_game->assets().getSprite("panel"));
 	panelGO->addComponent<CPanelUI>(panel);
-	panelGO->addComponent<CUI>();
+	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -472,9 +472,9 @@ void Scene_Play::sUI()
 	//Make UI follow the camera;
 	for (auto e : m_entityManager.getEntities("UI"))
 	{
-		if (e->hasComponent<CPanelUI>())
+		if (e->hasComponent<CUI>())
 		{
-			e->getComponent<CPanelUI>().panelui.setposition(m_game->windowToWorld(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2)));
+			e->getComponent<CUI>().recttransform.setposition(m_game->windowToWorld(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2)));
 		}
 	}
 }
@@ -559,10 +559,10 @@ void Scene_Play::sRender()
 			if (e->hasComponent<CPanelUI>())
 			{
 				auto& image = e->getComponent<CPanelUI>().panelui.getimage();
-				auto& panel = e->getComponent<CPanelUI>().panelui;
-				image.getSprite().setRotation(panel.getangle());
-				image.getSprite().setPosition(panel.getposition().x, panel.getposition().y);
-				image.getSprite().setScale(panel.getscale().x, panel.getscale().y);
+				auto& panelrt = e->getComponent<CUI>().recttransform;
+				image.getSprite().setRotation(panelrt.getangle());
+				image.getSprite().setPosition(panelrt.getposition().x, panelrt.getposition().y);
+				image.getSprite().setScale(panelrt.getscale().x, panelrt.getscale().y);
 				m_game->window().draw(image.getSprite());
 			}
 		}

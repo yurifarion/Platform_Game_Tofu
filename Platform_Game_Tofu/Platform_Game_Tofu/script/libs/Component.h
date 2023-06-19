@@ -2,6 +2,7 @@
 
 #include "Assets.h"
 #include "PanelUI.h"
+#include "RectTransform.h"
 #include "AnimatorMachine.h"
 #include "Rigidbody.h"
 
@@ -135,8 +136,10 @@ class CUI : public Component
 {
 public:
 	std::string name = "NONE";
+	RectTransform recttransform;
 	CUI() {}
-	CUI(const std::string& n) :name(n) {}
+	CUI(const std::string& n, const Vec2& pos, const Vec2& scale) 
+		:name(n),recttransform(RectTransform(pos,scale)) {}
 }; 
 class CPanelUI : public Component
 {
