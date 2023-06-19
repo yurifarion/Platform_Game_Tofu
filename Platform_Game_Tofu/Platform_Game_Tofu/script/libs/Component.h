@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Assets.h"
+#include "ButtonUI.h"
 #include "PanelUI.h"
 #include "RectTransform.h"
 #include "AnimatorMachine.h"
@@ -150,6 +151,16 @@ public:
 		:panelui(PanelUI(image)) {}
 	CPanelUI(const Vec2& size)
 		:panelui(PanelUI(size)) {}
+};
+class CButtonUI : public Component
+{
+public:
+	ButtonUI buttonui;
+	CButtonUI() {}
+	CButtonUI(const Sprite& image,const RectTransform& rect)
+		:buttonui(ButtonUI(image, rect)) {}
+	CButtonUI(const Vec2& size, const RectTransform& rect)
+		:buttonui(ButtonUI(size, rect)) {}
 };
 class CTileMap : public Component
 {

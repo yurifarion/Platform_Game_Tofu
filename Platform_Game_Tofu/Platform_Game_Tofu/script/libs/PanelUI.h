@@ -17,5 +17,6 @@ public:
 	Sprite& getimage();
 	Vec2& getsize();
 	sf::Color getcolor();
+	void setcolor(sf::Color& color);
 	bool hassprite();
 };

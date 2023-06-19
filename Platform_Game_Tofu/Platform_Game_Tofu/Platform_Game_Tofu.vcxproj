@@ -23,6 +23,7 @@
     <ClCompile Include="script\Engine\Animation.cpp" />
     <ClCompile Include="script\Engine\AnimatorMachine.cpp" />
     <ClCompile Include="script\Engine\Assets.cpp" />
+    <ClCompile Include="script\engine\ButtonUI.cpp" />
     <ClCompile Include="script\Engine\Entity.cpp" />
     <ClCompile Include="script\Engine\EntityManager.cpp" />
     <ClCompile Include="script\Engine\GameEngine.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="script\libs\Animation.h" />
     <ClInclude Include="script\libs\AnimatorMachine.h" />
     <ClInclude Include="script\libs\Assets.h" />
+    <ClInclude Include="script\libs\ButtonUI.h" />
     <ClInclude Include="script\libs\Common.h" />
     <ClInclude Include="script\libs\Component.h" />
     <ClInclude Include="script\libs\Entity.h" />

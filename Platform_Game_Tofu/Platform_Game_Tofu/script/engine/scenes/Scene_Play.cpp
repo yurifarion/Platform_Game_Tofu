@@ -138,6 +138,11 @@ void Scene_Play::loadLevel(const std::string& filename)
 	auto panelGO = m_entityManager.addEntity("UI");
 	panelGO->addComponent<CPanelUI>(Vec2(200,200));
 	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
+
+	auto buttonGO = m_entityManager.addEntity("UI");
+	buttonGO->addComponent<CUI>("Button", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
+	buttonGO->addComponent<CButtonUI>(Vec2(30, 30), buttonGO->getComponent<CUI>().recttransform);
+	buttonGO->getComponent<CButtonUI>().buttonui.setcolor(sf::Color::Red);
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -476,6 +481,22 @@ void Scene_Play::sUI()
 			e->getComponent<CUI>().recttransform.setposition(m_game->windowToWorld(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2)));
 		}
 	}
+
+	
+	for (auto e : m_entityManager.getEntities("UI"))
+	{
+		if (e->hasComponent<CButtonUI>())
+		{
+			auto& button = e->getComponent<CButtonUI>();
+			button.buttonui.Update(m_game->window());
+
+			//Check Button if is over
+			if (button.buttonui.ismouseover()) button.buttonui.setcolor(sf::Color::Yellow);
+			else  button.buttonui.setcolor(sf::Color::Red);
+
+			if (button.buttonui.ispressed()) button.buttonui.setcolor(sf::Color::Blue);
+		}
+	}
 }
 void Scene_Play::onEnd()
 {
@@ -571,6 +592,25 @@ void Scene_Play::sRender()
 					sf::RectangleShape rectangle(sf::Vector2f(panel.getsize().x, panel.getsize().y));
 					rectangle.setPosition(sf::Vector2f(panelrt.getposition().x, panelrt.getposition().y)); 
 					rectangle.setFillColor(panel.getcolor());
+					m_game->window().draw(rectangle);
+				}
+			}
+			else if (e->hasComponent<CButtonUI>())
+			{
+				auto& buttonrt = e->getComponent<CUI>().recttransform;
+				auto& button = e->getComponent<CButtonUI>().buttonui;
+				if (button.hassprite())
+				{
+					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
+					image.getSprite().setRotation(buttonrt.getangle());
+					image.getSprite().setPosition(buttonrt.getposition().x, buttonrt.getposition().y);
+					image.getSprite().setScale(buttonrt.getscale().x, buttonrt.getscale().y);
+					m_game->window().draw(image.getSprite());
+				}
+				else {
+					sf::RectangleShape rectangle(sf::Vector2f(button.getsize().x, button.getsize().y));
+					rectangle.setPosition(sf::Vector2f(buttonrt.getposition().x, buttonrt.getposition().y));
+					rectangle.setFillColor(button.getcolor());
 					m_game->window().draw(rectangle);
 				}
 			}

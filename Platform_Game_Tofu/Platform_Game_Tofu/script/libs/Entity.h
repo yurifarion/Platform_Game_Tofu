@@ -19,6 +19,7 @@ typedef std::tuple<
 	CRigidbody,
 	CUI,
 	CPanelUI,
+	CButtonUI,
 	CTileMap
 >ComponentTuple;
 

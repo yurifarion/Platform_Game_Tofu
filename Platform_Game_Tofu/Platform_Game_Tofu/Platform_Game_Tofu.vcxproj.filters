@@ -96,6 +96,9 @@
     <ClCompile Include="script\engine\RectTransform.cpp">
       <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClCompile>
+    <ClCompile Include="script\engine\ButtonUI.cpp">
+      <Filter>Arquivos de Recurso\Engine\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\libs\Action.h">
@@ -165,6 +168,9 @@
       <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClInclude>
     <ClInclude Include="script\libs\RectTransform.h">
+      <Filter>Arquivos de Recurso\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="script\libs\ButtonUI.h">
       <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClInclude>
   </ItemGroup>
