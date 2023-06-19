@@ -136,8 +136,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//TEST FOR UI
 	auto panelGO = m_entityManager.addEntity("UI");
-	PanelUI panel(m_game->assets().getSprite("panel"));
-	panelGO->addComponent<CPanelUI>(panel);
+	panelGO->addComponent<CPanelUI>(Vec2(200,200));
 	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
 }
 
@@ -558,12 +557,22 @@ void Scene_Play::sRender()
 		{
 			if (e->hasComponent<CPanelUI>())
 			{
-				auto& image = e->getComponent<CPanelUI>().panelui.getimage();
 				auto& panelrt = e->getComponent<CUI>().recttransform;
-				image.getSprite().setRotation(panelrt.getangle());
-				image.getSprite().setPosition(panelrt.getposition().x, panelrt.getposition().y);
-				image.getSprite().setScale(panelrt.getscale().x, panelrt.getscale().y);
-				m_game->window().draw(image.getSprite());
+				auto& panel = e->getComponent<CPanelUI>().panelui;
+				if (panel.hassprite())
+				{
+					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
+					image.getSprite().setRotation(panelrt.getangle());
+					image.getSprite().setPosition(panelrt.getposition().x, panelrt.getposition().y);
+					image.getSprite().setScale(panelrt.getscale().x, panelrt.getscale().y);
+					m_game->window().draw(image.getSprite());
+				}
+				else {
+					sf::RectangleShape rectangle(sf::Vector2f(panel.getsize().x, panel.getsize().y));
+					rectangle.setPosition(sf::Vector2f(panelrt.getposition().x, panelrt.getposition().y)); 
+					rectangle.setFillColor(panel.getcolor());
+					m_game->window().draw(rectangle);
+				}
 			}
 		}
 	}

@@ -146,8 +146,10 @@ class CPanelUI : public Component
 public:
 	PanelUI panelui;
 	CPanelUI() {}
-	CPanelUI(const PanelUI panel) 
-		:panelui(panel) {}
+	CPanelUI(const Sprite& image) 
+		:panelui(PanelUI(image)) {}
+	CPanelUI(const Vec2& size)
+		:panelui(PanelUI(size)) {}
 };
 class CTileMap : public Component
 {
