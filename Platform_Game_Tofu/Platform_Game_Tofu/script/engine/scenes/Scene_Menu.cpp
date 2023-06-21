@@ -20,7 +20,7 @@ void Scene_Menu::init()
     registerAction(sf::Keyboard::Enter, "CONFIRM");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
-    m_title = "No Name";
+    m_title = "Mr Tofu man";
     m_menuStrings.push_back("Play");
     m_menuStrings.push_back("Options");
     m_menuStrings.push_back("Level Editor");
