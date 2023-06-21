@@ -140,8 +140,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
 
 	auto buttonGO = m_entityManager.addEntity("UI");
-	buttonGO->addComponent<CUI>("Button", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
-	buttonGO->addComponent<CButtonUI>(Vec2(30, 30), buttonGO->getComponent<CUI>().recttransform);
+	buttonGO->addComponent<CUI>("Button", Vec2(0, 0), Vec2(10, 10),panelGO->getComponent<CUI>().recttransform);
+	buttonGO->addComponent<CButtonUI>(Vec2(20, 20), buttonGO->getComponent<CUI>().recttransform);
 	buttonGO->getComponent<CButtonUI>().buttonui.setcolor(sf::Color::Red);
 }
 
@@ -478,7 +478,8 @@ void Scene_Play::sUI()
 	{
 		if (e->hasComponent<CUI>())
 		{
-			e->getComponent<CUI>().recttransform.setposition(m_game->windowToWorld(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2)));
+			auto position = m_game->windowToWorld(e->getComponent<CUI>().recttransform.getposition());
+			e->getComponent<CUI>().recttransform.setscreenposition(position);
 		}
 	}
 
@@ -584,13 +585,13 @@ void Scene_Play::sRender()
 				{
 					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
 					image.getSprite().setRotation(panelrt.getangle());
-					image.getSprite().setPosition(panelrt.getposition().x, panelrt.getposition().y);
+					image.getSprite().setPosition(panelrt.getscreenposition().x, panelrt.getscreenposition().y);
 					image.getSprite().setScale(panelrt.getscale().x, panelrt.getscale().y);
 					m_game->window().draw(image.getSprite());
 				}
 				else {
 					sf::RectangleShape rectangle(sf::Vector2f(panel.getsize().x, panel.getsize().y));
-					rectangle.setPosition(sf::Vector2f(panelrt.getposition().x, panelrt.getposition().y)); 
+					rectangle.setPosition(sf::Vector2f(panelrt.getscreenposition().x, panelrt.getscreenposition().y));
 					rectangle.setFillColor(panel.getcolor());
 					m_game->window().draw(rectangle);
 				}
@@ -603,13 +604,13 @@ void Scene_Play::sRender()
 				{
 					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
 					image.getSprite().setRotation(buttonrt.getangle());
-					image.getSprite().setPosition(buttonrt.getposition().x, buttonrt.getposition().y);
+					image.getSprite().setPosition(buttonrt.getscreenposition().x, buttonrt.getscreenposition().y);
 					image.getSprite().setScale(buttonrt.getscale().x, buttonrt.getscale().y);
 					m_game->window().draw(image.getSprite());
 				}
 				else {
 					sf::RectangleShape rectangle(sf::Vector2f(button.getsize().x, button.getsize().y));
-					rectangle.setPosition(sf::Vector2f(buttonrt.getposition().x, buttonrt.getposition().y));
+					rectangle.setPosition(sf::Vector2f(buttonrt.getscreenposition().x, buttonrt.getscreenposition().y));
 					rectangle.setFillColor(button.getcolor());
 					m_game->window().draw(rectangle);
 				}
