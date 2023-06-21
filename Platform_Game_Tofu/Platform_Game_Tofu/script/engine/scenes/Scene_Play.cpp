@@ -136,13 +136,17 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//TEST FOR UI
 	auto panelGO = m_entityManager.addEntity("UI");
-	panelGO->addComponent<CPanelUI>(Vec2(200,200));
-	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(10, 10));
+	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(100, 100));
+	panelGO->addComponent<CImageUI>();
+	panelGO->addComponent<CTextUI>("Panel Text");
+
+
 
 	auto buttonGO = m_entityManager.addEntity("UI");
 	buttonGO->addComponent<CUI>("Button", Vec2(0, 0), Vec2(10, 10),panelGO->getComponent<CUI>().recttransform);
-	buttonGO->addComponent<CButtonUI>(Vec2(20, 20), buttonGO->getComponent<CUI>().recttransform);
-	buttonGO->getComponent<CButtonUI>().buttonui.setcolor(sf::Color::Red);
+	buttonGO->addComponent<CImageUI>();
+	buttonGO->addComponent<CButtonUI>(buttonGO->getComponent<CUI>().recttransform);
+	
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -492,10 +496,10 @@ void Scene_Play::sUI()
 			button.buttonui.Update(m_game->window());
 
 			//Check Button if is over
-			if (button.buttonui.ismouseover()) button.buttonui.setcolor(sf::Color::Yellow);
-			else  button.buttonui.setcolor(sf::Color::Red);
+			if (button.buttonui.ismouseover()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Yellow);
+			else  e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
 
-			if (button.buttonui.ispressed()) button.buttonui.setcolor(sf::Color::Blue);
+			if (button.buttonui.ispressed()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Blue);
 		}
 	}
 }
@@ -577,44 +581,32 @@ void Scene_Play::sRender()
 	{
 		if (e->hasComponent<CUI>())
 		{
-			if (e->hasComponent<CPanelUI>())
+			if (e->hasComponent<CImageUI>())
 			{
-				auto& panelrt = e->getComponent<CUI>().recttransform;
-				auto& panel = e->getComponent<CPanelUI>().panelui;
-				if (panel.hassprite())
+				if (e->getComponent<CImageUI>().imgui.hassprite())
 				{
-					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
-					image.getSprite().setRotation(panelrt.getangle());
-					image.getSprite().setPosition(panelrt.getscreenposition().x, panelrt.getscreenposition().y);
-					image.getSprite().setScale(panelrt.getscale().x, panelrt.getscale().y);
+					auto& image = e->getComponent<CImageUI>().imgui.getimage();
+					image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
+					image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
+					image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
 					m_game->window().draw(image.getSprite());
 				}
 				else {
-					sf::RectangleShape rectangle(sf::Vector2f(panel.getsize().x, panel.getsize().y));
-					rectangle.setPosition(sf::Vector2f(panelrt.getscreenposition().x, panelrt.getscreenposition().y));
-					rectangle.setFillColor(panel.getcolor());
+					sf::RectangleShape rectangle(sf::Vector2f(e->getComponent<CUI>().recttransform.getsize().x, e->getComponent<CUI>().recttransform.getsize().y));
+					rectangle.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+					rectangle.setFillColor(e->getComponent<CImageUI>().imgui.getcolor());
 					m_game->window().draw(rectangle);
 				}
 			}
-			else if (e->hasComponent<CButtonUI>())
-			{
-				auto& buttonrt = e->getComponent<CUI>().recttransform;
-				auto& button = e->getComponent<CButtonUI>().buttonui;
-				if (button.hassprite())
-				{
-					auto& image = e->getComponent<CPanelUI>().panelui.getimage();
-					image.getSprite().setRotation(buttonrt.getangle());
-					image.getSprite().setPosition(buttonrt.getscreenposition().x, buttonrt.getscreenposition().y);
-					image.getSprite().setScale(buttonrt.getscale().x, buttonrt.getscale().y);
-					m_game->window().draw(image.getSprite());
-				}
-				else {
-					sf::RectangleShape rectangle(sf::Vector2f(button.getsize().x, button.getsize().y));
-					rectangle.setPosition(sf::Vector2f(buttonrt.getscreenposition().x, buttonrt.getscreenposition().y));
-					rectangle.setFillColor(button.getcolor());
-					m_game->window().draw(rectangle);
-				}
-			}
+		}
+		if (e->hasComponent<CTextUI>())
+		{
+			sf::Text text;
+			text.setFont(m_game->assets().getFont("tech"));
+			text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
+			text.setString(e->getComponent<CTextUI>().textui.gettext());
+			text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+			m_game->window().draw(text);
 		}
 	}
 	//Draw Entities Collision Box

@@ -2,7 +2,8 @@
 
 #include "Assets.h"
 #include "ButtonUI.h"
-#include "PanelUI.h"
+#include "ImageUI.h"
+#include "TextUI.h"
 #include "RectTransform.h"
 #include "AnimatorMachine.h"
 #include "Rigidbody.h"
@@ -144,25 +145,29 @@ public:
 	CUI(const std::string& n, const Vec2& pos, const Vec2& scale, const RectTransform& parent)
 		:name(n), recttransform(RectTransform(pos, scale,parent)) {}
 }; 
-class CPanelUI : public Component
+class CImageUI : public Component
 {
 public:
-	PanelUI panelui;
-	CPanelUI() {}
-	CPanelUI(const Sprite& image) 
-		:panelui(PanelUI(image)) {}
-	CPanelUI(const Vec2& size)
-		:panelui(PanelUI(size)) {}
+	ImageUI imgui;
+	CImageUI() {}
+	CImageUI(const Sprite& image)
+		:imgui(ImageUI(image)) {}
 };
 class CButtonUI : public Component
 {
 public:
 	ButtonUI buttonui;
 	CButtonUI() {}
-	CButtonUI(const Sprite& image,const RectTransform& rect)
-		:buttonui(ButtonUI(image, rect)) {}
-	CButtonUI(const Vec2& size, const RectTransform& rect)
-		:buttonui(ButtonUI(size, rect)) {}
+	CButtonUI(const RectTransform& rect)
+		:buttonui(ButtonUI(rect)) {}
+};
+class CTextUI : public Component
+{
+public:
+	TextUI textui;
+	CTextUI() {}
+	CTextUI(const std::string& text, const sf::Color& color = sf::Color::White)
+		:textui(TextUI(text,color)) {}
 };
 class CTileMap : public Component
 {

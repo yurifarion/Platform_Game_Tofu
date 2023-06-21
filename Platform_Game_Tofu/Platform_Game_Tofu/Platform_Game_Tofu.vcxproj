@@ -28,7 +28,7 @@
     <ClCompile Include="script\Engine\EntityManager.cpp" />
     <ClCompile Include="script\Engine\GameEngine.cpp" />
     <ClCompile Include="script\engine\MapLevel.cpp" />
-    <ClCompile Include="script\engine\PanelUI.cpp" />
+    <ClCompile Include="script\engine\ImageUI.cpp" />
     <ClCompile Include="script\Engine\Physics.cpp" />
     <ClCompile Include="script\engine\RectTransform.cpp" />
     <ClCompile Include="script\Engine\Rigidbody.cpp" />
@@ -39,6 +39,7 @@
     <ClCompile Include="script\Engine\Scenes\Scene_Play.cpp" />
     <ClCompile Include="script\Engine\Scenes\Scene_Splash.cpp" />
     <ClCompile Include="script\Engine\Sprite.cpp" />
+    <ClCompile Include="script\engine\TextUI.cpp" />
     <ClCompile Include="script\Engine\Vec2.cpp" />
     <ClCompile Include="script\main.cpp" />
     <ClCompile Include="script\utils\tinyfiledialogs.c" />
@@ -55,7 +56,7 @@
     <ClInclude Include="script\libs\EntityManager.h" />
     <ClInclude Include="script\libs\GameEngine.h" />
     <ClInclude Include="script\libs\MapLevel.h" />
-    <ClInclude Include="script\libs\PanelUI.h" />
+    <ClInclude Include="script\libs\ImageUI.h" />
     <ClInclude Include="script\libs\Physics.h" />
     <ClInclude Include="script\libs\RectTransform.h" />
     <ClInclude Include="script\libs\Rigidbody.h" />
@@ -66,6 +67,7 @@
     <ClInclude Include="script\libs\Scene_Play.h" />
     <ClInclude Include="script\libs\Scene_Splash.h" />
     <ClInclude Include="script\libs\Sprite.h" />
+    <ClInclude Include="script\libs\TextUI.h" />
     <ClInclude Include="script\libs\Vec2.h" />
     <ClInclude Include="script\utils\tinyfiledialogs.h" />
   </ItemGroup>

@@ -2,11 +2,11 @@
 
 RectTransform::RectTransform() {}
 
-RectTransform::RectTransform(const Vec2& pos, const Vec2& scale)
-	:  m_pos(pos), m_scale(scale),m_screenpos(pos) {}
+RectTransform::RectTransform(const Vec2& pos, const Vec2& size)
+	:  m_pos(pos), m_size(size),m_screenpos(pos) {}
 
-RectTransform::RectTransform(const Vec2& pos, const Vec2& scale, const RectTransform& parent)
-	: m_pos(pos), m_scale(scale), m_screenpos(pos), m_parent(std::make_shared<RectTransform>(parent))
+RectTransform::RectTransform(const Vec2& pos, const Vec2& size, const RectTransform& parent)
+	: m_pos(pos), m_size(size), m_screenpos(pos), m_parent(std::make_shared<RectTransform>(parent))
 {
 	if (m_parent != NULL)	m_pos = pos + m_parent->getposition();
 }
@@ -44,6 +44,14 @@ void RectTransform::setscreenposition(const Vec2& pos)
 const float RectTransform::getangle()
 {
 	return m_angle;
+}
+const Vec2& RectTransform::getsize()
+{
+	return m_size;
+}
+void RectTransform::setsize(const Vec2& size)
+{
+	m_size = size;
 }
 const Vec2& RectTransform::getscale()
 {

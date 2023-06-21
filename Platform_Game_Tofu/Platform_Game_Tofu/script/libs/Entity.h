@@ -18,8 +18,9 @@ typedef std::tuple<
 	CSprite,
 	CRigidbody,
 	CUI,
-	CPanelUI,
+	CImageUI,
 	CButtonUI,
+	CTextUI,
 	CTileMap
 >ComponentTuple;
 
