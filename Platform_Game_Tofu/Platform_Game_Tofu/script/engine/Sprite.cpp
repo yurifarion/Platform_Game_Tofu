@@ -19,7 +19,7 @@ Sprite::Sprite(const std::string& name, const sf::Texture& t, const Vec2& size, 
 	, m_sprite(t)
 {
 	m_size = Vec2(size.x, size.y);
-	m_sprite.setOrigin(size.x / 2.0f, size.y / 2.0f);
+	m_sprite.setOrigin(0, 0);
 
 	m_sprite.setTextureRect(sf::IntRect(origin.x, origin.y,size.x,size.y));
 }

@@ -15,23 +15,22 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine)
 
 void Scene_Menu::init()
 {
-    registerAction(sf::Keyboard::W, "UP");
-    registerAction(sf::Keyboard::S, "DOWN");
-    registerAction(sf::Keyboard::Enter, "CONFIRM");
+    registerAction(sf::Keyboard::L, "LEVELEDITOR");
+    registerAction(sf::Keyboard::K, "CUSTOMLEVEL");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
     m_entityManager = EntityManager();
 
     //Background Image
     auto bgGO = m_entityManager.addEntity("UI");
-    bgGO->addComponent<CUI>("Background", Vec2(m_game->window().getSize().x/2, m_game->window().getSize().y/2), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+    bgGO->addComponent<CUI>("Background", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
     bgGO->addComponent<CImageUI>(m_game->assets().getSprite("menubg"));
     bgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
 
     //Logo image
     auto logoGO = m_entityManager.addEntity("UI");
     Vec2 logosize = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2);
-    Vec2 logoposition = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 4);
+    Vec2 logoposition = Vec2(m_game->window().getSize().x / 4, 0);
 
     logoGO->addComponent<CUI>("Logo", logoposition, logosize, bgGO->getComponent<CUI>().recttransform);
     logoGO->addComponent<CImageUI>(m_game->assets().getSprite("logo"));
@@ -47,22 +46,6 @@ void Scene_Menu::init()
     startText->addComponent<CTextUI>("Click to start...");
     startText->getComponent<CTextUI>().textui.setfontsize(16);
 
-
-
-    /*auto buttonGO = m_entityManager.addEntity("UI");
-    buttonGO->addComponent<CUI>("Button", Vec2(50, 50), Vec2(20, 20), panelGO->getComponent<CUI>().recttransform);
-    buttonGO->addComponent<CImageUI>();
-    buttonGO->addComponent<CButtonUI>(buttonGO->getComponent<CUI>().recttransform);*/
-
-    /*m_title = "Mr Tofu man";
-    m_menuStrings.push_back("Play");
-    m_menuStrings.push_back("Options");
-    m_menuStrings.push_back("Level Editor");
-    m_menuStrings.push_back("Credits");
-    m_menuStrings.push_back("Quit");
-    m_menuText.setFont(m_game->assets().getFont("tech"));
-    m_menuText.setCharacterSize(64);*/
-
 }
 
 void Scene_Menu::update()
@@ -74,15 +57,11 @@ void Scene_Menu::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
-        if (action.name() == "UP")
+        if (action.name() == "LEVELEDITOR")
         {
             m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditorMenu>(m_game));
         }
-        else if (action.name() == "QUIT"|| action.name() == "CLOSE_WINDOW")
-        {
-            onEnd();
-        }
-        else
+        else if (action.name() == "CUSTOMLEVEL")
         {
             char const* path;
             char const* fileter[2] = { "*Level","*.Level" };
@@ -93,6 +72,15 @@ void Scene_Menu::sDoAction(const Action& action)
                 std::cout << "Null file";
             }
             else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+        }
+        else if (action.name() == "QUIT"|| action.name() == "CLOSE_WINDOW")
+        {
+            onEnd();
+        }
+        else
+        {
+            char const* path = "Levels/ExampleLevel";
+            m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
         }
     }
 }
@@ -142,32 +130,6 @@ void Scene_Menu::sRender()
         }
     }
 
-
-    // draw the game title in the top-left of the screen
-   /* m_menuText.setCharacterSize(100);
-    m_menuText.setString(m_title);
-    m_menuText.setFillColor(sf::Color(100, 100, 100));
-    m_menuText.setPosition(sf::Vector2f(500, 20));
-    m_menuText.setCharacterSize(50);
-    m_game->window().draw(m_menuText);
-   
-
-    // draw all of the menu options
-    for (size_t i = 0; i < m_menuStrings.size(); i++)
-    {
-        m_menuText.setString(m_menuStrings[i]);
-        m_menuText.setFillColor(i == m_selectedMenuIndex ? sf::Color::White : sf::Color(100, 100, 100));
-        m_menuText.setPosition(sf::Vector2f(500, 300 + i * 72));
-        m_game->window().draw(m_menuText);
-    }
-
-    // draw the controls in the bottom-left
-    m_menuText.setCharacterSize(20);
-    m_menuText.setFillColor(sf::Color(100, 100, 100));
-    m_menuText.setString("up: w     down: s    play: d      back: esc");
-    m_menuText.setPosition(sf::Vector2f(10, 690));
-
-    m_game->window().draw(m_menuText);*/
 }
 
 void Scene_Menu::onEnd()

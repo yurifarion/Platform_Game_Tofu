@@ -133,6 +133,73 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 	}
 
+	//Pause Menu UI
+	//Background
+	auto pausebgGO = m_entityManager.addEntity("UI");
+	pausebgGO->addComponent<CUI>("Pause_bg", Vec2(0,0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+	pausebgGO->addComponent<CImageUI>();
+	pausebgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f,0.0f,0.0f,100.0f));
+
+	//panel
+	auto pausepanel = m_entityManager.addEntity("UI");
+
+	Vec2 panelsize = Vec2(m_game->window().getSize().x / 3, m_game->window().getSize().y / 3);
+	Vec2 panelposition = Vec2(m_game->window().getSize().x / 2 - panelsize.x/2, m_game->window().getSize().y / 2 - panelsize.y / 2);
+
+	pausepanel->addComponent<CUI>("Pause_panel",panelposition,panelsize);
+	pausepanel->addComponent<CImageUI>(m_game->assets().getSprite("dialogwin"));
+	pausepanel->getComponent<CImageUI>().imgui.setcolor(sf::Color(255, 255, 255, 200.0f));
+
+	//Pause Title text
+	auto pausetitle = m_entityManager.addEntity("UI");
+
+	pausetitle->addComponent<CUI>("Pause_Titlepanel", Vec2(0,0), Vec2(0, 0), pausepanel->getComponent<CUI>().recttransform);
+	pausetitle->addComponent<CTextUI>("Paused");
+	pausetitle->getComponent<CTextUI>().textui.setfontsize(32);
+	float textsizex = pausetitle->getComponent<CTextUI>().textui.gettext().length() * pausetitle->getComponent<CTextUI>().textui.getfontsize() ;
+	Vec2 textpos = Vec2(111, 15);
+	pausetitle->getComponent<CUI>().recttransform.setposition(textpos);
+
+	//Resume Button
+	auto pauseresumebtn = m_entityManager.addEntity("UI");
+
+	Vec2 resumebtnsize = Vec2(200,50);
+	Vec2 resumebtnposition = Vec2(100, 80);
+
+	pauseresumebtn->addComponent<CUI>("Pause_resumebtn", resumebtnposition, resumebtnsize, pausepanel->getComponent<CUI>().recttransform);
+	pauseresumebtn->addComponent<CImageUI>();
+	pauseresumebtn->getComponent<CImageUI>().imgui.setcolor(sf::Color(5, 186, 5, 200.0f));
+	pauseresumebtn->addComponent<CButtonUI>(pauseresumebtn->getComponent<CUI>().recttransform);
+
+	//Resume button text
+	auto resumebtntext = m_entityManager.addEntity("UI");
+
+	resumebtntext->addComponent<CUI>("resumebtntext", Vec2(0, 0), Vec2(0, 0), pauseresumebtn->getComponent<CUI>().recttransform);
+	resumebtntext->addComponent<CTextUI>("Resume");
+	resumebtntext->getComponent<CTextUI>().textui.setfontsize(25);
+	 textpos = Vec2(35,10);
+	resumebtntext->getComponent<CUI>().recttransform.setposition(textpos);
+
+	//Quit Button
+	auto quitbtn = m_entityManager.addEntity("UI");
+
+	Vec2 quitbtnsize = Vec2(200, 50);
+	Vec2 quitbtnposition = Vec2(100, 150);
+
+	quitbtn->addComponent<CUI>("quitbtn", quitbtnposition, quitbtnsize, pausepanel->getComponent<CUI>().recttransform);
+	quitbtn->addComponent<CImageUI>();
+	quitbtn->getComponent<CImageUI>().imgui.setcolor(sf::Color(5, 186, 5, 200.0f));
+	quitbtn->addComponent<CButtonUI>(quitbtn->getComponent<CUI>().recttransform);
+
+	//Resume button text
+	auto quitbtntext = m_entityManager.addEntity("UI");
+
+	quitbtntext->addComponent<CUI>("quitbtntext", Vec2(0, 0), Vec2(0, 0), quitbtn->getComponent<CUI>().recttransform);
+	quitbtntext->addComponent<CTextUI>("Quit");
+	quitbtntext->getComponent<CTextUI>().textui.setfontsize(25);
+	textpos = Vec2(35, 10);
+	quitbtntext->getComponent<CUI>().recttransform.setposition(textpos);
+
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -482,10 +549,15 @@ void Scene_Play::sUI()
 			button.buttonui.Update(m_game->window());
 
 			//Check Button if is over
-			if (button.buttonui.ismouseover()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Yellow);
-			else  e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
+			if (button.buttonui.ismouseover()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color(8.6f, 212.7f, 8.6f, 200));
+			else  e->getComponent<CImageUI>().imgui.setcolor(sf::Color(5, 186, 5, 200.0f));
 
-			if (button.buttonui.ispressed()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color::Blue);
+			if (button.buttonui.ispressed())
+			{
+				e->getComponent<CImageUI>().imgui.setcolor(sf::Color(9.7f, 145, 9.7f, 200));
+
+				if(e->getComponent<CUI>().name == "quitbtn") onEnd();
+			}
 		}
 	}
 }

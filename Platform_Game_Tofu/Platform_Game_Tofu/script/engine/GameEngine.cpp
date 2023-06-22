@@ -18,7 +18,7 @@ void GameEngine::init(const std::string& path)
 	m_window.create(sf::VideoMode(1280, 720), "Tofu's Odyssey", sf::Style::Titlebar | sf::Style::Close);
 	m_window.setFramerateLimit(60);
 	m_camera_view = window().getDefaultView();
-	changeScene("SPLASH", std::make_shared<Scene_Splash>(this));
+	changeScene("MENU", std::make_shared<Scene_Menu>(this));
 }
 
 std::shared_ptr<Scene> GameEngine::currentScene()
