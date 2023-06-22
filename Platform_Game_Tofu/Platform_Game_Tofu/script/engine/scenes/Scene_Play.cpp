@@ -133,20 +133,6 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 	}
 
-
-	//TEST FOR UI
-	auto panelGO = m_entityManager.addEntity("UI");
-	panelGO->addComponent<CUI>("Panel", Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2), Vec2(300, 300));
-	panelGO->addComponent<CImageUI>();
-	panelGO->addComponent<CTextUI>("Panel Text");
-
-
-
-	auto buttonGO = m_entityManager.addEntity("UI");
-	buttonGO->addComponent<CUI>("Button", Vec2(50, 50), Vec2(20, 20),panelGO->getComponent<CUI>().recttransform);
-	buttonGO->addComponent<CImageUI>();
-	buttonGO->addComponent<CButtonUI>(buttonGO->getComponent<CUI>().recttransform);
-	
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)

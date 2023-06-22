@@ -20,14 +20,48 @@ void Scene_Menu::init()
     registerAction(sf::Keyboard::Enter, "CONFIRM");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
-    m_title = "Mr Tofu man";
+    m_entityManager = EntityManager();
+
+    //Background Image
+    auto bgGO = m_entityManager.addEntity("UI");
+    bgGO->addComponent<CUI>("Background", Vec2(m_game->window().getSize().x/2, m_game->window().getSize().y/2), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+    bgGO->addComponent<CImageUI>(m_game->assets().getSprite("menubg"));
+    bgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
+
+    //Logo image
+    auto logoGO = m_entityManager.addEntity("UI");
+    Vec2 logosize = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2);
+    Vec2 logoposition = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 4);
+
+    logoGO->addComponent<CUI>("Logo", logoposition, logosize, bgGO->getComponent<CUI>().recttransform);
+    logoGO->addComponent<CImageUI>(m_game->assets().getSprite("logo"));
+    logoGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Blue);
+
+    auto versionText = m_entityManager.addEntity("UI");
+    versionText->addComponent<CUI>("versionText", Vec2(0,0), Vec2(0, 0), bgGO->getComponent<CUI>().recttransform);
+    versionText->addComponent<CTextUI>("Version 0.0 - Alpha");
+    versionText->getComponent<CUI>().recttransform.setscreenposition(Vec2(0, m_game->window().getSize().y - (versionText->getComponent<CTextUI>().textui.getfontsize() * 2)));
+
+    auto startText = m_entityManager.addEntity("UI");
+    startText->addComponent<CUI>("startText",  Vec2(m_game->window().getSize().x /2.5f, m_game->window().getSize().y / 1.5f), Vec2(0, 0), bgGO->getComponent<CUI>().recttransform);
+    startText->addComponent<CTextUI>("Click to start...");
+    startText->getComponent<CTextUI>().textui.setfontsize(16);
+
+
+
+    /*auto buttonGO = m_entityManager.addEntity("UI");
+    buttonGO->addComponent<CUI>("Button", Vec2(50, 50), Vec2(20, 20), panelGO->getComponent<CUI>().recttransform);
+    buttonGO->addComponent<CImageUI>();
+    buttonGO->addComponent<CButtonUI>(buttonGO->getComponent<CUI>().recttransform);*/
+
+    /*m_title = "Mr Tofu man";
     m_menuStrings.push_back("Play");
     m_menuStrings.push_back("Options");
     m_menuStrings.push_back("Level Editor");
     m_menuStrings.push_back("Credits");
     m_menuStrings.push_back("Quit");
     m_menuText.setFont(m_game->assets().getFont("tech"));
-    m_menuText.setCharacterSize(64);
+    m_menuText.setCharacterSize(64);*/
 
 }
 
@@ -42,40 +76,23 @@ void Scene_Menu::sDoAction(const Action& action)
     {
         if (action.name() == "UP")
         {
-            if (m_selectedMenuIndex > 0) { m_selectedMenuIndex--; }
-            else { m_selectedMenuIndex = m_menuStrings.size() - 1; }
-        }
-        else if (action.name() == "DOWN")
-        {
-            m_selectedMenuIndex = (m_selectedMenuIndex + 1) % m_menuStrings.size();
-        }
-        else if (action.name() == "CONFIRM")
-        {
-            if (m_menuStrings[m_selectedMenuIndex] == "Play")
-            {
-                char const* path;
-                char const* fileter[2] = { "*Level","*.Level" };
-                path = tinyfd_openFileDialog("Load Level", "", 0, fileter, "Level file", 0);
-
-                if (path == NULL)
-                {
-                    std::cout << "Null file";
-                }
-                else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
-                
-            }
-            if (m_menuStrings[m_selectedMenuIndex] == "Level Editor")
-            {
-                m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditorMenu>(m_game));
-            }
-            if (m_menuStrings[m_selectedMenuIndex] == "Quit")
-            {
-                onEnd();
-            }
+            m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditorMenu>(m_game));
         }
         else if (action.name() == "QUIT"|| action.name() == "CLOSE_WINDOW")
         {
             onEnd();
+        }
+        else
+        {
+            char const* path;
+            char const* fileter[2] = { "*Level","*.Level" };
+            path = tinyfd_openFileDialog("Load Level", "", 0, fileter, "Level file", 0);
+
+            if (path == NULL)
+            {
+                std::cout << "Null file";
+            }
+            else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
         }
     }
 }
@@ -89,8 +106,45 @@ void Scene_Menu::sRender()
     m_game->window().clear();
 
 
+    //Draw UI
+    for (auto e : m_entityManager.getEntities("UI"))
+    {
+        if (e->hasComponent<CUI>())
+        {
+            if (e->hasComponent<CImageUI>())
+            {
+                if (e->getComponent<CImageUI>().imgui.hassprite())
+                {
+                    auto& image = e->getComponent<CImageUI>().imgui.getimage();
+                    image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
+                    image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
+                    image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
+                    m_game->window().draw(image.getSprite());
+                }
+                else {
+                    sf::RectangleShape rectangle(sf::Vector2f(e->getComponent<CUI>().recttransform.getsize().x, e->getComponent<CUI>().recttransform.getsize().y));
+                    rectangle.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+                    rectangle.setFillColor(e->getComponent<CImageUI>().imgui.getcolor());
+                    m_game->window().draw(rectangle);
+                }
+            }
+        }
+        if (e->hasComponent<CTextUI>())
+        {
+            sf::Text text;
+            text.setFont(m_game->assets().getFont("tech"));
+            text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
+            text.setString(e->getComponent<CTextUI>().textui.gettext());
+            text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+            text.setOutlineColor(sf::Color::Black);
+            text.setOutlineThickness(1);
+            m_game->window().draw(text);
+        }
+    }
+
+
     // draw the game title in the top-left of the screen
-    m_menuText.setCharacterSize(100);
+   /* m_menuText.setCharacterSize(100);
     m_menuText.setString(m_title);
     m_menuText.setFillColor(sf::Color(100, 100, 100));
     m_menuText.setPosition(sf::Vector2f(500, 20));
@@ -113,7 +167,7 @@ void Scene_Menu::sRender()
     m_menuText.setString("up: w     down: s    play: d      back: esc");
     m_menuText.setPosition(sf::Vector2f(10, 690));
 
-    m_game->window().draw(m_menuText);
+    m_game->window().draw(m_menuText);*/
 }
 
 void Scene_Menu::onEnd()
