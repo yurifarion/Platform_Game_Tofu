@@ -142,7 +142,7 @@ public:
 	CUI() {}
 	CUI(const std::string& n, const Vec2& pos, const Vec2& scale) 
 		:name(n),recttransform(RectTransform(pos,scale)) {}
-	CUI(const std::string& n, const Vec2& pos, const Vec2& scale, const RectTransform& parent)
+	CUI(const std::string& n, const Vec2& pos, const Vec2& scale, RectTransform* parent)
 		:name(n), recttransform(RectTransform(pos, scale,parent)) {}
 }; 
 class CImageUI : public Component

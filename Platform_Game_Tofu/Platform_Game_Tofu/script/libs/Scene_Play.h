@@ -16,6 +16,7 @@ class Scene_Play : public Scene
 protected:
 
 	std::shared_ptr<Entity> m_player;
+	std::shared_ptr<Entity> m_pausemenu;
 	MapLevel m_maplevel;
 	PlayerConfig m_playerConfig;
 	bool m_drawTextures = true;

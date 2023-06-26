@@ -10,16 +10,19 @@ class RectTransform
 	Vec2 m_scale = Vec2(1.0f, 1.0f);
 	float m_angle = 0.0f;
 	bool m_active = true;
-	std::shared_ptr<RectTransform> m_parent;
+	bool m_visible = true;
+	RectTransform* m_parent = nullptr;
 
 public:
 
 	RectTransform();
 	RectTransform(const Vec2& pos, const Vec2& size);
-	RectTransform(const Vec2& pos, const Vec2& size, const RectTransform& parent);
+	RectTransform(const Vec2& pos, const Vec2& size, RectTransform* parent);
 
 	bool isActive();
 	void SetActive(bool active);
+	bool isVisible();
+	void SetVisible(bool visible);
 	const Vec2& getposition();
 	void setposition(const Vec2& pos);
 	const Vec2& getscreenposition();
@@ -28,6 +31,6 @@ public:
 	const float getangle();
 	const Vec2& getsize();
 	void setsize(const Vec2& size);
-	const std::shared_ptr<RectTransform> getparent();
-	void setparent(const RectTransform parent);
+	const RectTransform* getparent();
+	void setparent(RectTransform* parent);
 };

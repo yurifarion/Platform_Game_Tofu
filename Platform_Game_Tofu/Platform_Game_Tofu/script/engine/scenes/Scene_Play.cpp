@@ -14,8 +14,7 @@ Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 
 void Scene_Play::init(const std::string& levelPath)
 {
-	registerAction(sf::Keyboard::P, "PAUSE");
-	registerAction(sf::Keyboard::Escape, "QUIT");
+	registerAction(sf::Keyboard::Escape, "PAUSE");
 	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
@@ -135,14 +134,15 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//Pause Menu UI
 	//Background
-	auto pbgGO = m_entityManager.addEntity("UI");
-	pbgGO->addComponent<CUI>("Pause_bg", Vec2(0,0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
-	pbgGO->addComponent<CImageUI>();
-	pbgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
+	m_pausemenu = m_entityManager.addEntity("UI");
+	m_pausemenu->addComponent<CUI>("Pause_bg", Vec2(0,0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+	m_pausemenu->addComponent<CImageUI>();
+	m_pausemenu->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
+	m_pausemenu->getComponent<CUI>().recttransform.SetActive(false);
 
 	//Title
 	auto ptitle = m_entityManager.addEntity("UI");
-	ptitle->addComponent<CUI>("Pause_title", Vec2(550, 250), Vec2(200, 200), pbgGO->getComponent<CUI>().recttransform);
+	ptitle->addComponent<CUI>("Pause_title", Vec2(550, 250), Vec2(200, 200),&m_pausemenu->getComponent<CUI>().recttransform);
 	ptitle->addComponent<CTextUI>("PAUSE");
 	ptitle->getComponent<CTextUI>().textui.setfontsize(32);
 	float centerx = m_game->window().getSize().x / 2 - (ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length() / 2);
@@ -151,7 +151,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//Resume button
 	auto presumebtn = m_entityManager.addEntity("UI");
-	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(565, 350), Vec2(200, 200), pbgGO->getComponent<CUI>().recttransform);
+	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(565, 350), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
 	presumebtn->addComponent<CTextUI>("Resume");
 	presumebtn->getComponent<CTextUI>().textui.setfontsize(20);
 	centerx = m_game->window().getSize().x / 2 - (presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length() / 2);
@@ -160,7 +160,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//Quit button
 	auto pquitbtn = m_entityManager.addEntity("UI");
 	
-	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(600, 400), Vec2(200, 200), pbgGO->getComponent<CUI>().recttransform);
+	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(600, 400), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
 	pquitbtn->addComponent<CTextUI>("Quit");
 	pquitbtn->getComponent<CTextUI>().textui.setfontsize(20);
 	centerx = m_game->window().getSize().x / 2 - (pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length()/2);
@@ -406,7 +406,11 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "TOGGLE_DEBUG") { m_drawDebug = !m_drawDebug; }
 
 		//Game State Input
-		else if (action.name() == "PAUSE") { setPaused(!m_paused); }
+		else if (action.name() == "PAUSE") 
+		{ 
+			setPaused(!m_paused); 
+			m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+		}
 		else if (action.name() == "QUIT") { onEnd(); }
 		else if (action.name() == "JUMP")
 		{
@@ -605,32 +609,36 @@ void Scene_Play::sRender()
 	{
 		if (e->hasComponent<CUI>())
 		{
-			if (e->hasComponent<CImageUI>())
+			if (e->getComponent<CUI>().recttransform.isVisible())
 			{
-				if (e->getComponent<CImageUI>().imgui.hassprite())
+				if (e->hasComponent<CImageUI>())
 				{
-					auto& image = e->getComponent<CImageUI>().imgui.getimage();
-					image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
-					image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
-					image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
-					m_game->window().draw(image.getSprite());
+					if (e->getComponent<CImageUI>().imgui.hassprite())
+					{
+						auto& image = e->getComponent<CImageUI>().imgui.getimage();
+						image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
+						image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
+						image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
+						m_game->window().draw(image.getSprite());
+					}
+					else {
+						sf::RectangleShape rectangle(sf::Vector2f(e->getComponent<CUI>().recttransform.getsize().x, e->getComponent<CUI>().recttransform.getsize().y));
+						rectangle.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+						rectangle.setFillColor(e->getComponent<CImageUI>().imgui.getcolor());
+						m_game->window().draw(rectangle);
+					}
 				}
-				else {
-					sf::RectangleShape rectangle(sf::Vector2f(e->getComponent<CUI>().recttransform.getsize().x, e->getComponent<CUI>().recttransform.getsize().y));
-					rectangle.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
-					rectangle.setFillColor(e->getComponent<CImageUI>().imgui.getcolor());
-					m_game->window().draw(rectangle);
+
+				if (e->hasComponent<CTextUI>())
+				{
+					sf::Text text;
+					text.setFont(m_game->assets().getFont("tech"));
+					text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
+					text.setString(e->getComponent<CTextUI>().textui.gettext());
+					text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+					m_game->window().draw(text);
 				}
 			}
-		}
-		if (e->hasComponent<CTextUI>())
-		{
-			sf::Text text;
-			text.setFont(m_game->assets().getFont("tech"));
-			text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
-			text.setString(e->getComponent<CTextUI>().textui.gettext());
-			text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
-			m_game->window().draw(text);
 		}
 	}
 	//Draw Entities Collision Box

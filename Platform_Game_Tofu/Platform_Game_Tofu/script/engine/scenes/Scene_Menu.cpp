@@ -32,17 +32,17 @@ void Scene_Menu::init()
     Vec2 logosize = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2);
     Vec2 logoposition = Vec2(m_game->window().getSize().x / 4, 0);
 
-    logoGO->addComponent<CUI>("Logo", logoposition, logosize, bgGO->getComponent<CUI>().recttransform);
+    logoGO->addComponent<CUI>("Logo", logoposition, logosize, &bgGO->getComponent<CUI>().recttransform);
     logoGO->addComponent<CImageUI>(m_game->assets().getSprite("logo"));
     logoGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Blue);
 
     auto versionText = m_entityManager.addEntity("UI");
-    versionText->addComponent<CUI>("versionText", Vec2(0,0), Vec2(0, 0), bgGO->getComponent<CUI>().recttransform);
+    versionText->addComponent<CUI>("versionText", Vec2(0,0), Vec2(0, 0), &bgGO->getComponent<CUI>().recttransform);
     versionText->addComponent<CTextUI>("Version 0.0 - Alpha");
     versionText->getComponent<CUI>().recttransform.setscreenposition(Vec2(0, m_game->window().getSize().y - (versionText->getComponent<CTextUI>().textui.getfontsize() * 2)));
 
     auto startText = m_entityManager.addEntity("UI");
-    startText->addComponent<CUI>("startText",  Vec2(m_game->window().getSize().x /2.5f, m_game->window().getSize().y / 1.5f), Vec2(0, 0), bgGO->getComponent<CUI>().recttransform);
+    startText->addComponent<CUI>("startText",  Vec2(m_game->window().getSize().x /2.5f, m_game->window().getSize().y / 1.5f), Vec2(0, 0), &bgGO->getComponent<CUI>().recttransform);
     startText->addComponent<CTextUI>("Click to start...");
     startText->getComponent<CTextUI>().textui.setfontsize(16);
 

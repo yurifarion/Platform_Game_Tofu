@@ -5,8 +5,8 @@ RectTransform::RectTransform() {}
 RectTransform::RectTransform(const Vec2& pos, const Vec2& size)
 	:  m_pos(pos), m_size(size),m_screenpos(pos) {}
 
-RectTransform::RectTransform(const Vec2& pos, const Vec2& size, const RectTransform& parent)
-	: m_pos(pos), m_size(size), m_screenpos(pos), m_parent(std::make_shared<RectTransform>(parent))
+RectTransform::RectTransform(const Vec2& pos, const Vec2& size, RectTransform* parent)
+	: m_pos(pos), m_size(size), m_screenpos(pos), m_parent(parent)
 {
 	if (m_parent != NULL)	m_pos = pos + m_parent->getposition();
 }
@@ -19,6 +19,22 @@ bool RectTransform::isActive()
 void RectTransform::SetActive(bool active)
 {
 	m_active = active;
+}
+bool RectTransform::isVisible()
+{
+	if (m_parent != NULL)
+	{
+		if (!m_parent->isActive() || !m_active) return false;
+		return m_visible;
+	}
+	else
+	{
+		return (m_active && m_visible);
+	}
+}
+void RectTransform::SetVisible(bool visible)
+{
+	m_visible = visible;
 }
 const Vec2& RectTransform::getposition()
 {
@@ -57,13 +73,12 @@ const Vec2& RectTransform::getscale()
 {
 	return m_scale;
 }
-const std::shared_ptr<RectTransform> RectTransform::getparent()
+const RectTransform* RectTransform::getparent()
 {
-	if (m_parent == NULL) return std::shared_ptr<RectTransform>(this);
 	return m_parent;
 }
 
-void RectTransform::setparent(const RectTransform parent)
+void RectTransform::setparent(RectTransform* parent)
 {
-	m_parent = std::make_shared<RectTransform>(parent);
+	m_parent = parent;
 }
