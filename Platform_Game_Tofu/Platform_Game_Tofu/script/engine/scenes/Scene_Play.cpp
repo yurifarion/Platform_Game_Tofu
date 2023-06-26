@@ -135,14 +135,14 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//Pause Menu UI
 	//Background
 	m_pausemenu = m_entityManager.addEntity("UI");
-	m_pausemenu->addComponent<CUI>("Pause_bg", Vec2(0,0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+	m_pausemenu->addComponent<CUI>("Pause_bg", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
 	m_pausemenu->addComponent<CImageUI>();
 	m_pausemenu->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
 	m_pausemenu->getComponent<CUI>().recttransform.SetActive(false);
 
 	//Title
 	auto ptitle = m_entityManager.addEntity("UI");
-	ptitle->addComponent<CUI>("Pause_title", Vec2(550, 250), Vec2(200, 200),&m_pausemenu->getComponent<CUI>().recttransform);
+	ptitle->addComponent<CUI>("Pause_title", Vec2(550, 250), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
 	ptitle->addComponent<CTextUI>("PAUSE");
 	ptitle->getComponent<CTextUI>().textui.setfontsize(32);
 	float centerx = m_game->window().getSize().x / 2 - (ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length() / 2);
@@ -151,21 +151,25 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//Resume button
 	auto presumebtn = m_entityManager.addEntity("UI");
-	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(565, 350), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
+	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(565, 350), Vec2(120, 25), &m_pausemenu->getComponent<CUI>().recttransform);
 	presumebtn->addComponent<CTextUI>("Resume");
 	presumebtn->getComponent<CTextUI>().textui.setfontsize(20);
 	centerx = m_game->window().getSize().x / 2 - (presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length() / 2);
 	presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(centerx, 350));
+	presumebtn->addComponent<CButtonUI>(presumebtn->getComponent<CUI>().recttransform);
+	presumebtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
+
+		});
 
 	//Quit button
 	auto pquitbtn = m_entityManager.addEntity("UI");
 	
-	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(600, 400), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
+	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(600, 400), Vec2(120, 50), &m_pausemenu->getComponent<CUI>().recttransform);
 	pquitbtn->addComponent<CTextUI>("Quit");
 	pquitbtn->getComponent<CTextUI>().textui.setfontsize(20);
 	centerx = m_game->window().getSize().x / 2 - (pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length()/2);
 	pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(centerx, 400));
-
+	pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -219,11 +223,15 @@ void Scene_Play::update()
 	m_entityManager.update();
 	m_debugGraph.clear();
 	//TODO implement pause functionality
-	sMovement();
-	sLifespan();
-	sAnimation();
-	sCollision();
-	sCameraMovement();
+
+	if (!m_paused)
+	{
+		sMovement();
+		sLifespan();
+		sAnimation();
+		sCollision();
+		sCameraMovement();
+	}
 	sUI();
 	sRender();
 }
@@ -247,10 +255,12 @@ void Scene_Play::sMovement()
 	}
 	if (m_player->getComponent<CInput>().right)
 	{
+		if(m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(false);
 		rb.addForce(Vec2(playerData.speed, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().left)
 	{
+		if (!m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(true);
 		rb.addForce(Vec2(-playerData.speed, 0.0f));
 	}
 	if (m_player->getComponent<CInput>().dash)
@@ -426,13 +436,11 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "RIGHT")
 		{
 			m_player->getComponent<CInput>().right = true; 
-			m_player->getComponent<CTransform>().flipX(false);
 			m_player->getComponent<CState>().state = "walk";
 		}
 		else if (action.name() == "LEFT")
 		{
 			m_player->getComponent<CInput>().left = true; 
-			m_player->getComponent<CTransform>().flipX(true);
 		}
 		else if (action.name() == "DASH")
 		{
@@ -513,20 +521,28 @@ void Scene_Play::sUI()
 	
 	for (auto e : m_entityManager.getEntities("UI"))
 	{
-		if (e->hasComponent<CButtonUI>())
+		if (e->hasComponent<CButtonUI>() && e->getComponent<CUI>().recttransform.isVisible())
 		{
 			auto& button = e->getComponent<CButtonUI>();
 			button.buttonui.Update(m_game->window());
 
 			//Check Button if is over
-			if (button.buttonui.ismouseover()) e->getComponent<CImageUI>().imgui.setcolor(sf::Color(8.6f, 212.7f, 8.6f, 200));
-			else  e->getComponent<CImageUI>().imgui.setcolor(sf::Color(5, 186, 5, 200.0f));
+			if (button.buttonui.ismouseover())
+			{
+				e->getComponent<CTextUI>().textui.setcolor(sf::Color::Yellow);
+			}
+			else  e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
 			if (button.buttonui.ispressed())
 			{
-				e->getComponent<CImageUI>().imgui.setcolor(sf::Color(9.7f, 145, 9.7f, 200));
+				e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
-				if(e->getComponent<CUI>().name == "quitbtn") onEnd();
+				if(e->getComponent<CUI>().name == "Pause_quitbtn") onEnd();
+				else if (e->getComponent<CUI>().name == "Pause_resumebtn")
+				{
+					setPaused(false);
+					m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+				}
 			}
 		}
 	}
@@ -636,6 +652,7 @@ void Scene_Play::sRender()
 					text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
 					text.setString(e->getComponent<CTextUI>().textui.gettext());
 					text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
+					text.setFillColor(e->getComponent<CTextUI>().textui.getcolor());
 					m_game->window().draw(text);
 				}
 			}

@@ -9,6 +9,10 @@ const sf::Color& TextUI::getcolor()
 {
 	return m_color;
 }
+void TextUI::setcolor(const sf::Color& color)
+{
+	m_color = color;
+}
 const std::string TextUI::gettext()
 {
 	return m_text;

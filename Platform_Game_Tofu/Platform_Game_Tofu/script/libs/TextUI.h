@@ -13,6 +13,7 @@ public:
 	TextUI(const std::string& text, const sf::Color& color);
 	
 	const sf::Color& getcolor();
+	void setcolor(const sf::Color& color);
 	const std::string gettext();
 	float getfontsize();
 	void setfontsize(float fontsize);

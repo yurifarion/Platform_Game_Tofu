@@ -30,7 +30,21 @@ void ButtonUI::Update(const sf::RenderWindow& window)
 
 	else m_ismouseover = false;
 	
-	if (m_ismouseover && sf::Mouse::isButtonPressed(sf::Mouse::Left)) m_ispressed = true;
+	if (m_ismouseover && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		if(!m_ispressed) buttonclick();
+		m_ispressed = true;
+	}
 
 	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left)) m_ispressed = false;
+}
+void ButtonUI::buttonclick()
+{
+	for (auto listener : m_listeners) {
+		listener();
+	}
+}
+void ButtonUI::addlistener(std::function<void()> listener)
+{
+	m_listeners.push_back(listener);
 }
