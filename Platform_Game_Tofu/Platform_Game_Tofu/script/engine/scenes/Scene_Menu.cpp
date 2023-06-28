@@ -43,10 +43,10 @@ void Scene_Menu::init()
     versionText->getComponent<CUI>().recttransform.setscreenposition(Vec2(0, m_game->window().getSize().y - (versionText->getComponent<CTextUI>().textui.getfontsize() * 2)));
 
     auto startText = m_entityManager.addEntity("UI");
-    float offset = 100;
+    float offset = 150;
     startText->addComponent<CUI>("startText",  Vec2(m_game->window().getSize().x /2.0f - offset, m_game->window().getSize().y / 1.5f), Vec2(0, 0), &bgGO->getComponent<CUI>().recttransform);
     startText->addComponent<CTextUI>("Click to start...");
-    startText->getComponent<CTextUI>().textui.setfontsize(16);
+    startText->getComponent<CTextUI>().textui.setfontsize(24);
 
 }
 
