@@ -8,7 +8,11 @@ RectTransform::RectTransform(const Vec2& pos, const Vec2& size)
 RectTransform::RectTransform(const Vec2& pos, const Vec2& size, RectTransform* parent)
 	: m_pos(pos), m_size(size), m_screenpos(pos), m_parent(parent)
 {
-	if (m_parent != NULL)	m_pos = pos + m_parent->getposition();
+	if (m_parent != NULL)
+	{
+		m_pos = pos + m_parent->getposition();
+		m_scale = m_parent->getscale();
+	}
 }
 
 bool RectTransform::isActive()
@@ -72,6 +76,15 @@ void RectTransform::setsize(const Vec2& size)
 const Vec2& RectTransform::getscale()
 {
 	return m_scale;
+}
+void RectTransform::setscale(const Vec2& scale)
+{
+	Vec2 scalep;
+
+	if (m_parent != NULL) scalep = scale + m_parent->getscale();
+	else scalep = scale;
+
+	m_scale = scalep;
 }
 const RectTransform* RectTransform::getparent()
 {

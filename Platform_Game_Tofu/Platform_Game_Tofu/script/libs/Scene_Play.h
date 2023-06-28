@@ -24,7 +24,7 @@ protected:
 	bool m_drawGrid = false;
 	bool m_drawDebug = false;
 
-	const Vec2 m_gridSize = { 64,64 };
+	const Vec2 m_gridSize = { 96,96 };
 	sf::Text m_gridText;
 
 	std::vector<sf::VertexArray> m_debugGraph;

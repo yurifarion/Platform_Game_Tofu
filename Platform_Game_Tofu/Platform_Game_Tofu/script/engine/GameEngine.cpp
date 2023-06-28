@@ -15,7 +15,8 @@ void GameEngine::init(const std::string& path)
 {
 	m_assets.loadFromFile(path);
 
-	m_window.create(sf::VideoMode(1280, 720), "Tofu's Odyssey", sf::Style::Titlebar | sf::Style::Close);
+	//m_window.create(sf::VideoMode(1280, 720), "Tofu's Odyssey", sf::Style::Titlebar | sf::Style::Close);
+	m_window.create(sf::VideoMode(1920, 1080), "Tofu's Odyssey", sf::Style::Titlebar | sf::Style::Close);
 	m_window.setFramerateLimit(60);
 	m_camera_view = window().getDefaultView();
 	changeScene("MENU", std::make_shared<Scene_Menu>(this));

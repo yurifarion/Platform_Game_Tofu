@@ -28,6 +28,7 @@ public:
 	const Vec2& getscreenposition();
 	void setscreenposition(const Vec2& pos);
 	const Vec2& getscale();
+	void setscale(const Vec2& scale);
 	const float getangle();
 	const Vec2& getsize();
 	void setsize(const Vec2& size);
