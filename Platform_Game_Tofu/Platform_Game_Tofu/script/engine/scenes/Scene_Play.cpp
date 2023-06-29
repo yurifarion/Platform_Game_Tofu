@@ -634,7 +634,9 @@ void Scene_Play::sRender()
 						auto& image = e->getComponent<CImageUI>().imgui.getimage();
 						image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
 						image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
-						image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
+						
+						Vec2 currScale = Vec2(image.getSprite().getScale().x, image.getSprite().getScale().y);
+						image.getSprite().setScale(currScale.x * e->getComponent<CUI>().recttransform.getscale().x, currScale.y * e->getComponent<CUI>().recttransform.getscale().y);
 						m_game->window().draw(image.getSprite());
 					}
 					else {

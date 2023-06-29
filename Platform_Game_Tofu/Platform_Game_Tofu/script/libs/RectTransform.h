@@ -4,6 +4,7 @@
 
 class RectTransform
 {
+	
 	Vec2 m_pos = Vec2(0.0f,0.0f);
 	Vec2 m_screenpos = Vec2(0.0f, 0.0f);
 	Vec2 m_size = Vec2(0.0f, 0.0f);
@@ -12,8 +13,11 @@ class RectTransform
 	bool m_active = true;
 	bool m_visible = true;
 	RectTransform* m_parent = nullptr;
+	
 
 public:
+	enum class Align { topright, center , topcenter};
+	Align alignment = Align::topright;
 
 	RectTransform();
 	RectTransform(const Vec2& pos, const Vec2& size);

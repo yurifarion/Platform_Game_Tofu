@@ -2,6 +2,7 @@
 
 #include "Action.h"
 #include "EntityManager.h"
+#include "RectTransform.h"
 
 #include <memory>
 

@@ -150,8 +150,8 @@ class CImageUI : public Component
 public:
 	ImageUI imgui;
 	CImageUI() {}
-	CImageUI(const Sprite& image)
-		:imgui(ImageUI(image)) {}
+	CImageUI(const Sprite& image, const RectTransform& rect)
+		:imgui(ImageUI(image,rect)) {}
 };
 class CButtonUI : public Component
 {

@@ -48,10 +48,39 @@ void RectTransform::setposition(const Vec2& pos)
 {
 	Vec2 position;
 
-	if (m_parent != NULL) position = pos + m_parent->getposition();
-	else position = pos;
+	if (alignment == Align::topright)
+	{
 
+		if (m_parent != NULL) position = pos + m_parent->getposition();
+		else position = pos;
+
+	}
+	else if (alignment == Align::center) {
+
+		if (m_parent != NULL)
+		{
+			Vec2 psize = m_parent->getsize();
+			Vec2 pscale = m_parent->getscale();
+			float x = ((psize.x * pscale.x) / 2)  - (m_size.x / 2) + pos.x;
+			float y = ((psize.y * pscale.y) / 2)  - (m_size.y / 2) + pos.y;
+			position = Vec2(x, y);
+		}
+		else position = pos;
+	}
+	else if (alignment == Align::topcenter) {
+
+		if (m_parent != NULL)
+		{
+			Vec2 psize = m_parent->getsize();
+			Vec2 pscale = m_parent->getscale();
+			float x = ((psize.x * pscale.x) / 2) - (m_size.x / 2) + pos.x;
+			float y = 0;
+			position = Vec2(x, y);
+		}
+		else position = pos;
+	}
 	m_pos = position;
+	m_screenpos = position;
 }
 const Vec2& RectTransform::getscreenposition()
 {
@@ -81,7 +110,7 @@ void RectTransform::setscale(const Vec2& scale)
 {
 	Vec2 scalep;
 
-	if (m_parent != NULL) scalep = scale + m_parent->getscale();
+	if (m_parent != NULL) scalep = Vec2(scale.x * m_parent->getscale().x, scale.y * m_parent->getscale().y);
 	else scalep = scale;
 
 	m_scale = scalep;
@@ -95,3 +124,4 @@ void RectTransform::setparent(RectTransform* parent)
 {
 	m_parent = parent;
 }
+

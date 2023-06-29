@@ -24,17 +24,18 @@ void Scene_Menu::init()
     //Background Image
     auto bgGO = m_entityManager.addEntity("UI");
     bgGO->addComponent<CUI>("Background", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
-    bgGO->getComponent<CUI>().recttransform.setscale(Vec2(1.5f,1.5f));
-    bgGO->addComponent<CImageUI>(m_game->assets().getSprite("menubg"));
+    bgGO->addComponent<CImageUI>(m_game->assets().getSprite("menubg"),bgGO->getComponent<CUI>().recttransform);
     bgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
 
     //Logo image
     auto logoGO = m_entityManager.addEntity("UI");
     Vec2 logosize = Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2);
-    Vec2 logoposition = Vec2(m_game->window().getSize().x / 4, 0);
+    Vec2 logoposition = Vec2(0, 0);
 
     logoGO->addComponent<CUI>("Logo", logoposition, logosize, &bgGO->getComponent<CUI>().recttransform);
-    logoGO->addComponent<CImageUI>(m_game->assets().getSprite("logo"));
+    logoGO->getComponent<CUI>().recttransform.alignment = RectTransform::Align::topcenter;
+    logoGO->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+    logoGO->addComponent<CImageUI>(m_game->assets().getSprite("logo"), logoGO->getComponent<CUI>().recttransform);
     logoGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Blue);
 
     auto versionText = m_entityManager.addEntity("UI");
@@ -108,7 +109,9 @@ void Scene_Menu::sRender()
                     auto& image = e->getComponent<CImageUI>().imgui.getimage();
                     image.getSprite().setRotation(e->getComponent<CUI>().recttransform.getangle());
                     image.getSprite().setPosition(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y);
-                    image.getSprite().setScale(e->getComponent<CUI>().recttransform.getscale().x, e->getComponent<CUI>().recttransform.getscale().y);
+                    
+                    Vec2 currScale = Vec2(image.getSprite().getScale().x, image.getSprite().getScale().y);
+                    image.getSprite().setScale(currScale.x * e->getComponent<CUI>().recttransform.getscale().x, currScale.y * e->getComponent<CUI>().recttransform.getscale().y);
                     m_game->window().draw(image.getSprite());
                 }
                 else {

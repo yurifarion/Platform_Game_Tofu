@@ -2,10 +2,14 @@
 
 ImageUI::ImageUI(){}
 
-ImageUI::ImageUI(const Sprite& sprite)
-	: m_image(sprite) 
+ImageUI::ImageUI(const Sprite& sprite, const RectTransform& recttransform)
+	: m_image(sprite), m_recttransform(recttransform)
 	{
 		m_hassprite = true;
+
+		m_image.getSprite().setScale(
+			m_recttransform.getsize().x / m_image.getSprite().getLocalBounds().width,
+			m_recttransform.getsize().y / m_image.getSprite().getLocalBounds().height);
 	}
 Sprite& ImageUI::getimage()
 {
