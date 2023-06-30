@@ -22,5 +22,5 @@ public:
 	void setForce(const Vec2& force);
 	void clearForce();
 	Vec2 getVelocity(Vec2& maxvelocity);
-	void update();
+	void update(float deltatime);
 };

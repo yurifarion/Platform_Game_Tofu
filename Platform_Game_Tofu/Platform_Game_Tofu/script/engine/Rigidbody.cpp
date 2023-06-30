@@ -1,5 +1,4 @@
 #include "Rigidbody.h"
-
 Rigidbody::Rigidbody(){}
 
 Rigidbody::Rigidbody(float gravity)
@@ -39,16 +38,18 @@ Vec2 Rigidbody::getVelocity(Vec2& maxvelocity)
 	}
 	return result;
 }
-void Rigidbody::update()
+void Rigidbody::update(float deltatime)
 {
 	//fps equals to 60
-	m_gravityspeed += gravity/60;
+	m_gravityspeed += gravity * deltatime;
 	addForce(Vec2(0.0f, m_gravityspeed));
+	
 	if (isGrounded)
 	{
 		m_gravityspeed = 0;
 		addForce(Vec2(0.0f, -1 * m_appliedForce.y));//make it stop on ground
 	}
+	if (abs(m_appliedForce.x) < 0.1 && abs(m_appliedForce.y < 0.1)) return;
 	//simulate the friction 
 	Vec2 resultForce = Vec2(-1 * (m_appliedForce.x * m_groundFriction), 0);
 	addForce(resultForce);

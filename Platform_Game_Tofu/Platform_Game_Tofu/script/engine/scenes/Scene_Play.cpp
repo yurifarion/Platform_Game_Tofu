@@ -9,6 +9,10 @@
 Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 	:Scene(game)
 {
+	//Adjust to resolution
+	float cellsize = m_game->window().getView().getSize().x / 1960 * 96;
+	m_gridSize = Vec2(cellsize, cellsize);
+	m_scaleFactor = m_game->window().getView().getSize().x / 1960;
 	init(levelPath);
 }
 
@@ -76,7 +80,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 				auto m_mapTile = m_entityManager.addEntity("darkestbackground_tile");
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6);
+				m_mapTile->getComponent<CTransform>().scale = Vec2(6,6) * m_scaleFactor;
 				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
 				m_mapTile->getComponent<CTransform>().pos = position;
 			}
@@ -94,7 +98,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 				auto m_mapTile = m_entityManager.addEntity("background_tile");
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6);
+				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
 				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
 				m_mapTile->getComponent<CTransform>().pos = position;	
 			}
@@ -116,8 +120,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 				auto m_mapTile = m_entityManager.addEntity("foreground_tile");
 				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
 				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6);
-				m_mapTile->addComponent<CBoundingBox>(Vec2(96, 96));
+				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
+				m_mapTile->addComponent<CBoundingBox>(m_gridSize);
 				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
 				m_mapTile->getComponent<CTransform>().pos = position;
 
@@ -144,18 +148,25 @@ void Scene_Play::loadLevel(const std::string& filename)
 	auto ptitle = m_entityManager.addEntity("UI");
 	ptitle->addComponent<CUI>("Pause_title", Vec2(825, 375), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
 	ptitle->addComponent<CTextUI>("PAUSE");
-	ptitle->getComponent<CTextUI>().textui.setfontsize(32);
-	float centerx = m_game->window().getSize().x / 2 - (ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length() / 2);
-	ptitle->getComponent<CUI>().recttransform.setposition(Vec2(centerx, 375));
+	ptitle->getComponent<CTextUI>().textui.setfontsize(48*m_scaleFactor);
+
+	ptitle->getComponent<CUI>().recttransform.setsize(Vec2(ptitle->getComponent<CTextUI>().textui.getfontsize()* ptitle->getComponent<CTextUI>().textui.gettext().length(), ptitle->getComponent<CTextUI>().textui.getfontsize()));
+
+	ptitle->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+	float y =(ptitle->getComponent<CTextUI>().textui.getfontsize()*3);
+	ptitle->getComponent<CUI>().recttransform.setposition(Vec2(0,-y));
 
 
 	//Resume button
 	auto presumebtn = m_entityManager.addEntity("UI");
-	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(565, 350), Vec2(120, 25), &m_pausemenu->getComponent<CUI>().recttransform);
+	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
 	presumebtn->addComponent<CTextUI>("Resume");
-	presumebtn->getComponent<CTextUI>().textui.setfontsize(20);
-	centerx = m_game->window().getSize().x / 2 - (presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length() / 2);
-	presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(centerx, 525));
+	presumebtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+	presumebtn->getComponent<CUI>().recttransform.setsize(Vec2(presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length(), presumebtn->getComponent<CTextUI>().textui.getfontsize()));
+	presumebtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+	presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+
 	presumebtn->addComponent<CButtonUI>(presumebtn->getComponent<CUI>().recttransform);
 	presumebtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
 
@@ -164,11 +175,15 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//Quit button
 	auto pquitbtn = m_entityManager.addEntity("UI");
 	
-	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(600, 400), Vec2(120, 50), &m_pausemenu->getComponent<CUI>().recttransform);
+	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
 	pquitbtn->addComponent<CTextUI>("Quit");
-	pquitbtn->getComponent<CTextUI>().textui.setfontsize(20);
-	centerx = m_game->window().getSize().x / 2 - (pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length()/2);
-	pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(centerx, 600));
+
+	pquitbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+	pquitbtn->getComponent<CUI>().recttransform.setsize(Vec2(pquitbtn->getComponent<CTextUI>().textui.getfontsize()* pquitbtn->getComponent<CTextUI>().textui.gettext().length(), pquitbtn->getComponent<CTextUI>().textui.getfontsize()));
+	pquitbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+	pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize()*3));
+
 	pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
 }
 
@@ -178,7 +193,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 
 	m_player = m_entityManager.addEntity("player");
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
-	m_player->addComponent<CPlayer>(60.0f, 900.0f, 1500.0f,0.3);
+	m_player->addComponent<CPlayer>(60.0f* m_scaleFactor, 900.0f * m_scaleFactor, 1500.0f * m_scaleFactor,0.3f);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
@@ -207,9 +222,9 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->getComponent<CAnimator>().animator.setAnimation("idle");
 
 	m_player->addComponent<CTransform>(position);
-	m_player->getComponent<CTransform>().scale = Vec2(6, 6);
-	m_player->addComponent<CRigidbody>(120.0f);
-	m_player->addComponent<CBoundingBox>(Vec2(96, 96));
+	m_player->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
+	m_player->addComponent<CRigidbody>(120.0f * m_scaleFactor);
+	m_player->addComponent<CBoundingBox>(m_gridSize);
 
 	//TODO be sure to add the remianing components to the player
 }
@@ -240,10 +255,10 @@ void Scene_Play::sMovement()
 	//Update all rigibodies
 	auto& rb = m_player->getComponent<CRigidbody>().rigidbody;
 	auto& playerData = m_player->getComponent<CPlayer>();
-	rb.update();
+	rb.update(m_game->deltaTime);
 
 	//Max moviment per frame the player can move
-	Vec2 maxspeed(2000.0f, 2000.0f);
+	Vec2 maxspeed(2000.0f * m_scaleFactor, 2000.0f * m_scaleFactor);
 	
 
 	if (m_player->getComponent<CInput>().up)
@@ -356,7 +371,7 @@ void Scene_Play::sCollision()
 		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
 		{
 			auto overlap = physics.GetOverlap(m_player, e);
-			if (overlap.x > 0 && overlap.y > 0)
+			if (overlap.x > 0.01 && overlap.y > 0.01)
 			{
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
@@ -369,7 +384,7 @@ void Scene_Play::sCollision()
 	
 	//Check with Raycast if Player is close to the ground
 	Vec2 origin = m_player->getComponent<CTransform>().pos;
-	Vec2 destiny = m_player->getComponent<CTransform>().pos + Vec2(0, 48);
+	Vec2 destiny = m_player->getComponent<CTransform>().pos + (Vec2(0, m_gridSize.y/1.9));
 
 	for (auto e : m_entityManager.getEntities())
 	{

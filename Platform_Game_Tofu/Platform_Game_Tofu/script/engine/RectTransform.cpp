@@ -48,7 +48,7 @@ void RectTransform::setposition(const Vec2& pos)
 {
 	Vec2 position;
 
-	if (alignment == Align::topright)
+	if (alignment == Align::topleft)
 	{
 
 		if (m_parent != NULL) position = pos + m_parent->getposition();

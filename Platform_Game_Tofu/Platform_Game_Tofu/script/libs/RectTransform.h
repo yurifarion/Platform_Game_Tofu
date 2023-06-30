@@ -16,8 +16,8 @@ class RectTransform
 	
 
 public:
-	enum class Align { topright, center , topcenter};
-	Align alignment = Align::topright;
+	enum class Align { topleft, center , topcenter};
+	Align alignment = Align::topleft;
 
 	RectTransform();
 	RectTransform(const Vec2& pos, const Vec2& size);
