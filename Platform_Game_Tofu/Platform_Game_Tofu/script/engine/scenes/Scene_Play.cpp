@@ -9,10 +9,25 @@
 Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath)
 	:Scene(game)
 {
+	m_amoutOfLives = 3;
+	m_amountOfDash = 3;
+	m_amountOfSpheres = 0;
+
 	//Adjust to resolution
 	float cellsize = m_game->window().getView().getSize().x / 1960 * 96;
 	m_gridSize = Vec2(cellsize, cellsize);
 	m_scaleFactor = m_game->window().getView().getSize().x / 1960;
+	m_levelpath = levelPath;
+	init(m_levelpath);
+}
+Scene_Play::Scene_Play(GameEngine* game, const std::string& levelPath, int amoutOfLives, int amountOfDash, int amountOfSpheres)
+	:Scene(game),m_amoutOfLives(amoutOfLives),m_amountOfDash(amountOfDash),m_amountOfSpheres(amountOfSpheres)
+{
+	//Adjust to resolution
+	float cellsize = m_game->window().getView().getSize().x / 1960 * 96;
+	m_gridSize = Vec2(cellsize, cellsize);
+	m_scaleFactor = m_game->window().getView().getSize().x / 1960;
+	m_levelpath = levelPath;
 	init(levelPath);
 }
 
@@ -205,7 +220,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 		//Sphere count
 		m_spherecount = m_entityManager.addEntity("UI");
 		m_spherecount->addComponent<CUI>("spheretext", Vec2(0, 0) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
-		m_spherecount->addComponent<CTextUI>("150X");
+		m_spherecount->addComponent<CTextUI>(std::to_string(m_amountOfSpheres)+"X");
 		m_spherecount->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
 		m_spherecount->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
 		float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
@@ -325,7 +340,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 void Scene_Play::spawnPlayer(Vec2& position)
 {
 	//here is a smaple player entity which you can use to construct other entities
-
+	m_startPos = position;
 	m_player = m_entityManager.addEntity("player");
 	m_player->addComponent<CSprite>(m_game->assets().getSprite("Tofu_stand"), false);
 	m_player->addComponent<CPlayer>(60.0f* m_scaleFactor, 900.0f * m_scaleFactor, 1500.0f * m_scaleFactor,0.3f);
@@ -367,7 +382,9 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->addComponent<CRigidbody>(120.0f * m_scaleFactor);
 	m_player->addComponent<CBoundingBox>(m_gridSize);
 
-	
+	m_player->getComponent<CPlayer>().lifeamount = m_amoutOfLives;
+	m_player->getComponent<CPlayer>().dashamount = m_amountOfDash;
+	m_player->getComponent<CPlayer>().gemscollected = m_amountOfSpheres;
 }
 void Scene_Play::spawnEnemy(Vec2& position)
 {
@@ -471,8 +488,13 @@ void Scene_Play::sMovement()
 		}
 	}
 
-	
-	
+	//Check player y, if its over the limit then reset
+	float lowerlimit = 1000.0f;
+
+	if (m_player->getComponent<CTransform>().pos.y >= lowerlimit)
+	{
+		reset();
+	}
 	
 }
 void Scene_Play::sEnemyMovement()
@@ -811,7 +833,11 @@ void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 
 	m_game->window().draw(lines);
 }
-
+void Scene_Play::reset()
+{
+	m_player->getComponent<CPlayer>().lifeamount--;
+	m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, m_levelpath, m_player->getComponent<CPlayer>().lifeamount, m_player->getComponent<CPlayer>().dashamount, m_player->getComponent<CPlayer>().gemscollected));
+}
 //Draw a debug line
 void Scene_Play::debugline(Vec2 p1, Vec2 p2, sf::Color color)
 {

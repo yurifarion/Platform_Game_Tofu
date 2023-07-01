@@ -74,7 +74,7 @@ void Scene_Menu::sDoAction(const Action& action)
             {
                 std::cout << "Null file";
             }
-            else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+            else m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path,3,3,0));
         }
         else if (action.name() == "QUIT"|| action.name() == "CLOSE_WINDOW")
         {
@@ -83,7 +83,7 @@ void Scene_Menu::sDoAction(const Action& action)
         else
         {
             char const* path = "Levels/ExampleLevel";
-            m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+            m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path, 3, 3, 0));
         }
     }
 }

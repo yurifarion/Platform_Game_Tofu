@@ -19,6 +19,8 @@ protected:
 	std::shared_ptr<Entity> m_pausemenu;
 	std::shared_ptr<Entity> m_gameovermenu;
 	std::shared_ptr<Entity> m_spherecount;
+	Vec2 m_startPos;
+	std::string m_levelpath;
 	MapLevel m_maplevel;
 	PlayerConfig m_playerConfig;
 	bool m_drawTextures = true;
@@ -32,6 +34,10 @@ protected:
 
 	std::vector<sf::VertexArray> m_debugGraph;
 
+	int m_amoutOfLives;
+	int m_amountOfDash;
+	int m_amountOfSpheres;
+
 	void init(const std::string& levelPath);
 	Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
 	void loadLevel(const std::string& filename);
@@ -39,7 +45,8 @@ protected:
 	void update();
 
 public:
-	Scene_Play(GameEngine * gameEngine, const std::string& levelPath);
+	Scene_Play(GameEngine* gameEngine, const std::string& levelPath);
+	Scene_Play(GameEngine * gameEngine, const std::string& levelPath, int amoutOfLives, int amountOfDash, int amountOfSpheres);
 	void spawnPlayer(Vec2& position);
 	void spawnEnemy(Vec2& position);
 	void spawnBullet(std::shared_ptr<Entity> entity);
@@ -56,4 +63,5 @@ public:
 	void sUpdateDashbar();
 	void drawline(Vec2 p1,Vec2 p2);
 	void debugline(Vec2 p1, Vec2 p2,sf::Color color = sf::Color::Blue);
+	void reset();
 };
