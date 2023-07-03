@@ -16,7 +16,7 @@ void GameEngine::init(const std::string& path)
 	m_assets.loadFromFile(path);
 
 	m_window.create(sf::VideoMode(1280, 720), "Tofu's Odyssey", sf::Style::Titlebar | sf::Style::Close);
-	//m_window.create(sf::VideoMode(1280, 720), "Tofu's Odyssey", sf::Style::Fullscreen);
+	//m_window.create(sf::VideoMode(1920, 1080), "Tofu's Odyssey", sf::Style::Fullscreen);
 	//m_window.create(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Tofu's Odyssey", sf::Style::Fullscreen);
 	m_window.setVerticalSyncEnabled(true);
 	m_window.setFramerateLimit(0);
