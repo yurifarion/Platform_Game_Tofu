@@ -13,6 +13,22 @@ void TextUI::setcolor(const sf::Color& color)
 {
 	m_color = color;
 }
+const sf::Color& TextUI::getoutlinecolor()
+{
+	return m_outlinecolor;
+}
+void TextUI::setoutlinecolor(const sf::Color& color)
+{
+	m_outlinecolor = color;
+}
+void TextUI::setoutlinethickness(float thickness)
+{
+	m_outlinethickness = thickness;
+}
+float  TextUI::getoutlinethickness()
+{
+	return m_outlinethickness;
+}
 const std::string TextUI::gettext()
 {
 	return m_text;

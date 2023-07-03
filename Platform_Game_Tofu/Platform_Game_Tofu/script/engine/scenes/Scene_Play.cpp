@@ -138,53 +138,56 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 	//Heart UI
 	auto heartuitext = m_entityManager.addEntity("UI");
-	heartuitext->addComponent<CUI>("hptext", Vec2(10, 7), Vec2(88, 48));
+	heartuitext->addComponent<CUI>("hptext", Vec2(10, 7) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
 	heartuitext->addComponent<CTextUI>("HP");
-	heartuitext->getComponent<CTextUI>().textui.setfontsize(35);
+	heartuitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+	heartuitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
 	//heartuitext->addComponent<CImageUI>(m_game->assets().getSprite("hptext"), heartuitext->getComponent<CUI>().recttransform);
 
 	auto heart_1 = m_entityManager.addEntity("UI");
-	heart_1->addComponent<CUI>("heart_1", Vec2(88, 0), Vec2(48, 48));
+	heart_1->addComponent<CUI>("heart_1", Vec2(88, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
 	heart_1->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_1->getComponent<CUI>().recttransform);
 
 	auto heart_2 = m_entityManager.addEntity("UI");
-	heart_2->addComponent<CUI>("heart_2", Vec2(136, 0), Vec2(48, 48));
+	heart_2->addComponent<CUI>("heart_2", Vec2(136, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
 	heart_2->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_2->getComponent<CUI>().recttransform);
 
 	auto heart_3 = m_entityManager.addEntity("UI");
-	heart_3->addComponent<CUI>("heart_3", Vec2(184, 0), Vec2(48, 48));
+	heart_3->addComponent<CUI>("heart_3", Vec2(184, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
 	heart_3->addComponent<CImageUI>(m_game->assets().getSprite("emptyheart"), heart_3->getComponent<CUI>().recttransform);
 
 	//Mana UI
 	auto manauitext = m_entityManager.addEntity("UI");
-	manauitext->addComponent<CUI>("manatext", Vec2(10, 55), Vec2(88, 48));
+	manauitext->addComponent<CUI>("manatext", Vec2(10, 55) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
 	manauitext->addComponent<CTextUI>("MP");
-	manauitext->getComponent<CTextUI>().textui.setfontsize(35);
+	manauitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+	manauitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
 	//manauitext->addComponent<CImageUI>(m_game->assets().getSprite("manatext"), manauitext->getComponent<CUI>().recttransform);
 
 	auto mana_1 = m_entityManager.addEntity("UI");
-	mana_1->addComponent<CUI>("mana_1", Vec2(88, 48), Vec2(48, 48));
+	mana_1->addComponent<CUI>("mana_1", Vec2(88, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
 	mana_1->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_1->getComponent<CUI>().recttransform);
 
 	auto mana_2 = m_entityManager.addEntity("UI");
-	mana_2->addComponent<CUI>("mana_2", Vec2(136, 48), Vec2(48, 48));
+	mana_2->addComponent<CUI>("mana_2", Vec2(136, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
 	mana_2->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_2->getComponent<CUI>().recttransform);
 
 	auto mana_3 = m_entityManager.addEntity("UI");
-	mana_3->addComponent<CUI>("mana_3", Vec2(184, 48), Vec2(48, 48));
+	mana_3->addComponent<CUI>("mana_3", Vec2(184, 48)* m_scaleFactor, Vec2(48, 48)* m_scaleFactor);
 	mana_3->addComponent<CImageUI>(m_game->assets().getSprite("emptymana"), mana_3->getComponent<CUI>().recttransform);
 
 	//Sphere count
 	auto spheretext = m_entityManager.addEntity("UI");
-	spheretext->addComponent<CUI>("spheretext", Vec2(0, 0), Vec2(88, 48));
+	spheretext->addComponent<CUI>("spheretext", Vec2(0, 0)* m_scaleFactor, Vec2(88, 48)* m_scaleFactor);
 	spheretext->addComponent<CTextUI>("150X");
-	spheretext->getComponent<CTextUI>().textui.setfontsize(35);
-	float xpos = m_game->window().getSize().x - (spheretext->getComponent<CTextUI>().textui.getfontsize() * spheretext->getComponent<CTextUI>().textui.gettext().length()) - 50;
-	spheretext->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7));
+	spheretext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+	spheretext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
+	float xpos = m_game->window().getSize().x - (spheretext->getComponent<CTextUI>().textui.getfontsize() * spheretext->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+	spheretext->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
 
 	//sphere image
 	auto sphereui = m_entityManager.addEntity("UI");
-	sphereui->addComponent<CUI>("sphereui", Vec2(m_game->window().getSize().x - 48, 0), Vec2(48, 48));
+	sphereui->addComponent<CUI>("sphereui", Vec2(m_game->window().getSize().x - (48 * m_scaleFactor), 0), Vec2(48 * m_scaleFactor, 48 * m_scaleFactor));
 	sphereui->addComponent<CImageUI>(m_game->assets().getSprite("sphereui"), sphereui->getComponent<CUI>().recttransform);
 
 	//Pause Menu UI
@@ -721,8 +724,8 @@ void Scene_Play::sRender()
 					text.setString(e->getComponent<CTextUI>().textui.gettext());
 					text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
 					text.setFillColor(e->getComponent<CTextUI>().textui.getcolor());
-					text.setOutlineThickness(5.0f);
-					text.setOutlineColor(sf::Color::Black);
+					text.setOutlineThickness(e->getComponent<CTextUI>().textui.getoutlinethickness());
+					text.setOutlineColor(e->getComponent<CTextUI>().textui.getoutlinecolor());
 					m_game->window().draw(text);
 				}
 			}
