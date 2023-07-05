@@ -115,22 +115,25 @@ void Scene_Play::loadLevel(const std::string& filename)
 		{
 			if (mapdata[row][collumn] != 0)
 			{
+					auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
+					auto m_mapTile = m_entityManager.addEntity("foreground_tile");
+					m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
+					m_mapTile->addComponent<CTransform>(Vec2(0, 0));
+					m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
+					m_mapTile->addComponent<CBoundingBox>(m_gridSize);
+					Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
+					m_mapTile->getComponent<CTransform>().pos = position;
 
-				auto spriteName = m_game->assets().spriteRef.EnumToStr(Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]));
-				auto m_mapTile = m_entityManager.addEntity("foreground_tile");
-				m_mapTile->addComponent<CSprite>(m_game->assets().getSprite(spriteName), false);
-				m_mapTile->addComponent<CTransform>(Vec2(0, 0));
-				m_mapTile->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
-				m_mapTile->addComponent<CBoundingBox>(m_gridSize);
-				Vec2 position = m_game->windowToWorld(gridToMidPixel(row, collumn, m_mapTile));
-				m_mapTile->getComponent<CTransform>().pos = position;
-
-				if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::PLAYER && !isPlayerSpawned)
-				{
-					isPlayerSpawned = true;
-					m_mapTile->destroy();
-					spawnPlayer(position);
-				}
+					if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::PLAYER && !isPlayerSpawned)
+					{
+						isPlayerSpawned = true;
+						m_mapTile->destroy();
+						spawnPlayer(position);
+					}
+					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_d)
+					{
+						m_mapTile->getComponent<CTransform>().setname("spike");
+					}
 
 			}
 		}
@@ -250,6 +253,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->addComponent<CPlayer>(60.0f* m_scaleFactor, 900.0f * m_scaleFactor, 1500.0f * m_scaleFactor,0.3f);
 
 	Sprite idle_fr(m_game->assets().getSprite("Tofu_stand"));
+	Sprite hit_fr(m_game->assets().getSprite("Tofu_hit"));
 	Sprite walk_fr_1(m_game->assets().getSprite("Tofu_walk1_jump"));
 	Sprite walk_fr_2(m_game->assets().getSprite("Tofu_walk2"));
 	Sprite walk_fr_3(m_game->assets().getSprite("Tofu_walk3"));
@@ -268,11 +272,16 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	Animation idleAnimClip("idle", 1.0f);
 	idleAnimClip.addFrame(idle_fr);
 
+	Animation hitAnimClip("hit", 1.0f);
+	hitAnimClip.setfixedduration(60);
+	hitAnimClip.addFrame(hit_fr);
+
 	//Set animator
 	m_player->addComponent<CAnimator>(m_player->getComponent<CSprite>().sprite);
 	m_player->getComponent<CAnimator>().animator.addAnimation(walkAnimClip);
 	m_player->getComponent<CAnimator>().animator.addAnimation(jumpAnimClip);
 	m_player->getComponent<CAnimator>().animator.addAnimation(idleAnimClip);
+	m_player->getComponent<CAnimator>().animator.addAnimation(hitAnimClip);
 	m_player->getComponent<CAnimator>().animator.setAnimation("idle");
 
 	m_player->addComponent<CTransform>(position);
@@ -314,34 +323,35 @@ void Scene_Play::sMovement()
 	//Max moviment per frame the player can move
 	Vec2 maxspeed(2000.0f * m_scaleFactor, 2000.0f * m_scaleFactor);
 	
+	if (m_player->getComponent<CAnimator>().animator.getCurrentAnimation().getName() != "hit")
+	{
+		if (m_player->getComponent<CInput>().up)
+		{
+			if (rb.isGrounded)
+			{
+				rb.addForce(Vec2(0.0f, -playerData.jumpforce));
+			}
+		}
+		if (m_player->getComponent<CInput>().right)
+		{
+			if (m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(false);
+			rb.addForce(Vec2(playerData.speed, 0.0f));
+		}
+		if (m_player->getComponent<CInput>().left)
+		{
+			if (!m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(true);
+			rb.addForce(Vec2(-playerData.speed, 0.0f));
+		}
+		if (m_player->getComponent<CInput>().dash)
+		{
+			if (m_player->getComponent<CPlayer>().dashenergy > 0)
+			{
+				Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
+				rb.addForce(dir);
+			}
 
-	if (m_player->getComponent<CInput>().up)
-	{
-		if (rb.isGrounded)
-		{
-			rb.addForce(Vec2(0.0f, -playerData.jumpforce));
 		}
 	}
-	if (m_player->getComponent<CInput>().right)
-	{
-		if(m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(false);
-		rb.addForce(Vec2(playerData.speed, 0.0f));
-	}
-	if (m_player->getComponent<CInput>().left)
-	{
-		if (!m_player->getComponent<CTransform>().isFaceLeft) m_player->getComponent<CTransform>().flipX(true);
-		rb.addForce(Vec2(-playerData.speed, 0.0f));
-	}
-	if (m_player->getComponent<CInput>().dash)
-	{
-		if (m_player->getComponent<CPlayer>().dashenergy > 0)
-		{
-			Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
-			rb.addForce(dir);
-		}
-		
-	}
-	
 
 	m_player->getComponent<CTransform>().velocity = rb.getVelocity(maxspeed);
 
@@ -430,6 +440,22 @@ void Scene_Play::sCollision()
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
 				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
+
+				if (e->getComponent<CTransform>().getname() == "spike")
+				{
+					Vec2 damagedir;
+					if (resolveCol.x == 0)
+					{
+						damagedir = Vec2(-1, 0);
+					}
+					else
+					{
+						damagedir = Vec2(resolveCol.x, 0);
+					}
+					m_player->getComponent<CRigidbody>().rigidbody.addForce(damagedir*1000);
+					m_player->getComponent<CState>().state = "hit";
+					m_player->getComponent<CAnimator>().animator.setAnimation("hit");
+				}
 			}
 		}
 	}
@@ -494,7 +520,6 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "JUMP")
 		{
 			m_player->getComponent<CInput>().up = true; 
-			m_player->getComponent<CState>().state = "jump";
 		}
 
 		 //Game Controls Input
@@ -505,7 +530,6 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "RIGHT")
 		{
 			m_player->getComponent<CInput>().right = true; 
-			m_player->getComponent<CState>().state = "walk";
 		}
 		else if (action.name() == "LEFT")
 		{
@@ -543,18 +567,20 @@ void Scene_Play::sAnimation()
 {
 
 	//Set Player animation based on physics
-	if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
-		m_player->getComponent<CState>().state = "jump";
-	else if (m_player->getComponent<CInput>().right || m_player->getComponent<CInput>().left)
-		m_player->getComponent<CState>().state = "walk";
-	else
-		m_player->getComponent<CState>().state = "idle";
-
-	
+		if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+			m_player->getComponent<CState>().state = "jump";
+		else if (m_player->getComponent<CInput>().right || m_player->getComponent<CInput>().left)
+			m_player->getComponent<CState>().state = "walk";
+		else
+			m_player->getComponent<CState>().state = "idle";
 	
 	//change animations
 	auto& playeranimator = m_player->getComponent<CAnimator>().animator;
-	 if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
+	if (m_player->getComponent<CState>().state == "hit")
+	{
+		playeranimator.setAnimation("hit");
+	}
+	 else if (m_player->getComponent<CState>().state == "jump" && !m_player->getComponent<CRigidbody>().rigidbody.isGrounded)
 	{
 		playeranimator.setAnimation("jump");
 	}

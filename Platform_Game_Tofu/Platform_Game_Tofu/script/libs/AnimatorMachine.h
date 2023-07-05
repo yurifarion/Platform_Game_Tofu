@@ -15,6 +15,7 @@ public:
 	void addAnimation(Animation& anim);
 	void update();
 	Sprite getCurrentSprite();
+	const Animation& getCurrentAnimation();
 	bool hasEnded();
 	void setAnimation(const std::string& name);
 	bool isAnimationPlaying(const std::string& name);

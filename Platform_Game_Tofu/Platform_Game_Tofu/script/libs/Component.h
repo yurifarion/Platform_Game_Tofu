@@ -21,6 +21,7 @@ public:
 	Vec2 prevPos = { 0.0,0.0 };
 	Vec2 scale = { 1.0,1.0 };
 	Vec2 velocity = { 0.0,0.0 };
+	std::string m_name = "";
 	float angle = 0;
 	bool isFaceLeft = false;
 
@@ -40,6 +41,14 @@ public:
 	{
 		prevPos = pos;
 		pos += ppos;
+	}
+	void setname(const std::string& name)
+	{
+		m_name = name;
+	}
+	const std::string& getname()
+	{
+		return m_name;
 	}
 
 };

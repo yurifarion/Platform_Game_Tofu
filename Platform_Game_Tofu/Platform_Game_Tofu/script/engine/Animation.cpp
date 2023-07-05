@@ -25,6 +25,15 @@ const size_t Animation::getSpeed() const
 {
 	return m_speed;
 }
+void Animation::setfixedduration(size_t duration)
+{
+	m_fixedduration = duration;
+	cooldown = duration;
+}
+const size_t Animation::getfixedduration()
+{
+	return m_fixedduration;
+}
 SpriteVec& Animation::getSprites()
 {
 	return m_sprites;

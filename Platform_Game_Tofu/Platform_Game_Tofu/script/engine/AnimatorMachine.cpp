@@ -13,8 +13,6 @@ void AnimatorMachine::addAnimation(Animation& anim)
 {
 	m_animations[anim.getName()] = anim;
 
-	//Mudar isso para o set animation em caso de ter mais de uma animacao
-	m_currentAnimation = anim;
 	m_framecount = m_currentAnimation.getSprites().size() - 1;
 }
 void AnimatorMachine::update()
@@ -23,6 +21,8 @@ void AnimatorMachine::update()
 
 	//current fps is 60
 	m_currentframe++;
+
+	if (m_currentAnimation.getfixedduration() > 0) m_currentAnimation.cooldown -= 1;
 
 	auto index = ((int)m_currentframe / (60 / m_currentAnimation.getSpeed()));
 
@@ -49,13 +49,21 @@ Sprite AnimatorMachine::getCurrentSprite()
 {
 	return m_currentSprite;
 }
+const Animation& AnimatorMachine::getCurrentAnimation()
+{
+	return m_currentAnimation;
+}
 void AnimatorMachine::setAnimation(const std::string& name)
 {
-	if (isAnimationPlaying(name)) return;
+	if (m_currentAnimation.cooldown <= 0)
+	{
+		if (isAnimationPlaying(name)) return;
 
-	m_currentAnimation = m_animations[name];
-	m_framecount = m_currentAnimation.getSprites().size() - 1;
-	m_hasEnd = false;
+		m_currentAnimation = m_animations[name];
+		m_currentAnimation.cooldown = m_currentAnimation.getfixedduration();
+		m_framecount = m_currentAnimation.getSprites().size() - 1;
+		m_hasEnd = false;
+	}
 }
 bool AnimatorMachine::isAnimationPlaying(const std::string& name)
 {
