@@ -48,6 +48,7 @@ public:
 	void sUI();
 	void onEnd();
 	void sRender();
+	void sUpdateLifebar();
 	void drawline(Vec2 p1,Vec2 p2);
 	void debugline(Vec2 p1, Vec2 p2,sf::Color color = sf::Color::Blue);
 };

@@ -15,6 +15,15 @@ Sprite& ImageUI::getimage()
 {
 	return m_image;
 }
+void ImageUI::setimage(const Sprite& sprite)
+{
+	m_image = sprite;
+	m_hassprite = true;
+
+	m_image.getSprite().setScale(
+		m_recttransform.getsize().x / m_image.getSprite().getLocalBounds().width,
+		m_recttransform.getsize().y / m_image.getSprite().getLocalBounds().height);
+}
 sf::Color ImageUI::getcolor()
 {
 	return m_color;

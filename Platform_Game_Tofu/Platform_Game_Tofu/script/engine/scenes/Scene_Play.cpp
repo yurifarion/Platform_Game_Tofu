@@ -242,6 +242,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 	pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize()*3));
 
 	pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
+
+	sUpdateLifebar();
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -289,7 +291,7 @@ void Scene_Play::spawnPlayer(Vec2& position)
 	m_player->addComponent<CRigidbody>(120.0f * m_scaleFactor);
 	m_player->addComponent<CBoundingBox>(m_gridSize);
 
-	//TODO be sure to add the remianing components to the player
+	
 }
 
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
@@ -368,8 +370,66 @@ void Scene_Play::sLifespan()
 {
 	//Consume and recover of dash amount
 	if(m_player->getComponent<CInput>().dash) m_player->getComponent<CPlayer>().addDash(-1 * m_game->deltaTime);
-	else m_player->getComponent<CPlayer>().addDash(0.1f * m_game->deltaTime);
-	
+	else m_player->getComponent<CPlayer>().addDash(0.1f * m_game->deltaTime);	
+}
+void Scene_Play::sUpdateLifebar()
+{
+	//Update number of hearts based on stats
+	if (m_player->getComponent<CPlayer>().lifeamount >= 3)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "heart_1" || e->getComponent<CUI>().name == "heart_2" || e->getComponent<CUI>().name == "heart_3")
+				{
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullheart"));
+				}
+			}
+			else {
+				std::cout << "NO UI";
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().lifeamount == 2)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "heart_1" || e->getComponent<CUI>().name == "heart_2")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullheart"));
+				else if (e->getComponent<CUI>().name == "heart_3")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptyheart"));
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().lifeamount == 1)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "heart_1")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullheart"));
+				else if (e->getComponent<CUI>().name == "heart_2" || e->getComponent<CUI>().name == "heart_3")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptyheart"));
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().lifeamount <= 0)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "heart_1" || e->getComponent<CUI>().name == "heart_2" || e->getComponent<CUI>().name == "heart_3")
+				{
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptyheart"));
+				}
+			}
+		}
+	}
 }
 void Scene_Play::sCameraMovement()
 {
@@ -451,6 +511,11 @@ void Scene_Play::sCollision()
 					else
 					{
 						damagedir = Vec2(resolveCol.x, 0);
+					}
+					if (m_player->getComponent<CAnimator>().animator.getCurrentAnimation().getName() != "hit")
+					{
+						m_player->getComponent<CPlayer>().reducelife(-1);
+						sUpdateLifebar();
 					}
 					m_player->getComponent<CRigidbody>().rigidbody.addForce(damagedir*1000);
 					m_player->getComponent<CState>().state = "hit";

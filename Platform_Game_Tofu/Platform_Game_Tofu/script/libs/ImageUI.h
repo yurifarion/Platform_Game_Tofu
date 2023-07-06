@@ -16,6 +16,7 @@ public:
 	ImageUI(const Sprite& sprite,const RectTransform& recttransform);
 	Sprite& getimage();
 	sf::Color getcolor();
+	void setimage(const Sprite& sprite);
 	void setcolor(const sf::Color& color);
 	bool hassprite();
 };
