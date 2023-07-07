@@ -82,6 +82,7 @@ class CPlayer : public Component
 	float maxdashenergy = 0;
 public:
 	int lifeamount = 3;
+	int dashamount = 3;
 	float speed = 0;
 	float jumpforce = 0;
 	float dashforce = 0;
@@ -100,7 +101,10 @@ public:
 	void reducelife(int amout)
 	{
 		lifeamount += amout;
-		std::cout << "Life" << lifeamount;
+	}
+	void reducedash(int amout)
+	{
+		dashamount += amout;
 	}
 };
 class CBoundingBox : public Component

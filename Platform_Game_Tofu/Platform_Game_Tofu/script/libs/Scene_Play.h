@@ -17,13 +17,14 @@ protected:
 
 	std::shared_ptr<Entity> m_player;
 	std::shared_ptr<Entity> m_pausemenu;
+	std::shared_ptr<Entity> m_gameovermenu;
 	MapLevel m_maplevel;
 	PlayerConfig m_playerConfig;
 	bool m_drawTextures = true;
 	bool m_drawCollision = false;
 	bool m_drawGrid = false;
 	bool m_drawDebug = false;
-
+	bool m_gameover = false;
 	Vec2 m_gridSize = { 96,96 };
 	float m_scaleFactor = 1;
 	sf::Text m_gridText;
@@ -49,6 +50,7 @@ public:
 	void onEnd();
 	void sRender();
 	void sUpdateLifebar();
+	void sUpdateDashbar();
 	void drawline(Vec2 p1,Vec2 p2);
 	void debugline(Vec2 p1, Vec2 p2,sf::Color color = sf::Color::Blue);
 };

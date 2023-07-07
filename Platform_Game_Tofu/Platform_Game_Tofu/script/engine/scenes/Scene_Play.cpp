@@ -57,6 +57,9 @@ Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity
 
 void Scene_Play::loadLevel(const std::string& filename)
 {
+	//place camera in the middle of the screen
+	m_game->setCameraPosition(Vec2(m_game->window().getSize().x / 2, m_game->window().getSize().y / 2));
+	std::cout << "Camera center x:" << m_game->getCameraView().getCenter().x << " " << m_game->getCameraView().getCenter().y;
 	//reset the entity managet every time we load a level
 	m_entityManager = EntityManager();
 
@@ -139,111 +142,166 @@ void Scene_Play::loadLevel(const std::string& filename)
 		}
 	}
 
-	//Heart UI
-	auto heartuitext = m_entityManager.addEntity("UI");
-	heartuitext->addComponent<CUI>("hptext", Vec2(10, 7) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
-	heartuitext->addComponent<CTextUI>("HP");
-	heartuitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
-	heartuitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
-	//heartuitext->addComponent<CImageUI>(m_game->assets().getSprite("hptext"), heartuitext->getComponent<CUI>().recttransform);
+	//Gameplay UI
+	{
+		//Heart UI
+		auto heartuitext = m_entityManager.addEntity("UI");
+		heartuitext->addComponent<CUI>("hptext", Vec2(10, 7) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
+		heartuitext->addComponent<CTextUI>("HP");
+		heartuitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+		heartuitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
+		//heartuitext->addComponent<CImageUI>(m_game->assets().getSprite("hptext"), heartuitext->getComponent<CUI>().recttransform);
 
-	auto heart_1 = m_entityManager.addEntity("UI");
-	heart_1->addComponent<CUI>("heart_1", Vec2(88, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
-	heart_1->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_1->getComponent<CUI>().recttransform);
+		auto heart_1 = m_entityManager.addEntity("UI");
+		heart_1->addComponent<CUI>("heart_1", Vec2(88, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		heart_1->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_1->getComponent<CUI>().recttransform);
 
-	auto heart_2 = m_entityManager.addEntity("UI");
-	heart_2->addComponent<CUI>("heart_2", Vec2(136, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
-	heart_2->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_2->getComponent<CUI>().recttransform);
+		auto heart_2 = m_entityManager.addEntity("UI");
+		heart_2->addComponent<CUI>("heart_2", Vec2(136, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		heart_2->addComponent<CImageUI>(m_game->assets().getSprite("fullheart"), heart_2->getComponent<CUI>().recttransform);
 
-	auto heart_3 = m_entityManager.addEntity("UI");
-	heart_3->addComponent<CUI>("heart_3", Vec2(184, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
-	heart_3->addComponent<CImageUI>(m_game->assets().getSprite("emptyheart"), heart_3->getComponent<CUI>().recttransform);
+		auto heart_3 = m_entityManager.addEntity("UI");
+		heart_3->addComponent<CUI>("heart_3", Vec2(184, 0) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		heart_3->addComponent<CImageUI>(m_game->assets().getSprite("emptyheart"), heart_3->getComponent<CUI>().recttransform);
 
-	//Mana UI
-	auto manauitext = m_entityManager.addEntity("UI");
-	manauitext->addComponent<CUI>("manatext", Vec2(10, 55) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
-	manauitext->addComponent<CTextUI>("MP");
-	manauitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
-	manauitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
-	//manauitext->addComponent<CImageUI>(m_game->assets().getSprite("manatext"), manauitext->getComponent<CUI>().recttransform);
+		//Mana UI
+		auto manauitext = m_entityManager.addEntity("UI");
+		manauitext->addComponent<CUI>("manatext", Vec2(10, 55) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
+		manauitext->addComponent<CTextUI>("MP");
+		manauitext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+		manauitext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
+		//manauitext->addComponent<CImageUI>(m_game->assets().getSprite("manatext"), manauitext->getComponent<CUI>().recttransform);
 
-	auto mana_1 = m_entityManager.addEntity("UI");
-	mana_1->addComponent<CUI>("mana_1", Vec2(88, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
-	mana_1->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_1->getComponent<CUI>().recttransform);
+		auto mana_1 = m_entityManager.addEntity("UI");
+		mana_1->addComponent<CUI>("mana_1", Vec2(88, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		mana_1->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_1->getComponent<CUI>().recttransform);
 
-	auto mana_2 = m_entityManager.addEntity("UI");
-	mana_2->addComponent<CUI>("mana_2", Vec2(136, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
-	mana_2->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_2->getComponent<CUI>().recttransform);
+		auto mana_2 = m_entityManager.addEntity("UI");
+		mana_2->addComponent<CUI>("mana_2", Vec2(136, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		mana_2->addComponent<CImageUI>(m_game->assets().getSprite("fullmana"), mana_2->getComponent<CUI>().recttransform);
 
-	auto mana_3 = m_entityManager.addEntity("UI");
-	mana_3->addComponent<CUI>("mana_3", Vec2(184, 48)* m_scaleFactor, Vec2(48, 48)* m_scaleFactor);
-	mana_3->addComponent<CImageUI>(m_game->assets().getSprite("emptymana"), mana_3->getComponent<CUI>().recttransform);
+		auto mana_3 = m_entityManager.addEntity("UI");
+		mana_3->addComponent<CUI>("mana_3", Vec2(184, 48) * m_scaleFactor, Vec2(48, 48) * m_scaleFactor);
+		mana_3->addComponent<CImageUI>(m_game->assets().getSprite("emptymana"), mana_3->getComponent<CUI>().recttransform);
 
-	//Sphere count
-	auto spheretext = m_entityManager.addEntity("UI");
-	spheretext->addComponent<CUI>("spheretext", Vec2(0, 0)* m_scaleFactor, Vec2(88, 48)* m_scaleFactor);
-	spheretext->addComponent<CTextUI>("150X");
-	spheretext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
-	spheretext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
-	float xpos = m_game->window().getSize().x - (spheretext->getComponent<CTextUI>().textui.getfontsize() * spheretext->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
-	spheretext->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+		//Sphere count
+		auto spheretext = m_entityManager.addEntity("UI");
+		spheretext->addComponent<CUI>("spheretext", Vec2(0, 0) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
+		spheretext->addComponent<CTextUI>("150X");
+		spheretext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+		spheretext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
+		float xpos = m_game->window().getSize().x - (spheretext->getComponent<CTextUI>().textui.getfontsize() * spheretext->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+		spheretext->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
 
-	//sphere image
-	auto sphereui = m_entityManager.addEntity("UI");
-	sphereui->addComponent<CUI>("sphereui", Vec2(m_game->window().getSize().x - (48 * m_scaleFactor), 0), Vec2(48 * m_scaleFactor, 48 * m_scaleFactor));
-	sphereui->addComponent<CImageUI>(m_game->assets().getSprite("sphereui"), sphereui->getComponent<CUI>().recttransform);
-
+		//sphere image
+		auto sphereui = m_entityManager.addEntity("UI");
+		sphereui->addComponent<CUI>("sphereui", Vec2(m_game->window().getSize().x - (48 * m_scaleFactor), 0), Vec2(48 * m_scaleFactor, 48 * m_scaleFactor));
+		sphereui->addComponent<CImageUI>(m_game->assets().getSprite("sphereui"), sphereui->getComponent<CUI>().recttransform);
+	}
 	//Pause Menu UI
-	//Background
-	m_pausemenu = m_entityManager.addEntity("UI");
-	m_pausemenu->addComponent<CUI>("Pause_bg", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
-	m_pausemenu->addComponent<CImageUI>();
-	m_pausemenu->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
-	m_pausemenu->getComponent<CUI>().recttransform.SetActive(false);
+	{
+		//Background
+		m_pausemenu = m_entityManager.addEntity("UI");
+		m_pausemenu->addComponent<CUI>("Pause_bg", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+		m_pausemenu->addComponent<CImageUI>();
+		m_pausemenu->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
+		m_pausemenu->getComponent<CUI>().recttransform.SetActive(false);
 
-	//Title
-	auto ptitle = m_entityManager.addEntity("UI");
-	ptitle->addComponent<CUI>("Pause_title", Vec2(825, 375), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
-	ptitle->addComponent<CTextUI>("PAUSE");
-	ptitle->getComponent<CTextUI>().textui.setfontsize(48*m_scaleFactor);
+		//Title
+		auto ptitle = m_entityManager.addEntity("UI");
+		ptitle->addComponent<CUI>("Pause_title", Vec2(825, 375), Vec2(200, 200), &m_pausemenu->getComponent<CUI>().recttransform);
+		ptitle->addComponent<CTextUI>("PAUSE");
+		ptitle->getComponent<CTextUI>().textui.setfontsize(48 * m_scaleFactor);
 
-	ptitle->getComponent<CUI>().recttransform.setsize(Vec2(ptitle->getComponent<CTextUI>().textui.getfontsize()* ptitle->getComponent<CTextUI>().textui.gettext().length(), ptitle->getComponent<CTextUI>().textui.getfontsize()));
+		ptitle->getComponent<CUI>().recttransform.setsize(Vec2(ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length(), ptitle->getComponent<CTextUI>().textui.getfontsize()));
 
-	ptitle->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
-	float y =(ptitle->getComponent<CTextUI>().textui.getfontsize()*3);
-	ptitle->getComponent<CUI>().recttransform.setposition(Vec2(0,-y));
+		ptitle->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		float y = (ptitle->getComponent<CTextUI>().textui.getfontsize() * 3);
+		ptitle->getComponent<CUI>().recttransform.setposition(Vec2(0, -y));
 
 
-	//Resume button
-	auto presumebtn = m_entityManager.addEntity("UI");
-	presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
-	presumebtn->addComponent<CTextUI>("Resume");
-	presumebtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+		//Resume button
+		auto presumebtn = m_entityManager.addEntity("UI");
+		presumebtn->addComponent<CUI>("Pause_resumebtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
+		presumebtn->addComponent<CTextUI>("Resume");
+		presumebtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
 
-	presumebtn->getComponent<CUI>().recttransform.setsize(Vec2(presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length(), presumebtn->getComponent<CTextUI>().textui.getfontsize()));
-	presumebtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
-	presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+		presumebtn->getComponent<CUI>().recttransform.setsize(Vec2(presumebtn->getComponent<CTextUI>().textui.getfontsize() * presumebtn->getComponent<CTextUI>().textui.gettext().length(), presumebtn->getComponent<CTextUI>().textui.getfontsize()));
+		presumebtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
 
-	presumebtn->addComponent<CButtonUI>(presumebtn->getComponent<CUI>().recttransform);
-	presumebtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
+		presumebtn->addComponent<CButtonUI>(presumebtn->getComponent<CUI>().recttransform);
+		presumebtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
 
-		});
+			});
 
-	//Quit button
-	auto pquitbtn = m_entityManager.addEntity("UI");
-	
-	pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
-	pquitbtn->addComponent<CTextUI>("Quit");
+		//Quit button
+		auto pquitbtn = m_entityManager.addEntity("UI");
 
-	pquitbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+		pquitbtn->addComponent<CUI>("Pause_quitbtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
+		pquitbtn->addComponent<CTextUI>("Quit");
 
-	pquitbtn->getComponent<CUI>().recttransform.setsize(Vec2(pquitbtn->getComponent<CTextUI>().textui.getfontsize()* pquitbtn->getComponent<CTextUI>().textui.gettext().length(), pquitbtn->getComponent<CTextUI>().textui.getfontsize()));
-	pquitbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
-	pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize()*3));
+		pquitbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
 
-	pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
+		pquitbtn->getComponent<CUI>().recttransform.setsize(Vec2(pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length(), pquitbtn->getComponent<CTextUI>().textui.getfontsize()));
+		pquitbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize() * 3));
 
+		pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
+	}
+	//Gameover Menu UI
+	{
+		//Background
+		m_gameovermenu = m_entityManager.addEntity("UI");
+		m_gameovermenu->addComponent<CUI>("Gameover_bg", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+		m_gameovermenu->addComponent<CImageUI>();
+		m_gameovermenu->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
+		m_gameovermenu->getComponent<CUI>().recttransform.SetActive(false);
+
+		//Title
+		auto ptitle = m_entityManager.addEntity("UI");
+		ptitle->addComponent<CUI>("Gameover_title", Vec2(825, 375), Vec2(200, 200), &m_gameovermenu->getComponent<CUI>().recttransform);
+		ptitle->addComponent<CTextUI>("Gameover");
+		ptitle->getComponent<CTextUI>().textui.setfontsize(48 * m_scaleFactor);
+
+		ptitle->getComponent<CUI>().recttransform.setsize(Vec2(ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length(), ptitle->getComponent<CTextUI>().textui.getfontsize()));
+
+		ptitle->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		float y = (ptitle->getComponent<CTextUI>().textui.getfontsize() * 3);
+		ptitle->getComponent<CUI>().recttransform.setposition(Vec2(0, -y));
+
+
+		//Resume button
+		auto prestartbtn = m_entityManager.addEntity("UI");
+		prestartbtn->addComponent<CUI>("Gameover_restartbtn", Vec2(0, 0), Vec2(0, 0), &m_gameovermenu->getComponent<CUI>().recttransform);
+		prestartbtn->addComponent<CTextUI>("Restart");
+		prestartbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+		prestartbtn->getComponent<CUI>().recttransform.setsize(Vec2(prestartbtn->getComponent<CTextUI>().textui.getfontsize() * prestartbtn->getComponent<CTextUI>().textui.gettext().length(), prestartbtn->getComponent<CTextUI>().textui.getfontsize()));
+		prestartbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		prestartbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+
+		prestartbtn->addComponent<CButtonUI>(prestartbtn->getComponent<CUI>().recttransform);
+		prestartbtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
+
+			});
+
+		//Quit button
+		auto pquitbtn = m_entityManager.addEntity("UI");
+
+		pquitbtn->addComponent<CUI>("Gameover_quitbtn", Vec2(0, 0), Vec2(0, 0), &m_gameovermenu->getComponent<CUI>().recttransform);
+		pquitbtn->addComponent<CTextUI>("Quit");
+
+		pquitbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+		pquitbtn->getComponent<CUI>().recttransform.setsize(Vec2(pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length(), pquitbtn->getComponent<CTextUI>().textui.getfontsize()));
+		pquitbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize() * 3));
+
+		pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
+	}
 	sUpdateLifebar();
+	sUpdateDashbar();
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -346,7 +404,7 @@ void Scene_Play::sMovement()
 		}
 		if (m_player->getComponent<CInput>().dash)
 		{
-			if (m_player->getComponent<CPlayer>().dashenergy > 0)
+			if (m_player->getComponent<CPlayer>().dashenergy > 0 && m_player->getComponent<CPlayer>().dashamount >= 0)
 			{
 				Vec2 dir = m_player->getComponent<CTransform>().isFaceLeft ? Vec2(-playerData.dashforce, 0.0f) : Vec2(playerData.dashforce, 0.0f);
 				rb.addForce(dir);
@@ -426,6 +484,64 @@ void Scene_Play::sUpdateLifebar()
 				if (e->getComponent<CUI>().name == "heart_1" || e->getComponent<CUI>().name == "heart_2" || e->getComponent<CUI>().name == "heart_3")
 				{
 					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptyheart"));
+				}
+			}
+		}
+		m_gameovermenu->getComponent<CUI>().recttransform.SetActive(true);
+		m_gameover = true;
+	}
+}
+void Scene_Play::sUpdateDashbar()
+{
+	//Update number of dash based on stats
+	if (m_player->getComponent<CPlayer>().dashamount >= 3)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "mana_1" || e->getComponent<CUI>().name == "mana_2" || e->getComponent<CUI>().name == "mana_3")
+				{
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullmana"));
+				}
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().dashamount == 2)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "mana_1" || e->getComponent<CUI>().name == "mana_2")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullmana"));
+				else if (e->getComponent<CUI>().name == "mana_3")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptymana"));
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().dashamount == 1)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "mana_1")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("fullmana"));
+				else if (e->getComponent<CUI>().name == "mana_2" || e->getComponent<CUI>().name == "mana_3")
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptymana"));
+			}
+		}
+	}
+	else if (m_player->getComponent<CPlayer>().dashamount <= 0)
+	{
+		for (auto e : m_entityManager.getEntities("UI"))
+		{
+			if (e->hasComponent<CUI>())
+			{
+				if (e->getComponent<CUI>().name == "mana_1" || e->getComponent<CUI>().name == "mana_2" || e->getComponent<CUI>().name == "mana_3")
+				{
+					e->getComponent<CImageUI>().imgui.setimage(m_game->assets().getSprite("emptymana"));
 				}
 			}
 		}
@@ -575,35 +691,41 @@ void Scene_Play::sDoAction(const Action& action)
 		else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
 		else if (action.name() == "TOGGLE_DEBUG") { m_drawDebug = !m_drawDebug; }
 
-		//Game State Input
-		else if (action.name() == "PAUSE") 
-		{ 
-			setPaused(!m_paused); 
-			m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+		if (!m_gameover)
+		{
+				//Game State Input
+			if (action.name() == "PAUSE")
+			{
+				setPaused(!m_paused);
+				m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+			}
+		
+			else if (action.name() == "JUMP")
+			{
+				m_player->getComponent<CInput>().up = true;
+			}
+
+			//Game Controls Input
+			else if (action.name() == "DOWN")
+			{
+				m_player->getComponent<CInput>().down = true;
+			}
+			else if (action.name() == "RIGHT")
+			{
+				m_player->getComponent<CInput>().right = true;
+			}
+			else if (action.name() == "LEFT")
+			{
+				m_player->getComponent<CInput>().left = true;
+			}
+			else if (action.name() == "DASH")
+			{
+				m_player->getComponent<CInput>().dash = true;
+				m_player->getComponent<CPlayer>().reducedash(-1);
+				sUpdateDashbar();
+			}
 		}
 		else if (action.name() == "QUIT") { onEnd(); }
-		else if (action.name() == "JUMP")
-		{
-			m_player->getComponent<CInput>().up = true; 
-		}
-
-		 //Game Controls Input
-		else if (action.name() == "DOWN")
-		{ 
-			m_player->getComponent<CInput>().down = true; 
-		}
-		else if (action.name() == "RIGHT")
-		{
-			m_player->getComponent<CInput>().right = true; 
-		}
-		else if (action.name() == "LEFT")
-		{
-			m_player->getComponent<CInput>().left = true; 
-		}
-		else if (action.name() == "DASH")
-		{
-			m_player->getComponent<CInput>().dash = true;
-		}
 	}
 	//When Action end
 	else if (action.type() == "END")
@@ -697,11 +819,16 @@ void Scene_Play::sUI()
 			{
 				e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
-				if(e->getComponent<CUI>().name == "Pause_quitbtn") onEnd();
+				if(e->getComponent<CUI>().name == "Pause_quitbtn" || e->getComponent<CUI>().name == "Gameover_quitbtn") onEnd();
 				else if (e->getComponent<CUI>().name == "Pause_resumebtn")
 				{
 					setPaused(false);
 					m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+				}
+				else if (e->getComponent<CUI>().name == "Gameover_restartbtn")
+				{
+					char const* path = "Levels/ExampleLevel";
+					m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
 				}
 			}
 		}
