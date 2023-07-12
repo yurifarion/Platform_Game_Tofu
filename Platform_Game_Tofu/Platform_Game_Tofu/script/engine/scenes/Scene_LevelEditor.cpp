@@ -444,6 +444,7 @@ void Scene_LevelEditor::sRender()
 	//Draw grid
 	if (m_drawGrid)
 	{
+		auto scaleFactor = 17 * (m_game->window().getView().getSize().x / 1280);
 		float leftX = m_game->window().getView().getCenter().x - width() / 2;
 		float rightX = leftX + width() + m_gridSize.x;
 		float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
@@ -455,7 +456,7 @@ void Scene_LevelEditor::sRender()
 
 		for (float y = 0; y < height(); y += m_gridSize.y)
 		{
-			drawline(Vec2(leftX, height() - y), Vec2(rightX, height() - y));
+			drawline(Vec2(leftX, (height() - y)- scaleFactor), Vec2(rightX, (height() - y) - scaleFactor));
 
 			for (float x = nextGridX; x < rightX; x += m_gridSize.x)
 			{
