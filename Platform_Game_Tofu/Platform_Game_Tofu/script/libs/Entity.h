@@ -21,7 +21,8 @@ typedef std::tuple<
 	CImageUI,
 	CButtonUI,
 	CTextUI,
-	CTileMap
+	CTileMap,
+	CEnemyAI
 >ComponentTuple;
 
 

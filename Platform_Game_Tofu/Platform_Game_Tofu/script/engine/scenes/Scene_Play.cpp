@@ -133,6 +133,11 @@ void Scene_Play::loadLevel(const std::string& filename)
 						m_mapTile->destroy();
 						spawnPlayer(position);
 					}
+					if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::ENEMY)
+					{
+						m_mapTile->destroy();
+						spawnEnemy(position);
+					}
 					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_d)
 					{
 						m_mapTile->getComponent<CTransform>().setname("spike");
@@ -351,7 +356,17 @@ void Scene_Play::spawnPlayer(Vec2& position)
 
 	
 }
+void Scene_Play::spawnEnemy(Vec2& position)
+{
+	auto enemy = m_entityManager.addEntity("enemy");
+	enemy->addComponent<CSprite>(m_game->assets().getSprite("Enemy_stand"), false);
+	enemy->addComponent<CEnemyAI>();
 
+	enemy->addComponent<CTransform>(position);
+	enemy->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
+	enemy->addComponent<CRigidbody>(120.0f * m_scaleFactor);
+	enemy->addComponent<CBoundingBox>(m_gridSize);
+}
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 {
 	//TODO this should spawn a bullet at the given entity, going in the direction the enity is facing
@@ -423,6 +438,10 @@ void Scene_Play::sMovement()
 		}
 	}
 	
+}
+void Scene_Play::sEnemyMovement()
+{
+
 }
 void Scene_Play::sLifespan()
 {
@@ -893,6 +912,19 @@ void Scene_Play::sRender()
 		}
 
 		for (auto e : m_entityManager.getEntities("player"))
+		{
+			auto& transform = e->getComponent<CTransform>();
+
+			if (e->hasComponent<CSprite>())
+			{
+				auto& sprite = e->getComponent<CSprite>().sprite;
+				sprite.getSprite().setRotation(transform.angle);
+				sprite.getSprite().setPosition(transform.pos.x, transform.pos.y);
+				sprite.getSprite().setScale(transform.scale.x, transform.scale.y);
+				m_game->window().draw(sprite.getSprite());
+			}
+		}
+		for (auto e : m_entityManager.getEntities("enemy"))
 		{
 			auto& transform = e->getComponent<CTransform>();
 

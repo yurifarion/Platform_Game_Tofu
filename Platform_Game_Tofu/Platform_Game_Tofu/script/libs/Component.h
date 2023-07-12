@@ -195,4 +195,10 @@ public:
 	CTileMap() {}
 	CTileMap(const int si) :spriteID(si) {}
 };
-
+class CEnemyAI : public Component
+{
+public:
+	bool rightinput = false;
+	bool leftinput = false;
+	CEnemyAI() {}
+};

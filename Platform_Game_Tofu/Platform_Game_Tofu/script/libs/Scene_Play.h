@@ -40,8 +40,10 @@ protected:
 public:
 	Scene_Play(GameEngine * gameEngine, const std::string& levelPath);
 	void spawnPlayer(Vec2& position);
+	void spawnEnemy(Vec2& position);
 	void spawnBullet(std::shared_ptr<Entity> entity);
 	void sMovement();
+	void sEnemyMovement();
 	void sLifespan();
 	void sCameraMovement();
 	void sCollision();
