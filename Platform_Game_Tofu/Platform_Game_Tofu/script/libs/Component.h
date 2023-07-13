@@ -198,7 +198,8 @@ public:
 class CEnemyAI : public Component
 {
 public:
-	bool rightinput = false;
+	bool rightinput = true;
 	bool leftinput = false;
+	float speed = 5.0f;
 	CEnemyAI() {}
 };

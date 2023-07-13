@@ -364,7 +364,7 @@ void Scene_Play::spawnEnemy(Vec2& position)
 
 	enemy->addComponent<CTransform>(position);
 	enemy->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
-	enemy->addComponent<CRigidbody>(120.0f * m_scaleFactor);
+	enemy->addComponent<CRigidbody>(0.0f * m_scaleFactor);
 	enemy->addComponent<CBoundingBox>(m_gridSize);
 }
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
@@ -380,6 +380,7 @@ void Scene_Play::update()
 	if (!m_paused)
 	{
 		sMovement();
+		sEnemyMovement();
 		sLifespan();
 		sAnimation();
 		sCollision();
@@ -391,6 +392,8 @@ void Scene_Play::update()
 void Scene_Play::sMovement()
 {
 	//Update all rigibodies
+
+	//Player rigid body
 	auto& rb = m_player->getComponent<CRigidbody>().rigidbody;
 	auto& playerData = m_player->getComponent<CPlayer>();
 	rb.update(m_game->deltaTime);
@@ -430,18 +433,52 @@ void Scene_Play::sMovement()
 
 	m_player->getComponent<CTransform>().velocity = rb.getVelocity(maxspeed);
 
-	for (auto e : m_entityManager.getEntities())
+	for (auto e : m_entityManager.getEntities("player"))
 	{
 		if (e->getComponent<CTransform>().velocity != Vec2(0, 0))
 		{
 			e->getComponent<CTransform>().move(e->getComponent<CTransform>().velocity * m_game->deltaTime);
 		}
 	}
+
+	
+	
 	
 }
 void Scene_Play::sEnemyMovement()
 {
+	//Max moviment per frame the player can move
+	Vec2 maxspeed(2000.0f * m_scaleFactor, 2000.0f * m_scaleFactor);
+	//Enemy rigidbody
+	for (auto e : m_entityManager.getEntities("enemy"))
+	{
+		if (e->hasComponent<CRigidbody>())
+		{
+			auto& erb = e->getComponent<CRigidbody>().rigidbody;
+			erb.update(m_game->deltaTime);
 
+			//Max moviment per frame the player can move
+			Vec2 maxspeed(2000.0f * m_scaleFactor, 2000.0f * m_scaleFactor);
+
+			if (e->getComponent<CEnemyAI>().rightinput)
+			{
+				if (e->getComponent<CTransform>().isFaceLeft) e->getComponent<CTransform>().flipX(false);
+				erb.addForce(Vec2(e->getComponent<CEnemyAI>().speed, 0.0f));
+			}
+			else if (e->getComponent<CEnemyAI>().leftinput)
+			{
+				if (e->getComponent<CTransform>().isFaceLeft) e->getComponent<CTransform>().flipX(true);
+				erb.addForce(Vec2(-e->getComponent<CEnemyAI>().speed, 0.0f));
+			}
+
+			e->getComponent<CTransform>().velocity = erb.getVelocity(maxspeed);
+
+			if (e->getComponent<CTransform>().velocity != Vec2(0, 0))
+			{
+				e->getComponent<CTransform>().move(e->getComponent<CTransform>().velocity * m_game->deltaTime);
+			}
+		}
+	}
 }
 void Scene_Play::sLifespan()
 {
@@ -660,24 +697,54 @@ void Scene_Play::sCollision()
 		}
 	}
 
-	
-	
 	//Check with Raycast if Player is close to the ground
-	Vec2 origin = m_player->getComponent<CTransform>().pos;
-	Vec2 destiny = m_player->getComponent<CTransform>().pos + (Vec2(0, m_gridSize.y/1.9));
-
-	for (auto e : m_entityManager.getEntities())
 	{
-		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
+		//Check with Raycast if Player is close to the ground
+		Vec2 origin = m_player->getComponent<CTransform>().pos;
+		Vec2 destiny = m_player->getComponent<CTransform>().pos + (Vec2(0, m_gridSize.y / 1.9));
+
+		for (auto e : m_entityManager.getEntities())
 		{
-			if (physics.EntityIntersect(origin, destiny, e))
+			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
 			{
-				m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
-				debugline(origin, destiny, sf::Color::Red);
+				if (physics.EntityIntersect(origin, destiny, e))
+				{
+					m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
+					debugline(origin, destiny, sf::Color::Red);
+				}
+			}
+		}
+		if (!m_player->getComponent<CRigidbody>().rigidbody.isGrounded) debugline(origin, destiny, sf::Color::Yellow);
+	}
+
+	{//Check with raycast if enemy is going to hit a tile
+		
+		for (auto ee : m_entityManager.getEntities("enemy"))
+		{
+			bool hit = false;
+			float dir = 0;
+			if (ee->getComponent<CEnemyAI>().rightinput) dir = m_gridSize.y / 1.9;
+			else dir = -m_gridSize.y / 1.9;
+
+			Vec2 origin = ee->getComponent<CTransform>().pos;
+			Vec2 destiny = ee->getComponent<CTransform>().pos + (Vec2(dir, 0));
+			
+			for (auto e : m_entityManager.getEntities())
+			{
+				if (e->hasComponent<CBoundingBox>() && e->id() != ee->id())
+				{
+					if (physics.EntityIntersect(origin, destiny, e))
+					{
+						debugline(origin, destiny, sf::Color::Red);
+						ee->getComponent<CEnemyAI>().rightinput = !ee->getComponent<CEnemyAI>().rightinput;
+						ee->getComponent<CEnemyAI>().leftinput = !ee->getComponent<CEnemyAI>().leftinput;
+						hit = true;
+					}
+					else if(!hit)debugline(origin, destiny, sf::Color::Yellow);
+				}
 			}
 		}
 	}
-	if(!m_player->getComponent<CRigidbody>().rigidbody.isGrounded) debugline(origin, destiny, sf::Color::Yellow);
 }
 void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 {
