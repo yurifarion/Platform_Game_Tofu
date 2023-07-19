@@ -370,6 +370,22 @@ void Scene_Play::spawnEnemy(Vec2& position)
 	enemy->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
 	enemy->addComponent<CRigidbody>(0.0f * m_scaleFactor);
 	enemy->addComponent<CBoundingBox>(m_gridSize);
+
+	//enemy animation
+	Sprite walk_fr_1(m_game->assets().getSprite("Enemy_walk1_jump"));
+	Sprite walk_fr_2(m_game->assets().getSprite("Enemy_walk2"));
+	Sprite walk_fr_3(m_game->assets().getSprite("Enemy_walk3"));
+	Sprite walk_fr_4(m_game->assets().getSprite("Enemy_walk4"));
+
+	Animation walkAnimClip("walk", 6.0f);
+
+	walkAnimClip.addFrame(walk_fr_1);
+	walkAnimClip.addFrame(walk_fr_2);
+	walkAnimClip.addFrame(walk_fr_3);
+	walkAnimClip.addFrame(walk_fr_4);
+
+	enemy->addComponent<CAnimator>(enemy->getComponent<CSprite>().sprite);
+	enemy->getComponent<CAnimator>().animator.addAnimation(walkAnimClip);
 }
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 {
@@ -711,7 +727,7 @@ void Scene_Play::sCollision()
 
 		for (auto e : m_entityManager.getEntities())
 		{
-			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
+			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && e->getComponent<CTransform>().getname() != "ENEMYEVENT")
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
 				{
@@ -878,6 +894,14 @@ void Scene_Play::sAnimation()
 
 	//change sprites
 	m_player->getComponent<CSprite>().sprite = m_player->getComponent<CAnimator>().animator.getCurrentSprite();
+
+	//Enemy animation
+	for (auto e : m_entityManager.getEntities("enemy"))
+	{
+		e->getComponent<CAnimator>().animator.setAnimation("walk");
+		e->getComponent<CAnimator>().animator.update();
+		e->getComponent<CSprite>().sprite = e->getComponent<CAnimator>().animator.getCurrentSprite();
+	}
 
 }
 void Scene_Play::sUI()
