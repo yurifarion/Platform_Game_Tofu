@@ -466,12 +466,12 @@ void Scene_Play::sEnemyMovement()
 
 			if (e->getComponent<CEnemyAI>().rightinput)
 			{
-				if (e->getComponent<CTransform>().isFaceLeft) e->getComponent<CTransform>().flipX(false);
+				e->getComponent<CTransform>().flipX(true);
 				erb.addForce(Vec2(e->getComponent<CEnemyAI>().speed, 0.0f));
 			}
 			else if (e->getComponent<CEnemyAI>().leftinput)
 			{
-				if (e->getComponent<CTransform>().isFaceLeft) e->getComponent<CTransform>().flipX(true);
+				e->getComponent<CTransform>().flipX(false);
 				erb.addForce(Vec2(-e->getComponent<CEnemyAI>().speed, 0.0f));
 			}
 
