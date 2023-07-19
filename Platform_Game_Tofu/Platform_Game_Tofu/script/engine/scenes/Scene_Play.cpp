@@ -142,7 +142,11 @@ void Scene_Play::loadLevel(const std::string& filename)
 					{
 						m_mapTile->getComponent<CTransform>().setname("spike");
 					}
-
+					//GEM_RED
+					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::GEM_RED)
+					{
+						m_mapTile->getComponent<CTransform>().setname("ENEMYEVENT");
+					}
 			}
 		}
 	}
@@ -666,13 +670,15 @@ void Scene_Play::sCollision()
 	{
 		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
 		{
+			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT") continue;
+
 			auto overlap = physics.GetOverlap(m_player, e);
 			if (overlap.x > 0.01 && overlap.y > 0.01)
 			{
 				auto resolveCol = physics.ResolveCollision(m_player, e);
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
 				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
-
+				
 				if (e->getComponent<CTransform>().getname() == "spike")
 				{
 					Vec2 damagedir;
@@ -733,7 +739,7 @@ void Scene_Play::sCollision()
 			{
 				if (e->hasComponent<CBoundingBox>() && e->id() != ee->id())
 				{
-					if (physics.EntityIntersect(origin, destiny, e))
+					if (physics.EntityIntersect(origin, destiny, e) && e->getComponent<CTransform>().getname() == "ENEMYEVENT")
 					{
 						debugline(origin, destiny, sf::Color::Red);
 						ee->getComponent<CEnemyAI>().rightinput = !ee->getComponent<CEnemyAI>().rightinput;
@@ -967,6 +973,7 @@ void Scene_Play::sRender()
 		for (auto e : m_entityManager.getEntities("foreground_tile"))
 		{
 			auto& transform = e->getComponent<CTransform>();
+			if (transform.getname() == "ENEMYEVENT") continue;
 
 			if (e->hasComponent<CSprite>())
 			{
