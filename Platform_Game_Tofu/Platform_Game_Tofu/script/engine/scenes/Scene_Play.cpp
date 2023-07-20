@@ -367,6 +367,7 @@ void Scene_Play::spawnEnemy(Vec2& position)
 	enemy->addComponent<CEnemyAI>();
 
 	enemy->addComponent<CTransform>(position);
+	enemy->getComponent<CTransform>().setname("enemy");
 	enemy->getComponent<CTransform>().scale = Vec2(6, 6) * m_scaleFactor;
 	enemy->addComponent<CRigidbody>(0.0f * m_scaleFactor);
 	enemy->addComponent<CBoundingBox>(m_gridSize);
@@ -695,7 +696,7 @@ void Scene_Play::sCollision()
 				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
 				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
 				
-				if (e->getComponent<CTransform>().getname() == "spike")
+				if (e->getComponent<CTransform>().getname() == "spike"|| e->getComponent<CTransform>().getname() == "enemy")
 				{
 					Vec2 damagedir;
 					if (resolveCol.x == 0)
