@@ -29,6 +29,10 @@ float  TextUI::getoutlinethickness()
 {
 	return m_outlinethickness;
 }
+void TextUI::settext(const std::string& text)
+{
+	m_text = text;
+}
 const std::string TextUI::gettext()
 {
 	return m_text;

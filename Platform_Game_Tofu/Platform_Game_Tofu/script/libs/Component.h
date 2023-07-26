@@ -87,6 +87,7 @@ public:
 	float jumpforce = 0;
 	float dashforce = 0;
 	float dashenergy = 0;
+	int gemscollected = 0;
 	CPlayer() {}
 	CPlayer(const float s, const float j, const float d,const float de)
 		:speed(s), jumpforce(j), dashforce(d), dashenergy(de)

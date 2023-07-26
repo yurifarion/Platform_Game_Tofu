@@ -147,6 +147,15 @@ void Scene_Play::loadLevel(const std::string& filename)
 					{
 						m_mapTile->getComponent<CTransform>().setname("ENEMYEVENT");
 					}
+					//Other gems
+					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::GEM_BLUE)
+					{
+						m_mapTile->getComponent<CTransform>().setname("GEMBLUE");
+					}
+					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::GEM_GREEN)
+					{
+						m_mapTile->getComponent<CTransform>().setname("GEMGREEN");
+					}
 			}
 		}
 	}
@@ -194,13 +203,13 @@ void Scene_Play::loadLevel(const std::string& filename)
 		mana_3->addComponent<CImageUI>(m_game->assets().getSprite("emptymana"), mana_3->getComponent<CUI>().recttransform);
 
 		//Sphere count
-		auto spheretext = m_entityManager.addEntity("UI");
-		spheretext->addComponent<CUI>("spheretext", Vec2(0, 0) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
-		spheretext->addComponent<CTextUI>("150X");
-		spheretext->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
-		spheretext->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
-		float xpos = m_game->window().getSize().x - (spheretext->getComponent<CTextUI>().textui.getfontsize() * spheretext->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
-		spheretext->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+		m_spherecount = m_entityManager.addEntity("UI");
+		m_spherecount->addComponent<CUI>("spheretext", Vec2(0, 0) * m_scaleFactor, Vec2(88, 48) * m_scaleFactor);
+		m_spherecount->addComponent<CTextUI>("150X");
+		m_spherecount->getComponent<CTextUI>().textui.setfontsize(35 * m_scaleFactor);
+		m_spherecount->getComponent<CTextUI>().textui.setoutlinethickness(5.0f * m_scaleFactor);
+		float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+		m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
 
 		//sphere image
 		auto sphereui = m_entityManager.addEntity("UI");
@@ -716,6 +725,22 @@ void Scene_Play::sCollision()
 					m_player->getComponent<CState>().state = "hit";
 					m_player->getComponent<CAnimator>().animator.setAnimation("hit");
 				}
+				else if (e->getComponent<CTransform>().getname() == "GEMBLUE")
+				{
+					m_player->getComponent<CPlayer>().gemscollected++;
+					e->destroy();
+					m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected)+"X");
+					float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+					m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+				}
+				else if (e->getComponent<CTransform>().getname() == "GEMGREEN")
+				{
+					m_player->getComponent<CPlayer>().gemscollected+=10;
+					e->destroy();
+					m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
+					float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+					m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+				}
 			}
 		}
 	}
@@ -729,6 +754,14 @@ void Scene_Play::sCollision()
 		for (auto e : m_entityManager.getEntities())
 		{
 			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && e->getComponent<CTransform>().getname() != "ENEMYEVENT")
+			{
+				if (physics.EntityIntersect(origin, destiny, e))
+				{
+					m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
+					debugline(origin, destiny, sf::Color::Red);
+				}
+			}
+			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && (e->getComponent<CTransform>().getname() != "GEMBLUE"|| e->getComponent<CTransform>().getname() != "GEMGREEN"))
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
 				{

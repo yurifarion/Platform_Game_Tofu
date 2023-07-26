@@ -20,6 +20,7 @@ public:
 	void setoutlinecolor(const sf::Color& color);
 	void setoutlinethickness(float thickness);
 	float getoutlinethickness();
+	void settext(const std::string& text);
 	const std::string gettext();
 	float getfontsize();
 	void setfontsize(float fontsize);
