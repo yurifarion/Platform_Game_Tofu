@@ -753,7 +753,8 @@ void Scene_Play::sCollision()
 
 		for (auto e : m_entityManager.getEntities())
 		{
-			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && e->getComponent<CTransform>().getname() != "ENEMYEVENT")
+			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT") continue;
+			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() )
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
 				{
@@ -761,7 +762,7 @@ void Scene_Play::sCollision()
 					debugline(origin, destiny, sf::Color::Red);
 				}
 			}
-			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && (e->getComponent<CTransform>().getname() != "GEMBLUE"|| e->getComponent<CTransform>().getname() != "GEMGREEN"))
+			else if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && (e->getComponent<CTransform>().getname() != "GEMBLUE"|| e->getComponent<CTransform>().getname() != "GEMGREEN"))
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
 				{
