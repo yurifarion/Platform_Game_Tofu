@@ -37,7 +37,7 @@ void Scene_LevelEditor::init()
     
 	else
 	{
-		m_maplevel = MapLevel(100, 100);
+		m_maplevel = MapLevel(1000, 1000);
 		m_maplevel.createMapFile(m_levelPath);
 	}
 	
@@ -531,8 +531,8 @@ Vec2 Scene_LevelEditor::pixelToGrid(Vec2 pos)
 }
 void Scene_LevelEditor::loadLevel(const std::string& path)
 {
-	int rowp = 100;
-	int collumnp = 100;
+	int rowp = 1000;
+	int collumnp = 1000;
 	m_maplevel = MapLevel(rowp, collumnp);
 	//m_maplevel.createMapFile(path);
 	m_maplevel.loadfromMapFile(path);

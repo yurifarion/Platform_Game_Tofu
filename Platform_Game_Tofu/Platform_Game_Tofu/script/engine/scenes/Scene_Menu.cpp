@@ -82,7 +82,7 @@ void Scene_Menu::sDoAction(const Action& action)
         }
         else
         {
-            char const* path = "Levels/ExampleLevel";
+            char const* path = "Levels/level";
             m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path, 3, 3, 0));
         }
     }

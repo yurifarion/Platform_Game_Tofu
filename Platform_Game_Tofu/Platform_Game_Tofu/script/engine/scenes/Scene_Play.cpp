@@ -78,8 +78,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 	//reset the entity managet every time we load a level
 	m_entityManager = EntityManager();
 
-	int rowp = 100;
-	int collumnp = 100;
+	int rowp = 1000;
+	int collumnp = 1000;
 	m_maplevel = MapLevel(rowp, collumnp);
 
 	m_maplevel.loadfromMapFile(filename);
