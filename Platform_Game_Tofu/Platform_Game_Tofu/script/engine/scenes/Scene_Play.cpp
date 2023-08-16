@@ -719,6 +719,7 @@ void Scene_Play::sCollision()
 		if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id())
 		{
 			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT") continue;
+			if (m_player->getComponent<CTransform>().pos.dist(e->getComponent<CTransform>().pos) > m_player->getComponent<CBoundingBox>().size.x) continue;
 
 			auto overlap = physics.GetOverlap(m_player, e);
 			if (overlap.x > 0.01 && overlap.y > 0.01)
@@ -776,6 +777,7 @@ void Scene_Play::sCollision()
 		for (auto e : m_entityManager.getEntities())
 		{
 			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT") continue;
+			if (m_player->getComponent<CTransform>().pos.dist(e->getComponent<CTransform>().pos) > m_gridSize.y*2) continue;
 			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() )
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
@@ -800,6 +802,7 @@ void Scene_Play::sCollision()
 		
 		for (auto ee : m_entityManager.getEntities("enemy"))
 		{
+			
 			bool hit = false;
 			float dir = 0;
 			if (ee->getComponent<CEnemyAI>().rightinput) dir = m_gridSize.y / 1.9;
@@ -810,6 +813,7 @@ void Scene_Play::sCollision()
 			
 			for (auto e : m_entityManager.getEntities())
 			{
+				if (e->getComponent<CTransform>().pos.dist(ee->getComponent<CTransform>().pos) > e->getComponent<CBoundingBox>().size.x) continue;
 				if (e->hasComponent<CBoundingBox>() && e->id() != ee->id())
 				{
 					if (physics.EntityIntersect(origin, destiny, e) && e->getComponent<CTransform>().getname() == "ENEMYEVENT")
@@ -1032,7 +1036,7 @@ void Scene_Play::sRender()
 		{
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CSprite>())
+			if (e->hasComponent<CSprite>() && m_game->isObjectVisible(transform.pos))
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -1045,7 +1049,7 @@ void Scene_Play::sRender()
 		{
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CSprite>())
+			if (e->hasComponent<CSprite>() && m_game->isObjectVisible(transform.pos))
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -1060,7 +1064,7 @@ void Scene_Play::sRender()
 			auto& transform = e->getComponent<CTransform>();
 			if (transform.getname() == "ENEMYEVENT") continue;
 
-			if (e->hasComponent<CSprite>())
+			if (e->hasComponent<CSprite>() && m_game->isObjectVisible(transform.pos))
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -1074,7 +1078,7 @@ void Scene_Play::sRender()
 		{
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CSprite>())
+			if (e->hasComponent<CSprite>() && m_game->isObjectVisible(transform.pos))
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -1087,7 +1091,7 @@ void Scene_Play::sRender()
 		{
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CSprite>())
+			if (e->hasComponent<CSprite>() && m_game->isObjectVisible(transform.pos))
 			{
 				auto& sprite = e->getComponent<CSprite>().sprite;
 				sprite.getSprite().setRotation(transform.angle);
@@ -1145,7 +1149,7 @@ void Scene_Play::sRender()
 	{
 		for (auto e : m_entityManager.getEntities())
 		{
-			if (e->hasComponent<CBoundingBox>())
+			if (e->hasComponent<CBoundingBox>() && m_game->isObjectVisible(e->getComponent<CTransform>().pos))
 			{
 				auto& box = e->getComponent<CBoundingBox>();
 				auto& transform = e->getComponent<CTransform>();

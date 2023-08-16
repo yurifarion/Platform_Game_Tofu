@@ -38,4 +38,5 @@ public:
 	void setCameraViewSize(const Vec2& size);
 	sf::View getCameraView() const;
 	Vec2 windowToWorld(const Vec2& window);
+	bool isObjectVisible(const Vec2& pos);
 };
