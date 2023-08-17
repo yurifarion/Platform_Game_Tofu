@@ -175,11 +175,11 @@ Vec2 GameEngine::windowToWorld(const Vec2& windowpos)
 }
 bool GameEngine::isObjectVisible(const Vec2& pos)
 {
-	return true;
-	if(pos.x < window().getPosition().x) return false;
-	if (pos.x > (window().getPosition().x + window().getSize().x)) return false;
-	if (pos.y < window().getPosition().y) return false;
-	if (pos.y > (window().getPosition().y + window().getSize().y)) return false;
+	auto view = window().getView();
+	if(pos.x < view.getCenter().x - (window().getSize().x)) return false;
+	if (pos.x > (view.getCenter().x + (window().getSize().x))) return false;
+	if (pos.y < view.getCenter().y - (window().getSize().y)) return false;
+	if (pos.y > (view.getCenter().y + (window().getSize().y))) return false;
 
 	return true;
 	
