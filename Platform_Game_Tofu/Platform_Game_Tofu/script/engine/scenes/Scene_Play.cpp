@@ -724,46 +724,51 @@ void Scene_Play::sCollision()
 			auto overlap = physics.GetOverlap(m_player, e);
 			if (overlap.x > 0.01 && overlap.y > 0.01)
 			{
-				auto resolveCol = physics.ResolveCollision(m_player, e);
-				m_player->getComponent<CTransform>().move(Vec2(resolveCol));
-				m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
+
+			 if (e->getComponent<CTransform>().getname() == "GEMBLUE")
+			{
+				m_player->getComponent<CPlayer>().gemscollected++;
+				e->destroy();
+				m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
+				float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+				m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+			}
+			else if (e->getComponent<CTransform>().getname() == "GEMGREEN")
+			{
+				m_player->getComponent<CPlayer>().gemscollected += 10;
+				e->destroy();
+				m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
+				float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
+				m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+			}
+
+			else {
+ 				 auto resolveCol = physics.ResolveCollision(m_player, e);
+				 m_player->getComponent<CTransform>().move(Vec2(resolveCol));
+				 m_player->getComponent<CRigidbody>().rigidbody.isColliding = true;
+
+				 if (e->getComponent<CTransform>().getname() == "spike" || e->getComponent<CTransform>().getname() == "enemy")
+				 {
+					 Vec2 damagedir;
+					 if (resolveCol.x == 0)
+					 {
+						 damagedir = Vec2(-1, 0);
+					 }
+					 else
+					 {
+						 damagedir = Vec2(resolveCol.x, 0);
+					 }
+					 if (m_player->getComponent<CAnimator>().animator.getCurrentAnimation().getName() != "hit")
+					 {
+						 m_player->getComponent<CPlayer>().reducelife(-1);
+						 sUpdateLifebar();
+					 }
+					 m_player->getComponent<CRigidbody>().rigidbody.addForce(damagedir * 1000);
+					 m_player->getComponent<CState>().state = "hit";
+					 m_player->getComponent<CAnimator>().animator.setAnimation("hit");
+				 }
+			 }
 				
-				if (e->getComponent<CTransform>().getname() == "spike"|| e->getComponent<CTransform>().getname() == "enemy")
-				{
-					Vec2 damagedir;
-					if (resolveCol.x == 0)
-					{
-						damagedir = Vec2(-1, 0);
-					}
-					else
-					{
-						damagedir = Vec2(resolveCol.x, 0);
-					}
-					if (m_player->getComponent<CAnimator>().animator.getCurrentAnimation().getName() != "hit")
-					{
-						m_player->getComponent<CPlayer>().reducelife(-1);
-						sUpdateLifebar();
-					}
-					m_player->getComponent<CRigidbody>().rigidbody.addForce(damagedir*1000);
-					m_player->getComponent<CState>().state = "hit";
-					m_player->getComponent<CAnimator>().animator.setAnimation("hit");
-				}
-				else if (e->getComponent<CTransform>().getname() == "GEMBLUE")
-				{
-					m_player->getComponent<CPlayer>().gemscollected++;
-					e->destroy();
-					m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected)+"X");
-					float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
-					m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
-				}
-				else if (e->getComponent<CTransform>().getname() == "GEMGREEN")
-				{
-					m_player->getComponent<CPlayer>().gemscollected+=10;
-					e->destroy();
-					m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
-					float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
-					m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
-				}
 			}
 		}
 	}
@@ -776,17 +781,9 @@ void Scene_Play::sCollision()
 
 		for (auto e : m_entityManager.getEntities())
 		{
-			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT") continue;
+			if (e->getComponent<CTransform>().getname() == "ENEMYEVENT" || e->getComponent<CTransform>().getname() == "GEMBLUE" || e->getComponent<CTransform>().getname() == "GEMGREEN") continue;
 			if (m_player->getComponent<CTransform>().pos.dist(e->getComponent<CTransform>().pos) > m_gridSize.y*2) continue;
 			if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() )
-			{
-				if (physics.EntityIntersect(origin, destiny, e))
-				{
-					m_player->getComponent<CRigidbody>().rigidbody.isGrounded = true;
-					debugline(origin, destiny, sf::Color::Red);
-				}
-			}
-			else if (e->hasComponent<CBoundingBox>() && e->id() != m_player->id() && (e->getComponent<CTransform>().getname() != "GEMBLUE"|| e->getComponent<CTransform>().getname() != "GEMGREEN"))
 			{
 				if (physics.EntityIntersect(origin, destiny, e))
 				{
