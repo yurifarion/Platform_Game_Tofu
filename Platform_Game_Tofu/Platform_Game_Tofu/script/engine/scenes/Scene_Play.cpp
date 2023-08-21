@@ -426,12 +426,12 @@ void Scene_Play::update()
 
 	if (!m_paused)
 	{
-		sMovement();
 		sEnemyMovement();
 		sLifespan();
 		sAnimation();
 		sCollision();
 		sCameraMovement();
+		sMovement();
 	}
 	sUI();
 	sRender();
@@ -1005,8 +1005,9 @@ void Scene_Play::sUI()
 				}
 				else if (e->getComponent<CUI>().name == "Gameover_restartbtn")
 				{
-					char const* path = "Levels/ExampleLevel";
+					char const* path = "Levels/level";
 					m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+					
 				}
 			}
 		}
