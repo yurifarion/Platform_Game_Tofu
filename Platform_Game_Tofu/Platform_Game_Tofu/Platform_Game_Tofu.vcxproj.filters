@@ -102,6 +102,9 @@
     <ClCompile Include="script\engine\TextUI.cpp">
       <Filter>Arquivos de Recurso\Engine\UI</Filter>
     </ClCompile>
+    <ClCompile Include="script\engine\scenes\Scene_Loading.cpp">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="script\libs\Action.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="script\libs\TextUI.h">
       <Filter>Arquivos de Recurso\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="script\libs\Scene_Loading.h">
+      <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

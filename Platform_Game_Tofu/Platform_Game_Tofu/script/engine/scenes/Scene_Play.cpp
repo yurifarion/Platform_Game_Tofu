@@ -1,4 +1,5 @@
 #include  "Scene_Play.h"
+#include  "Scene_Loading.h"
 #include "Physics.h"
 #include "Assets.h"
 #include "GameEngine.h"
@@ -837,7 +838,7 @@ void Scene_Play::drawline(Vec2 p1, Vec2 p2)
 void Scene_Play::reset()
 {
 	m_player->getComponent<CPlayer>().lifeamount--;
-	m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, m_levelpath, m_player->getComponent<CPlayer>().lifeamount, m_player->getComponent<CPlayer>().dashamount, m_player->getComponent<CPlayer>().gemscollected));
+	m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game, m_levelpath, m_player->getComponent<CPlayer>().lifeamount, m_player->getComponent<CPlayer>().dashamount, m_player->getComponent<CPlayer>().gemscollected));
 }
 //Draw a debug line
 void Scene_Play::debugline(Vec2 p1, Vec2 p2, sf::Color color)
@@ -1006,7 +1007,7 @@ void Scene_Play::sUI()
 				else if (e->getComponent<CUI>().name == "Gameover_restartbtn")
 				{
 					char const* path = "Levels/level";
-					m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path));
+					m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game,path,3,3,0));
 					
 				}
 			}

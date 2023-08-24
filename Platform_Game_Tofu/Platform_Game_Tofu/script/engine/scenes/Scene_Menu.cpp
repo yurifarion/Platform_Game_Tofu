@@ -1,4 +1,5 @@
 #include "Scene_Menu.h"
+#include "Scene_Loading.h"
 #include "Scene_Play.h"
 #include "Scene_Splash.h"
 #include "Scene_LevelEditorMenu.h"
@@ -83,7 +84,7 @@ void Scene_Menu::sDoAction(const Action& action)
         else
         {
             char const* path = "Levels/level";
-            m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, path, 3, 3, 0));
+            m_game->changeScene("PLAY", std::make_shared<Scene_Loading>(m_game, path, 3, 3, 0));
         }
     }
 }
