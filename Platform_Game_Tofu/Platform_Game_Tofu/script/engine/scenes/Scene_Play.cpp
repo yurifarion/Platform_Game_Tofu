@@ -334,6 +334,43 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 		pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
 	}
+	//Game complete Menu UI
+	{
+		//Background
+		m_gamecomplete = m_entityManager.addEntity("UI");
+		m_gamecomplete->addComponent<CUI>("Gamecomplete_bg", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
+		m_gamecomplete->addComponent<CImageUI>();
+		m_gamecomplete->getComponent<CImageUI>().imgui.setcolor(sf::Color(0.0f, 0.0f, 0.0f, 100.0f));
+		m_gamecomplete->getComponent<CUI>().recttransform.SetActive(false);
+
+		//Title
+		auto ptitle = m_entityManager.addEntity("UI");
+		ptitle->addComponent<CUI>("Gamecomplete_title", Vec2(825, 375), Vec2(200, 200), &m_gamecomplete->getComponent<CUI>().recttransform);
+		ptitle->addComponent<CTextUI>("You WON!");
+		ptitle->getComponent<CTextUI>().textui.setfontsize(48 * m_scaleFactor);
+
+		ptitle->getComponent<CUI>().recttransform.setsize(Vec2(ptitle->getComponent<CTextUI>().textui.getfontsize() * ptitle->getComponent<CTextUI>().textui.gettext().length(), ptitle->getComponent<CTextUI>().textui.getfontsize()));
+
+		ptitle->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		float y = (ptitle->getComponent<CTextUI>().textui.getfontsize() * 3);
+		ptitle->getComponent<CUI>().recttransform.setposition(Vec2(0, -y));
+
+
+		//Resume button
+		auto prestartbtn = m_entityManager.addEntity("UI");
+		prestartbtn->addComponent<CUI>("Gamecomplete_backtoMenu", Vec2(0, 0), Vec2(0, 0), &m_gamecomplete->getComponent<CUI>().recttransform);
+		prestartbtn->addComponent<CTextUI>("Back to menu");
+		prestartbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+		prestartbtn->getComponent<CUI>().recttransform.setsize(Vec2(prestartbtn->getComponent<CTextUI>().textui.getfontsize() * prestartbtn->getComponent<CTextUI>().textui.gettext().length(), prestartbtn->getComponent<CTextUI>().textui.getfontsize()));
+		prestartbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		prestartbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+
+		prestartbtn->addComponent<CButtonUI>(prestartbtn->getComponent<CUI>().recttransform);
+		prestartbtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
+
+			});
+	}
 	sUpdateLifebar();
 	sUpdateDashbar();
 }
@@ -736,11 +773,9 @@ void Scene_Play::sCollision()
 			}
 			else if (e->getComponent<CTransform>().getname() == "GEMGREEN")
 			{
-				m_player->getComponent<CPlayer>().gemscollected += 10;
 				e->destroy();
-				m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
-				float xpos = m_game->window().getSize().x - (m_spherecount->getComponent<CTextUI>().textui.getfontsize() * m_spherecount->getComponent<CTextUI>().textui.gettext().length()) - (50 * m_scaleFactor);
-				m_spherecount->getComponent<CUI>().recttransform.setposition(Vec2(xpos, 7 * m_scaleFactor));
+				m_gamecomplete->getComponent<CUI>().recttransform.SetActive(true);
+				setPaused(true);
 			}
 
 			else {
@@ -1009,6 +1044,11 @@ void Scene_Play::sUI()
 					char const* path = "Levels/level";
 					m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game,path,3,3,0));
 					
+				}
+				else if (e->getComponent<CUI>().name == "Gamecomplete_backtoMenu")
+				{
+					m_game->changeScene("Menu", std::make_shared<Scene_Menu>(m_game));
+
 				}
 			}
 		}

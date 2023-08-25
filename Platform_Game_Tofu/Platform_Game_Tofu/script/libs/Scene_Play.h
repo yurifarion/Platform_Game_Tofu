@@ -18,6 +18,7 @@ protected:
 	std::shared_ptr<Entity> m_player;
 	std::shared_ptr<Entity> m_pausemenu;
 	std::shared_ptr<Entity> m_gameovermenu;
+	std::shared_ptr<Entity> m_gamecomplete;
 	std::shared_ptr<Entity> m_spherecount;
 	Vec2 m_startPos;
 	std::string m_levelpath;
