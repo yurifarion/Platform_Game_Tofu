@@ -39,4 +39,5 @@ public:
 	sf::View getCameraView() const;
 	Vec2 windowToWorld(const Vec2& window);
 	bool isObjectVisible(const Vec2& pos);
+	void showCursor(bool showcursor);
 };

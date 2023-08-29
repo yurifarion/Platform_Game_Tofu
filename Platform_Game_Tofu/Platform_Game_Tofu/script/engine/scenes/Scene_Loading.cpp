@@ -35,7 +35,7 @@ void Scene_Loading::update()
 
 void Scene_Loading::sRender()
 {
-
+    m_game->showCursor(false);
 
     // clear the window to a blue
     m_game->window().setView(m_game->window().getDefaultView());

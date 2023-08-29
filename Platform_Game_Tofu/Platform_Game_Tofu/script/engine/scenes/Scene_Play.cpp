@@ -376,6 +376,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 	}
 	sUpdateLifebar();
 	sUpdateDashbar();
+	m_game->showCursor(false);
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -638,6 +639,7 @@ void Scene_Play::sUpdateLifebar()
 		}
 		m_gameovermenu->getComponent<CUI>().recttransform.SetActive(true);
 		m_gameover = true;
+		m_game->showCursor(m_gameover);
 	}
 }
 void Scene_Play::sUpdateDashbar()
@@ -779,6 +781,7 @@ void Scene_Play::sCollision()
 				e->destroy();
 				m_gamecomplete->getComponent<CUI>().recttransform.SetActive(true);
 				setPaused(true);
+				m_game->showCursor(true);
 			}
 
 			else {
@@ -907,6 +910,7 @@ void Scene_Play::sDoAction(const Action& action)
 			{
 				setPaused(!m_paused);
 				m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
+				m_game->showCursor(m_paused);
 			}
 		
 			else if (action.name() == "JUMP")

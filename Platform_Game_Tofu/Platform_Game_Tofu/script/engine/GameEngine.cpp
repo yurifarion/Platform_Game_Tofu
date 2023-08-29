@@ -184,3 +184,7 @@ bool GameEngine::isObjectVisible(const Vec2& pos)
 	return true;
 	
 }
+void  GameEngine::showCursor(bool showcursor)
+{
+	window().setMouseCursorVisible(showcursor);
+}
