@@ -154,7 +154,10 @@ void Scene_Play::loadLevel(const std::string& filename)
 						m_mapTile->destroy();
 						spawnEnemy(position);
 					}
-					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_d)
+					else if (Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_d
+						   || Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_l
+						   || Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_r
+						   || Assets::SpriteIDReference::SPRITEID(mapdata[row][collumn]) == Assets::SpriteIDReference::SPRITEID::Tile_spike_t)
 					{
 						m_mapTile->getComponent<CTransform>().setname("spike");
 					}
