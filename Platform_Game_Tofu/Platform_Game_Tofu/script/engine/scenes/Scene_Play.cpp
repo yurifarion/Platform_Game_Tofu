@@ -272,6 +272,21 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 			});
 
+		//Restart button
+		auto prestartbtn = m_entityManager.addEntity("UI");
+		prestartbtn->addComponent<CUI>("Pause_restartbtn", Vec2(0, 0), Vec2(0, 0), &m_pausemenu->getComponent<CUI>().recttransform);
+		prestartbtn->addComponent<CTextUI>("Restart");
+		prestartbtn->getComponent<CTextUI>().textui.setfontsize(30 * m_scaleFactor);
+
+		prestartbtn->getComponent<CUI>().recttransform.setsize(Vec2(prestartbtn->getComponent<CTextUI>().textui.getfontsize()* prestartbtn->getComponent<CTextUI>().textui.gettext().length(), prestartbtn->getComponent<CTextUI>().textui.getfontsize()));
+		prestartbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
+		prestartbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, prestartbtn->getComponent<CTextUI>().textui.getfontsize() * 3));
+
+		prestartbtn->addComponent<CButtonUI>(prestartbtn->getComponent<CUI>().recttransform);
+		prestartbtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
+
+			});
+
 		//Quit button
 		auto pquitbtn = m_entityManager.addEntity("UI");
 
@@ -282,7 +297,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 
 		pquitbtn->getComponent<CUI>().recttransform.setsize(Vec2(pquitbtn->getComponent<CTextUI>().textui.getfontsize() * pquitbtn->getComponent<CTextUI>().textui.gettext().length(), pquitbtn->getComponent<CTextUI>().textui.getfontsize()));
 		pquitbtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::center;
-		pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, pquitbtn->getComponent<CTextUI>().textui.getfontsize() * 3));
+		pquitbtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 2 * pquitbtn->getComponent<CTextUI>().textui.getfontsize() * 3));
 
 		pquitbtn->addComponent<CButtonUI>(pquitbtn->getComponent<CUI>().recttransform);
 	}
@@ -1046,7 +1061,7 @@ void Scene_Play::sUI()
 					setPaused(false);
 					m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
 				}
-				else if (e->getComponent<CUI>().name == "Gameover_restartbtn")
+				else if (e->getComponent<CUI>().name == "Gameover_restartbtn" || e->getComponent<CUI>().name == "Pause_restartbtn")
 				{
 					char const* path = "Levels/level";
 					m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game,path,3,3,0));
