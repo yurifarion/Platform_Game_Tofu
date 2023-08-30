@@ -1051,7 +1051,7 @@ void Scene_Play::sUI()
 			}
 			else  e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
-			if (button.buttonui.ispressed())
+			if (button.buttonui.isreleased())
 			{
 				e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 

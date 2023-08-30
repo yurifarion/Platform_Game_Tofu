@@ -16,8 +16,13 @@ bool ButtonUI::ispressed()
 {
 	return m_ispressed;
 }
+bool ButtonUI::isreleased()
+{
+	return m_isreleased;
+}
 void ButtonUI::Update(const sf::RenderWindow& window)
 {
+	if (m_isreleased) m_isreleased = false;
 	Vec2 mousepos = Vec2(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 	auto& pos = m_recttransform.getposition();
 	auto& size = m_recttransform.getsize();
@@ -36,7 +41,14 @@ void ButtonUI::Update(const sf::RenderWindow& window)
 		m_ispressed = true;
 	}
 
-	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left)) m_ispressed = false;
+	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		if (m_ispressed)
+		{
+			m_isreleased = true;
+		}
+		m_ispressed = false;
+	}
 }
 void ButtonUI::buttonclick()
 {
