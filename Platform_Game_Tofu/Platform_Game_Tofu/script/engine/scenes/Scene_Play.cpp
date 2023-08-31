@@ -55,6 +55,9 @@ void Scene_Play::init(const std::string& levelPath)
 
 	m_gridText.setCharacterSize(6);
 	m_gridText.setFont(m_game->assets().getFont("tech"));
+
+	m_sound.setBuffer(m_game->assets().getSoundBuffer("gamesfx"));
+	m_sound.setVolume(m_game->m_mastersound);
 	loadLevel(levelPath);
 
 }
@@ -392,6 +395,8 @@ void Scene_Play::loadLevel(const std::string& filename)
 	sUpdateLifebar();
 	sUpdateDashbar();
 	m_game->showCursor(false);
+	m_sound.play();
+	
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -1063,12 +1068,14 @@ void Scene_Play::sUI()
 				}
 				else if (e->getComponent<CUI>().name == "Gameover_restartbtn" || e->getComponent<CUI>().name == "Pause_restartbtn")
 				{
+					m_sound.stop();
 					char const* path = "Levels/level";
 					m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game,path,3,3,0));
 					
 				}
 				else if (e->getComponent<CUI>().name == "Gamecomplete_backtoMenu")
 				{
+					m_sound.stop();
 					m_game->changeScene("Menu", std::make_shared<Scene_Menu>(m_game));
 
 				}
@@ -1079,6 +1086,7 @@ void Scene_Play::sUI()
 void Scene_Play::onEnd()
 {
 	m_hasEnded = true;
+	m_sound.stop();
 	m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 }
 

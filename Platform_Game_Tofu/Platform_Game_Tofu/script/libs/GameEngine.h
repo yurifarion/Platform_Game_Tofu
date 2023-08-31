@@ -17,6 +17,8 @@ protected:
 	bool m_running = true;
 	sf::View m_camera_view;
 	sf::Clock m_clock;
+
+	
 	
 
 	void init(const std::string& path);
@@ -25,6 +27,7 @@ protected:
 	std::shared_ptr<Scene> currentScene();
 
 public:
+	float m_mastersound = 10.0f;
 	float deltaTime = 0;
 	GameEngine(const std::string& path);
 	void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene, bool endCurrentScene = false);

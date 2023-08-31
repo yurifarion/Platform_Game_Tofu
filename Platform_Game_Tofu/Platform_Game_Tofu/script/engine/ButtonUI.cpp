@@ -22,7 +22,7 @@ bool ButtonUI::isreleased()
 }
 void ButtonUI::Update(const sf::RenderWindow& window)
 {
-	if (m_isreleased) m_isreleased = false;
+	if (m_isreleased) m_isreleased = false;  
 	Vec2 mousepos = Vec2(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 	auto& pos = m_recttransform.getposition();
 	auto& size = m_recttransform.getsize();

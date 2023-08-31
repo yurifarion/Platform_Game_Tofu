@@ -22,6 +22,9 @@ void Scene_Menu::init()
 
     m_entityManager = EntityManager();
 
+    m_sound.setVolume(m_game->m_mastersound);
+    m_sound.setBuffer(m_game->assets().getSoundBuffer("menusfx"));
+
     //Background Image
     auto bgGO = m_entityManager.addEntity("UI");
     bgGO->addComponent<CUI>("Background", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
@@ -50,6 +53,8 @@ void Scene_Menu::init()
     startText->addComponent<CTextUI>("Click to start...");
     startText->getComponent<CTextUI>().textui.setfontsize(24);
 
+    m_sound.play();
+
 }
 
 void Scene_Menu::update()
@@ -63,10 +68,12 @@ void Scene_Menu::sDoAction(const Action& action)
     {
         if (action.name() == "LEVELEDITOR")
         {
+            m_sound.stop();
             m_game->changeScene("EDITOR", std::make_shared<Scene_LevelEditorMenu>(m_game));
         }
         else if (action.name() == "CUSTOMLEVEL")
         {
+            m_sound.stop();
             char const* path;
             char const* fileter[2] = { "*Level","*.Level" };
             path = tinyfd_openFileDialog("Load Level", "", 0, fileter, "Level file", 0);
@@ -83,6 +90,7 @@ void Scene_Menu::sDoAction(const Action& action)
         }
         else
         {
+            m_sound.stop();
             char const* path = "Levels/level";
             m_game->changeScene("PLAY", std::make_shared<Scene_Loading>(m_game, path, 3, 3, 0));
         }

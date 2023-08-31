@@ -15,6 +15,7 @@ protected:
 	std::vector<std::string> m_levelPaths;
 	sf::Text m_menuText;
 	size_t m_selectedMenuIndex = 0;
+	sf::Sound m_sound;
 
 	void init();
 	void update();

@@ -35,6 +35,9 @@ protected:
 
 	std::vector<sf::VertexArray> m_debugGraph;
 
+
+	sf::Sound m_sound;
+
 	int m_amoutOfLives;
 	int m_amountOfDash;
 	int m_amountOfSpheres;
