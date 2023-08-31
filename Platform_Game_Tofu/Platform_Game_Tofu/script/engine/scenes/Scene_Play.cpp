@@ -56,8 +56,26 @@ void Scene_Play::init(const std::string& levelPath)
 	m_gridText.setCharacterSize(6);
 	m_gridText.setFont(m_game->assets().getFont("tech"));
 
-	m_sound.setBuffer(m_game->assets().getSoundBuffer("gamesfx"));
-	m_sound.setVolume(m_game->m_mastersound);
+	m_bgsound.setBuffer(m_game->assets().getSoundBuffer("gamesfx"));
+	m_bgsound.setVolume(m_game->m_mastersound);
+	m_gameoversound.setBuffer(m_game->assets().getSoundBuffer("gamoversfx"));
+	m_gameoversound.setVolume(m_game->m_mastersound);
+	m_gemsound.setBuffer(m_game->assets().getSoundBuffer("gemsfx"));
+	m_gemsound.setVolume(m_game->m_mastersound);
+	m_uihoversound.setBuffer(m_game->assets().getSoundBuffer("uihoversfx"));
+	m_uihoversound.setVolume(m_game->m_mastersound);
+	m_uiconfirmsound.setBuffer(m_game->assets().getSoundBuffer("uiconfirmsfx"));
+	m_uiconfirmsound.setVolume(m_game->m_mastersound);
+	m_hitsound.setBuffer(m_game->assets().getSoundBuffer("hitsfx"));
+	m_hitsound.setVolume(m_game->m_mastersound);
+	m_dashmsound.setBuffer(m_game->assets().getSoundBuffer("dashsfx"));
+	m_dashmsound.setVolume(m_game->m_mastersound);
+
+	m_soundlist.push_back(m_bgsound);
+	m_soundlist.push_back(m_gameoversound);
+	m_soundlist.push_back(m_gemsound);
+	m_soundlist.push_back(m_uihoversound);
+	m_soundlist.push_back(m_uiconfirmsound);
 	loadLevel(levelPath);
 
 }
@@ -395,7 +413,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 	sUpdateLifebar();
 	sUpdateDashbar();
 	m_game->showCursor(false);
-	m_sound.play();
+	m_bgsound.play();
 	
 }
 
@@ -657,6 +675,8 @@ void Scene_Play::sUpdateLifebar()
 				}
 			}
 		}
+		stopallsounds();
+		m_gameoversound.play();
 		m_gameovermenu->getComponent<CUI>().recttransform.SetActive(true);
 		m_gameover = true;
 		m_game->showCursor(m_gameover);
@@ -790,6 +810,7 @@ void Scene_Play::sCollision()
 
 			 if (e->getComponent<CTransform>().getname() == "GEMBLUE")
 			{
+				 m_gemsound.play();
 				m_player->getComponent<CPlayer>().gemscollected++;
 				e->destroy();
 				m_spherecount->getComponent<CTextUI>().textui.settext(std::to_string(m_player->getComponent<CPlayer>().gemscollected) + "X");
@@ -811,6 +832,7 @@ void Scene_Play::sCollision()
 
 				 if (e->getComponent<CTransform>().getname() == "spike" || e->getComponent<CTransform>().getname() == "enemy")
 				 {
+					 m_hitsound.play();
 					 Vec2 damagedir;
 					 if (resolveCol.x == 0)
 					 {
@@ -931,6 +953,7 @@ void Scene_Play::sDoAction(const Action& action)
 				setPaused(!m_paused);
 				m_pausemenu->getComponent<CUI>().recttransform.SetActive(m_paused);
 				m_game->showCursor(m_paused);
+				m_uihoversound.play();
 			}
 		
 			else if (action.name() == "JUMP")
@@ -953,6 +976,7 @@ void Scene_Play::sDoAction(const Action& action)
 			}
 			else if (action.name() == "DASH")
 			{
+				m_dashmsound.play();
 				m_player->getComponent<CInput>().dash = true;
 				m_player->getComponent<CPlayer>().reducedash(-1);
 				sUpdateDashbar();
@@ -1052,12 +1076,15 @@ void Scene_Play::sUI()
 			//Check Button if is over
 			if (button.buttonui.ismouseover())
 			{
+				//if(m_uihoversound.getStatus() != sf::Sound::Status::Playing) m_uihoversound.play();
+				
 				e->getComponent<CTextUI>().textui.setcolor(sf::Color::Yellow);
 			}
-			else  e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
+			else e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
 			if (button.buttonui.isreleased())
 			{
+				m_uiconfirmsound.play();
 				e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
 
 				if(e->getComponent<CUI>().name == "Pause_quitbtn" || e->getComponent<CUI>().name == "Gameover_quitbtn") onEnd();
@@ -1068,14 +1095,14 @@ void Scene_Play::sUI()
 				}
 				else if (e->getComponent<CUI>().name == "Gameover_restartbtn" || e->getComponent<CUI>().name == "Pause_restartbtn")
 				{
-					m_sound.stop();
+					stopallsounds();
 					char const* path = "Levels/level";
 					m_game->changeScene("Loading", std::make_shared<Scene_Loading>(m_game,path,3,3,0));
 					
 				}
 				else if (e->getComponent<CUI>().name == "Gamecomplete_backtoMenu")
 				{
-					m_sound.stop();
+					stopallsounds();
 					m_game->changeScene("Menu", std::make_shared<Scene_Menu>(m_game));
 
 				}
@@ -1086,10 +1113,16 @@ void Scene_Play::sUI()
 void Scene_Play::onEnd()
 {
 	m_hasEnded = true;
-	m_sound.stop();
+	stopallsounds();
 	m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 }
-
+void Scene_Play::stopallsounds()
+{
+	for (auto s : m_soundlist)
+	{
+		s.stop();
+	}
+}
 void Scene_Play::sRender()
 {
 	//color the background darker so you know that the game is paused

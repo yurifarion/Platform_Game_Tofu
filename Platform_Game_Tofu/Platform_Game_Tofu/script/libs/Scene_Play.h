@@ -35,8 +35,15 @@ protected:
 
 	std::vector<sf::VertexArray> m_debugGraph;
 
+	std::list<sf::Sound> m_soundlist;
+	sf::Sound m_bgsound;
+	sf::Sound m_gameoversound;
+	sf::Sound m_gemsound;
+	sf::Sound m_hitsound;
+	sf::Sound m_dashmsound;
+	sf::Sound m_uihoversound;
+	sf::Sound m_uiconfirmsound;
 
-	sf::Sound m_sound;
 
 	int m_amoutOfLives;
 	int m_amountOfDash;
@@ -68,4 +75,5 @@ public:
 	void drawline(Vec2 p1,Vec2 p2);
 	void debugline(Vec2 p1, Vec2 p2,sf::Color color = sf::Color::Blue);
 	void reset();
+	void stopallsounds();
 };
