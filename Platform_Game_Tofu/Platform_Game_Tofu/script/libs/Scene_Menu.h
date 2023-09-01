@@ -17,8 +17,12 @@ protected:
 	size_t m_selectedMenuIndex = 0;
 	sf::Sound m_sound;
 
+	bool m_isaudioon = true;
+	float m_mastervolumetemp;
+
 	void init();
 	void update();
+	void UIupdate();
 	void onEnd();
 	void sDoAction(const Action& action);
 

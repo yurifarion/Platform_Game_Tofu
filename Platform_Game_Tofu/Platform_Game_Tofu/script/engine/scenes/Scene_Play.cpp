@@ -289,9 +289,6 @@ void Scene_Play::loadLevel(const std::string& filename)
 		presumebtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
 
 		presumebtn->addComponent<CButtonUI>(presumebtn->getComponent<CUI>().recttransform);
-		presumebtn->getComponent<CButtonUI>().buttonui.addlistener([]() {
-
-			});
 
 		//Restart button
 		auto prestartbtn = m_entityManager.addEntity("UI");

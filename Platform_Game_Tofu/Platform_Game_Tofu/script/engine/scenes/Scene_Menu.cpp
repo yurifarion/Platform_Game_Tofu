@@ -11,6 +11,8 @@
 Scene_Menu::Scene_Menu(GameEngine* gameEngine)
     : Scene(gameEngine)
 {
+    m_mastervolumetemp = 10.0f;
+    m_isaudioon = m_game->m_mastersound != 0;
     init();
 }
 
@@ -18,6 +20,7 @@ void Scene_Menu::init()
 {
     registerAction(sf::Keyboard::L, "LEVELEDITOR");
     registerAction(sf::Keyboard::K, "CUSTOMLEVEL");
+    registerAction(sf::Keyboard::Enter, "STARTGAME");
     registerAction(sf::Keyboard::Escape, "QUIT");
 
     m_entityManager = EntityManager();
@@ -30,6 +33,20 @@ void Scene_Menu::init()
     bgGO->addComponent<CUI>("Background", Vec2(0, 0), Vec2(m_game->window().getSize().x, m_game->window().getSize().y));
     bgGO->addComponent<CImageUI>(m_game->assets().getSprite("menubg"),bgGO->getComponent<CUI>().recttransform);
     bgGO->getComponent<CImageUI>().imgui.setcolor(sf::Color::Red);
+
+
+    //Resume button
+    auto paudiobtn = m_entityManager.addEntity("UI");
+    paudiobtn->addComponent<CUI>("Audio_btn", Vec2(0, 0), Vec2(0, 0), &bgGO->getComponent<CUI>().recttransform);
+    std::string audiovalue = m_isaudioon ? "Audio ON" : "Audio OFF";
+    paudiobtn->addComponent<CTextUI>(audiovalue);
+    paudiobtn->getComponent<CTextUI>().textui.setfontsize(15);
+
+    paudiobtn->getComponent<CUI>().recttransform.setsize(Vec2(paudiobtn->getComponent<CTextUI>().textui.getfontsize() * paudiobtn->getComponent<CTextUI>().textui.gettext().length(), paudiobtn->getComponent<CTextUI>().textui.getfontsize()));
+    paudiobtn->getComponent<CUI>().recttransform.alignment = RectTransform::Align::topleft;
+    paudiobtn->getComponent<CUI>().recttransform.setposition(Vec2(0, 0));
+
+    paudiobtn->addComponent<CButtonUI>(paudiobtn->getComponent<CUI>().recttransform);
 
     //Logo image
     auto logoGO = m_entityManager.addEntity("UI");
@@ -59,9 +76,50 @@ void Scene_Menu::init()
 
 void Scene_Menu::update()
 {
+    UIupdate();
     m_entityManager.update();
 }
+void Scene_Menu::UIupdate()
+{
+    for (auto e : m_entityManager.getEntities("UI"))
+    {
+        if (e->hasComponent<CButtonUI>() && e->getComponent<CUI>().recttransform.isVisible())
+        {
+            auto& button = e->getComponent<CButtonUI>();
+            button.buttonui.Update(m_game->window());
 
+            //Check Button if is over
+            if (button.buttonui.ismouseover())
+            {
+                //if(m_uihoversound.getStatus() != sf::Sound::Status::Playing) m_uihoversound.play();
+
+                e->getComponent<CTextUI>().textui.setcolor(sf::Color::Yellow);
+            }
+            else e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
+
+            if (button.buttonui.isreleased())
+            {
+                e->getComponent<CTextUI>().textui.setcolor(sf::Color::White);
+                if (e->getComponent<CUI>().name == "Audio_btn")
+                {
+                    m_isaudioon = !m_isaudioon;
+                    if (!m_isaudioon) 
+                    {
+                        m_game->m_mastersound = 0;
+                        e->getComponent<CTextUI>().textui.settext("Audio OFF");
+                        m_sound.setVolume(m_game->m_mastersound);
+                    }
+                    else {
+                        e->getComponent<CTextUI>().textui.settext("Audio ON");
+                        m_game->m_mastersound = m_mastervolumetemp;
+                        m_sound.setVolume(m_game->m_mastersound);
+                    }
+                }
+               
+            }
+        }
+    }
+}
 void Scene_Menu::sDoAction(const Action& action)
 {
     if (action.type() == "START")
@@ -88,7 +146,7 @@ void Scene_Menu::sDoAction(const Action& action)
         {
             onEnd();
         }
-        else
+        else if(action.name() == "STARTGAME")
         {
             m_sound.stop();
             char const* path = "Levels/level";
@@ -138,8 +196,9 @@ void Scene_Menu::sRender()
             text.setCharacterSize(e->getComponent<CTextUI>().textui.getfontsize());
             text.setString(e->getComponent<CTextUI>().textui.gettext());
             text.setPosition(sf::Vector2f(e->getComponent<CUI>().recttransform.getscreenposition().x, e->getComponent<CUI>().recttransform.getscreenposition().y));
-            text.setOutlineColor(sf::Color::Black);
-            text.setOutlineThickness(1);
+            text.setFillColor(e->getComponent<CTextUI>().textui.getcolor());
+            text.setOutlineThickness(e->getComponent<CTextUI>().textui.getoutlinethickness());
+            text.setOutlineColor(e->getComponent<CTextUI>().textui.getoutlinecolor());
             m_game->window().draw(text);
         }
     }
