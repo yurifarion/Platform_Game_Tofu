@@ -70,7 +70,19 @@ void Scene_Menu::init()
     startText->addComponent<CTextUI>("Click to start...");
     startText->getComponent<CTextUI>().textui.setfontsize(24);
 
+    //Shader
+    if (!sf::Shader::isAvailable())
+    {
+        std::cout << "Shaders not available \n";
+    }
+  
+    if (!m_shader.loadFromFile("Res/Shaders/circleFade_shader.frag", sf::Shader::Fragment))
+    {
+        std::cout << "Couldnt find shader file \n";
+    }
+
     m_sound.play();
+
 
 }
 
@@ -163,6 +175,10 @@ void Scene_Menu::sRender()
     m_game->window().setView(m_game->window().getDefaultView());
     m_game->window().clear();
 
+    
+
+    m_shader.setUniform("u_time", m_time.getElapsedTime().asSeconds());
+    m_shader.setUniform("u_resolution", sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
 
     //Draw UI
     for (auto e : m_entityManager.getEntities("UI"))
@@ -202,6 +218,11 @@ void Scene_Menu::sRender()
             m_game->window().draw(text);
         }
     }
+
+    //Fade in shader
+    sf::RectangleShape rectangle(sf::Vector2f(120, 50));
+    rectangle.setSize(sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
+    m_game->window().draw(rectangle, &m_shader);
 
 }
 

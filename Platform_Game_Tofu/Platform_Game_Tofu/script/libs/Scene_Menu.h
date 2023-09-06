@@ -17,6 +17,9 @@ protected:
 	size_t m_selectedMenuIndex = 0;
 	sf::Sound m_sound;
 
+	sf::Shader m_shader;
+	sf::Clock m_time;
+
 	bool m_isaudioon = true;
 	float m_mastervolumetemp;
 

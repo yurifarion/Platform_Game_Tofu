@@ -186,4 +186,12 @@
       <Filter>Arquivos de Recurso\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\Shaders\fade_shader.frag">
+      <Filter>Arquivos de Recurso</Filter>
+    </None>
+    <None Include="Res\Shaders\circleFade_shader.frag">
+      <Filter>Arquivos de Recurso</Filter>
+    </None>
+  </ItemGroup>
 </Project>

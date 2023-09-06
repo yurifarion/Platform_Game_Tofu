@@ -73,6 +73,10 @@
     <ClInclude Include="script\libs\Vec2.h" />
     <ClInclude Include="script\utils\tinyfiledialogs.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\Shaders\circleFade_shader.frag" />
+    <None Include="Res\Shaders\fade_shader.frag" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
