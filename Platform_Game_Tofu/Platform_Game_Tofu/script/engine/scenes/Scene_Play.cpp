@@ -76,6 +76,19 @@ void Scene_Play::init(const std::string& levelPath)
 	m_soundlist.push_back(m_gemsound);
 	m_soundlist.push_back(m_uihoversound);
 	m_soundlist.push_back(m_uiconfirmsound);
+	if (!sf::Shader::isAvailable())
+	{
+		std::cout << "Shaders not available \n";
+	}
+
+	if (!m_shader.loadFromFile("Res/Shaders/circleFade_shader.frag", sf::Shader::Fragment))
+	{
+		std::cout << "Couldnt find shader file \n";
+	}
+	
+	m_shader.setUniform("u_time", m_time.getElapsedTime().asSeconds());
+	m_shader.setUniform("u_resolution", sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
+	m_shader.setUniform("u_center", sf::Vector2f(-0.21f, -0.23f));
 	loadLevel(levelPath);
 
 }
@@ -411,7 +424,7 @@ void Scene_Play::loadLevel(const std::string& filename)
 	sUpdateDashbar();
 	m_game->showCursor(false);
 	m_bgsound.play();
-	
+	m_time.restart();
 }
 
 void Scene_Play::spawnPlayer(Vec2& position)
@@ -1301,5 +1314,12 @@ void Scene_Play::sRender()
 			m_game->window().draw(db);
 		}
 	}
+	m_shader.setUniform("u_time", m_time.getElapsedTime().asSeconds());
+	//Fade in shader
+	sf::RectangleShape rectangle(sf::Vector2f(120, 50));
+	rectangle.setSize(sf::Vector2f(m_game->window().getSize().x, m_game->window().getSize().y));
+	rectangle.setFillColor(sf::Color(0, 0, 0, 0.5));
+	m_game->window().draw(rectangle, &m_shader);
+
 		
 }

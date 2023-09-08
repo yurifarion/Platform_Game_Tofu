@@ -20,6 +20,8 @@ protected:
 	std::shared_ptr<Entity> m_gameovermenu;
 	std::shared_ptr<Entity> m_gamecomplete;
 	std::shared_ptr<Entity> m_spherecount;
+	sf::Shader m_shader;
+	sf::Clock m_time;
 	Vec2 m_startPos;
 	std::string m_levelpath;
 	MapLevel m_maplevel;

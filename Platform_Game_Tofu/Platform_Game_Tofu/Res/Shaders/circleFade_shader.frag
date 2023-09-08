@@ -5,6 +5,7 @@ precision mediump float;
 
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform vec2 u_center;
 
 float circle(in vec2 _st, in float _radius){
     vec2 dist = _st-vec2(0.5);
@@ -15,10 +16,10 @@ float circle(in vec2 _st, in float _radius){
 
 void main(){
 	vec2 st = gl_FragCoord.xy/u_resolution.xy;
-	st.x -= 0.20; // <-0.5, 0.5>
+	st -= u_center; // <-0.5, 0.5>
 	st.x *= u_resolution.x/u_resolution.y; // fix aspect ratio
 
-	vec4 color = vec4(0.0,0.0,0.0,circle(st,0 + u_time*2));
+	vec4 color = vec4(0.0,0.0,0.0,circle(st,0 + u_time*8));
 
 	gl_FragColor = vec4( color);
 }
