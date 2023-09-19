@@ -37,7 +37,7 @@ protected:
 
 	std::vector<sf::VertexArray> m_debugGraph;
 
-	std::list<sf::Sound> m_soundlist;
+	std::list< std::reference_wrapper<sf::Sound>> m_soundlist;
 	sf::Sound m_bgsound;
 	sf::Sound m_gameoversound;
 	sf::Sound m_gemsound;

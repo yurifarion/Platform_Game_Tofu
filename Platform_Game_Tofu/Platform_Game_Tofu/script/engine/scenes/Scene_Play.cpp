@@ -1065,6 +1065,7 @@ void Scene_Play::sAnimation()
 }
 void Scene_Play::sUI()
 {
+	m_game->showCursor(m_gameovermenu->getComponent<CUI>().recttransform.isActive());
 	//Make UI follow the camera;
 	for (auto e : m_entityManager.getEntities("UI"))
 	{
@@ -1130,8 +1131,9 @@ void Scene_Play::stopallsounds()
 {
 	for (auto s : m_soundlist)
 	{
-		s.stop();
+		s.get().stop();
 	}
+	std::cout << "Stop all sounds \n";
 }
 void Scene_Play::sRender()
 {
